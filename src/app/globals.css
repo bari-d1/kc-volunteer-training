@@ -1,26 +1,141 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* KC design tokens. Each token becomes a utility, e.g. bg-surface, text-lime,
+   rounded-pill, shadow-glow, px-gutter. */
+@theme {
+  --color-bg: #191919;
+  --color-surface: #222222;
+  --color-surface-2: #2c2c2c;
+  --color-lime: #d9ff3d;
+  --color-lime-dark: #849a2c;
+  --color-text: #ffffff;
+  --color-muted: #9a9a9a;
+  --color-ink: #191919;
+  --color-branch-experience: #d9ff3d;
+  --color-branch-ministry: #ff5fc8;
+  --color-branch-creative: #ff7a1a;
+  --color-branch-systems: #33d6f5;
+  --color-success: #3ddc84;
+  --color-danger: #ff5a5f;
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-pill: 9999px;
+
+  --shadow-card: 0 1px 2px rgb(0 0 0 / 0.4), 0 8px 24px rgb(0 0 0 / 0.3);
+  --shadow-glow:
+    0 0 0 4px rgb(217 255 61 / 0.25), 0 0 24px rgb(217 255 61 / 0.35);
+
+  /* Page gutter: 16px mobile, 64px from lg. Overridden below. */
+  --spacing-gutter: 16px;
 }
 
+/* Inter is loaded by next/font in layout.tsx as --font-inter. */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  @media (width >= 64rem) {
+    :root {
+      --spacing-gutter: 64px;
+    }
+  }
+
+  body {
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    font-family: var(--font-sans);
+  }
+
+  ::selection {
+    background-color: var(--color-lime);
+    color: var(--color-ink);
+  }
+
+  :where(
+    a,
+    button,
+    input,
+    select,
+    textarea,
+    summary,
+    [tabindex]
+  ):focus-visible {
+    outline: 2px solid var(--color-lime);
+    outline-offset: 2px;
+    box-shadow: var(--shadow-glow);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* Type scale: mobile first, larger from md. */
+@utility text-display {
+  font-size: 2.75rem;
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  @media (width >= 48rem) {
+    font-size: 5rem;
+  }
+}
+
+@utility text-h1 {
+  font-size: 2.25rem;
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  @media (width >= 48rem) {
+    font-size: 3.5rem;
+  }
+}
+
+@utility text-h2 {
+  font-size: 1.75rem;
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  @media (width >= 48rem) {
+    font-size: 2.5rem;
+  }
+}
+
+@utility text-h3 {
+  font-size: 1.375rem;
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  @media (width >= 48rem) {
+    font-size: 1.75rem;
+  }
+}
+
+@utility text-body-lg {
+  font-size: 1.125rem;
+  line-height: 1.55;
+  @media (width >= 48rem) {
+    font-size: 1.25rem;
+  }
+}
+
+@utility text-body {
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+@utility text-small {
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+@utility text-label {
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
 }
