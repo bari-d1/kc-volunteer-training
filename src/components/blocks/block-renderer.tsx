@@ -52,7 +52,7 @@ export function BlockRenderer({ blocks, moduleId }: BlockRendererProps) {
           Record<string, unknown>
         >;
         return (
-          <Reveal key={id}>
+          <Reveal key={id} data-block-type={blockType} data-block-id={id}>
             <BlockErrorBoundary blockId={id} type={blockType}>
               <Component {...content} blockId={id} moduleId={moduleId} />
             </BlockErrorBoundary>

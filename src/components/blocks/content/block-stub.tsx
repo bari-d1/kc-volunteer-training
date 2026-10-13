@@ -10,8 +10,7 @@ export function BlockStub({
 }) {
   return (
     <div
-      data-block-type={type}
-      data-block-id={blockId}
+      data-stub-block-id={blockId}
       className="rounded-md border-2 border-dashed border-surface-2 bg-surface px-4 py-6 text-center font-mono text-small text-muted"
     >
       {type}

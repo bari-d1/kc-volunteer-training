@@ -24,7 +24,7 @@ export default function BlocksPreviewPage() {
         <h1 className="text-h1">Block preview</h1>
         <p className="text-body-lg text-muted">
           One sample of every block type, from{" "}
-          <code className="font-mono text-text">
+          <code className="font-mono break-all text-text">
             src/components/blocks/__fixtures__.ts
           </code>
           .

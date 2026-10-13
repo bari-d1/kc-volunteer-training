@@ -23,14 +23,14 @@ const headingProps = vi.fn();
 vi.mock("./content/heading-block", () => ({
   HeadingBlock: (props: Record<string, unknown>) => {
     headingProps(props);
-    return <div data-block-type="HEADING">HEADING</div>;
+    return <div>HEADING</div>;
   },
 }));
 const knowledgeCheckProps = vi.fn();
 vi.mock("./content/knowledge-check-block", () => ({
   KnowledgeCheckBlock: (props: Record<string, unknown>) => {
     knowledgeCheckProps(props);
-    return <div data-block-type="KNOWLEDGE_CHECK">KNOWLEDGE_CHECK</div>;
+    return <div>KNOWLEDGE_CHECK</div>;
   },
 }));
 vi.mock("./content/timeline-block", () => ({
@@ -149,8 +149,11 @@ describe("BlockRenderer", () => {
       <BlockRenderer blocks={blocks} moduleId={FIXTURE_MODULE_ID} />,
     );
 
-    expect(renderedTypes(container)).toEqual(["HEADING", "TEXT"]);
+    expect(renderedTypes(container)).toEqual(["HEADING", "TEXT", "TIMELINE"]);
+    const timeline = container.querySelector('[data-block-type="TIMELINE"]')!;
+    expect(timeline).toContainElement(screen.getByRole("alert"));
     expect(screen.getByRole("alert")).toHaveTextContent("timeline exploded");
+    expect(screen.getByText("HEADING")).toBeInTheDocument();
     expect(error).toHaveBeenCalledWith(
       expect.stringContaining("(TIMELINE) crashed"),
       expect.any(Error),
