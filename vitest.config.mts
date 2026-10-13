@@ -7,6 +7,10 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": fileURLToPath(new URL("./src", import.meta.url)),
+      // Next.js enforces server-only at build time; tests import freely.
+      "server-only": fileURLToPath(
+        new URL("./test/server-only-stub.ts", import.meta.url),
+      ),
     },
   },
   test: {

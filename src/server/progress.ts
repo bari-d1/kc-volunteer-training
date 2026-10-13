@@ -20,7 +20,7 @@ export class ProgressError extends Error {
  * Every write goes through this, so a crafted request can't touch a locked
  * or unpublished module.
  */
-async function assertUnlocked(profileId: VolunteerId, moduleId: string) {
+export async function assertUnlocked(profileId: VolunteerId, moduleId: string) {
   const courseModule = await prisma.module.findFirst({
     where: { id: moduleId, isPublished: true, course: { isPublished: true } },
     select: { id: true, courseId: true, requiresCheck: true },

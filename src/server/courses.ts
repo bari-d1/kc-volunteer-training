@@ -6,9 +6,9 @@ import { prisma } from "@/lib/prisma";
 import {
   BlockValidationError,
   parseBlock,
-  toVolunteerBlock,
   type VolunteerBlock,
 } from "@/lib/schemas/blocks";
+import { toPublicBlock } from "./public-block";
 import { computeModuleStates, type ModuleStatus } from "./unlock";
 
 export async function getPublishedCourse(slug: string) {
@@ -139,7 +139,7 @@ export async function getModuleForVolunteer(
   const blocks: VolunteerBlock[] = [];
   for (const row of courseModule.blocks) {
     try {
-      blocks.push(toVolunteerBlock(parseBlock(row)));
+      blocks.push(toPublicBlock(parseBlock(row)));
     } catch (error) {
       if (!(error instanceof BlockValidationError)) throw error;
       console.error(error.message);
