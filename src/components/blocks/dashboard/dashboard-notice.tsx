@@ -3,19 +3,10 @@
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef } from "react";
 import { useToast } from "@/components/ui/toast";
-
-const notices = {
-  locked: {
-    title: "Finish the previous module first",
-    variant: "info" as const,
-  },
-};
-
-export type DashboardNoticeKey = keyof typeof notices;
-
-export function isDashboardNotice(value: unknown): value is DashboardNoticeKey {
-  return typeof value === "string" && value in notices;
-}
+import {
+  dashboardNotices,
+  type DashboardNoticeKey,
+} from "@/lib/dashboard-notices";
 
 /** Shows a one-off toast from ?notice=… and removes it from the URL. */
 export function DashboardNotice({ notice }: { notice: DashboardNoticeKey }) {
@@ -27,7 +18,7 @@ export function DashboardNotice({ notice }: { notice: DashboardNoticeKey }) {
   useEffect(() => {
     if (shown.current) return;
     shown.current = true;
-    toast(notices[notice]);
+    toast(dashboardNotices[notice]);
     router.replace(pathname, { scroll: false });
   }, [notice, pathname, router, toast]);
 

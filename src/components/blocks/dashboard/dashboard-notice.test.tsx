@@ -9,8 +9,8 @@ vi.mock("next/navigation", () => ({
 const toast = vi.fn();
 vi.mock("@/components/ui/toast", () => ({ useToast: () => ({ toast }) }));
 
-const { DashboardNotice, isDashboardNotice } =
-  await import("./dashboard-notice");
+const { DashboardNotice } = await import("./dashboard-notice");
+const { isDashboardNotice } = await import("@/lib/dashboard-notices");
 
 describe("DashboardNotice", () => {
   it("shows the locked toast once and clears the query string", () => {
@@ -27,6 +27,7 @@ describe("DashboardNotice", () => {
   it("only accepts known notices", () => {
     expect(isDashboardNotice("locked")).toBe(true);
     expect(isDashboardNotice("<script>")).toBe(false);
+    expect(isDashboardNotice("toString")).toBe(false);
     expect(isDashboardNotice(undefined)).toBe(false);
   });
 });

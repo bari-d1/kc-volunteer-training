@@ -3,10 +3,8 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { CourseLayout } from "@/components/blocks/course-layout";
 import { CourseDashboard } from "@/components/blocks/dashboard/course-dashboard";
-import {
-  DashboardNotice,
-  isDashboardNotice,
-} from "@/components/blocks/dashboard/dashboard-notice";
+import { DashboardNotice } from "@/components/blocks/dashboard/dashboard-notice";
+import { isDashboardNotice } from "@/lib/dashboard-notices";
 import { DashboardSkeleton } from "@/components/blocks/dashboard/dashboard-skeleton";
 import { requireVolunteer } from "@/lib/auth";
 import { courseNav } from "@/lib/course-config";
