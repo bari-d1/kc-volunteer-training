@@ -7,8 +7,283 @@ datasource db {
   provider = "postgresql"
 }
 
-// Placeholder model used by GET /api/health. The real data model lands in Phase 3.
-model HealthCheck {
-  id        String   @id @default(cuid())
+// ─── Enums ───────────────────────────────────────────────────────────────────
+
+// Named BranchCode because the Branch model below holds the reference data.
+enum BranchCode {
+  EXPERIENCE
+  MINISTRY
+  CREATIVE
+  SYSTEMS
+}
+
+enum BlockType {
+  HEADING
+  TEXT
+  IMAGE
+  VIDEO
+  FLIP_CARDS
+  ACCORDION
+  TABS
+  TIMELINE
+  PYRAMID
+  PEOPLE
+  REFLECTION
+  CHECKLIST
+  CONTACT
+  LINK_QR
+  KNOWLEDGE_CHECK
+  NARRATOR_CALLOUT
+}
+
+enum LeaderGroup {
+  CHURCH_FAMILY
+  BRANCH_LEAD
+  TEAM_LEAD
+}
+
+// ─── Volunteers ──────────────────────────────────────────────────────────────
+
+/// One per Supabase auth user; id is the auth.users id (set by the app, no default).
+model Profile {
+  id             String      @id @db.Uuid
+  email          String      @unique
+  firstName      String
+  lastName       String
+  branchInterest BranchCode?
+  teamInterest   String?
+  consentAt      DateTime
+  hideNarrator   Boolean     @default(false)
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+
+  moduleProgress ModuleProgress[]
+  quizAttempts   QuizAttempt[]
+  certificates   Certificate[]
+}
+
+// ─── Course content ──────────────────────────────────────────────────────────
+
+model Course {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  slug        String   @unique
+  title       String
+  description String
+  isPublished Boolean  @default(false)
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  modules       Module[]
+  quizQuestions QuizQuestion[]
+  quizAttempts  QuizAttempt[]
+  certificates  Certificate[]
+
+  @@index([isPublished, order])
+}
+
+model Module {
+  id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  courseId      String   @db.Uuid
+  slug          String
+  title         String
+  summary       String
+  order         Int      @default(0)
+  isPublished   Boolean  @default(false)
+  narratorIntro String?
+  /// Volunteers must pass this module's knowledge check to complete it.
+  requiresCheck Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  course   Course           @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  blocks   Block[]
+  progress ModuleProgress[]
+
+  @@unique([courseId, slug])
+  @@index([courseId, order])
+}
+
+model Block {
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  moduleId    String    @db.Uuid
+  order       Int       @default(0)
+  type        BlockType
+  /// Shape depends on type; validated with zod in the app.
+  content     Json
+  isPublished Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  module Module @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+
+  // Not unique, so blocks can be reordered without constraint juggling.
+  @@index([moduleId, order])
+}
+
+// ─── Progress, quiz and certificates ─────────────────────────────────────────
+
+model ModuleProgress {
+  id             String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  profileId      String    @db.Uuid
+  moduleId       String    @db.Uuid
+  lastBlockOrder Int       @default(0)
+  checkPassed    Boolean   @default(false)
+  completedAt    DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  profile Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  module  Module  @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+
+  @@unique([profileId, moduleId])
+  @@index([moduleId])
+}
+
+model QuizQuestion {
+  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  courseId        String   @db.Uuid
+  prompt          String
+  /// Array of { id: string, text: string }.
+  options         Json
+  correctOptionId String
+  explanation     String
+  /// Always included in every attempt.
+  isRequired      Boolean  @default(false)
+  isActive        Boolean  @default(true)
+  order           Int      @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@index([courseId, isActive, order])
+}
+
+model QuizAttempt {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  profileId   String   @db.Uuid
+  courseId    String   @db.Uuid
+  /// Question ids served in this attempt, in order.
+  questionIds Json
+  /// Map of questionId → chosen optionId.
+  answers     Json
+  score       Int
+  total       Int
+  passed      Boolean
+  submittedAt DateTime @default(now())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  profile Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  course  Course  @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@index([profileId, courseId, submittedAt])
+  @@index([courseId])
+}
+
+model Certificate {
+  id                String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  profileId         String   @db.Uuid
+  courseId          String   @db.Uuid
+  /// Human readable, e.g. KC-2026-000123.
+  certificateNumber String   @unique
+  issuedAt          DateTime @default(now())
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  profile Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  // Restrict: a course with issued certificates can't be deleted by accident.
+  course  Course  @relation(fields: [courseId], references: [id], onDelete: Restrict)
+
+  @@unique([profileId, courseId])
+  @@index([courseId])
+}
+
+// ─── Reference data ──────────────────────────────────────────────────────────
+
+model Branch {
+  id          String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  code        BranchCode @unique
+  name        String
+  description String
+  /// Hex colour, e.g. #FF5FC8.
+  colour      String
+  order       Int        @default(0)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  teams   Team[]
+  leaders Leader[]
+}
+
+model Team {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  branchId    String   @db.Uuid
+  name        String
+  description String?
+  order       Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  branch Branch @relation(fields: [branchId], references: [id], onDelete: Cascade)
+
+  @@index([branchId, order])
+}
+
+model Leader {
+  id        String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name      String
+  role      String
+  photoUrl  String?
+  branchId  String?     @db.Uuid
+  group     LeaderGroup
+  order     Int         @default(0)
+  isActive  Boolean     @default(true)
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  branch Branch? @relation(fields: [branchId], references: [id], onDelete: SetNull)
+
+  @@index([group, order])
+  @@index([branchId])
+}
+
+/// Key/value settings: safeguarding contacts, incident form URL, WhatsApp
+/// group URL, quiz pass mark, questions per attempt.
+model SiteSetting {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  key       String   @unique
+  value     Json
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ─── Admin ───────────────────────────────────────────────────────────────────
+
+/// Append-only change log for the admin editor.
+model ContentChange {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  entity    String
+  entityId  String
+  /// e.g. create, update, delete, publish, reorder.
+  action    String
+  summary   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([entity, entityId])
+  @@index([createdAt])
+}
+
+/// Used to rate-limit the shared admin password.
+model AdminLoginAttempt {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  ipHash    String
+  succeeded Boolean
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([ipHash, createdAt])
 }

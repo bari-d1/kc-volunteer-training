@@ -5,7 +5,7 @@ export async function GET() {
   await connection();
 
   try {
-    await prisma.healthCheck.count();
+    await prisma.course.count();
     return Response.json({ ok: true, db: "connected" });
   } catch (error) {
     console.error("Health check failed", error);
