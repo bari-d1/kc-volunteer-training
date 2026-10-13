@@ -16,7 +16,8 @@
     "db:deploy": "prisma migrate deploy",
     "db:studio": "prisma studio",
     "db:check-rls": "node scripts/check-rls.mts",
-    "admin:hash-password": "node scripts/hash-admin-password.mts"
+    "admin:hash-password": "node scripts/hash-admin-password.mts",
+    "db:seed": "prisma db seed"
   },
   "dependencies": {
     "@node-rs/argon2": "^2.2.2",
@@ -53,6 +54,7 @@
     "prettier-plugin-tailwindcss": "^0.8.1",
     "prisma": "^7.10.0",
     "tailwindcss": "^4",
+    "tsx": "^4.23.15",
     "typescript": "^5",
     "vitest": "^5.0.3"
   },

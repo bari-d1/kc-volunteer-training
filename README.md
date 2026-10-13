@@ -35,6 +35,10 @@ The easiest way to deploy your Next.js app is to use the [Vercel Platform](https
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
 
+## Sample data
+
+`pnpm db:seed` loads the onboarding course (12 modules with sample blocks), branches and teams, placeholder leaders, site settings and five quiz questions. It's safe to rerun: records are matched by slug, key or name and only created when missing, so it never duplicates rows or overwrites admin edits, and blocks are only added to modules that have none. Every block, setting and question is validated against the app's Zod schemas first (`prisma/seed-data.ts`), and the seed stops before writing anything if one is invalid.
+
 ## Data access
 
 Pages, server actions, route handlers and components never import Prisma; ESLint enforces this. They call server-only functions in `src/server/`:
