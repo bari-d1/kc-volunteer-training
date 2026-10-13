@@ -12,9 +12,12 @@ vi.mock("next/navigation", () => ({
   },
   usePathname: () => "/course/volunteers-onboarding",
   useParams: () => ({}),
+  useRouter: () => ({ replace: () => {}, push: () => {} }),
 }));
 
-const requireVolunteer = vi.fn(async (_next?: string) => ({
+const requireVolunteer = vi.fn<
+  (next?: string) => Promise<{ id: string; firstName: string }>
+>(async () => ({
   id: "v1",
   firstName: "Ada",
 }));
@@ -36,6 +39,7 @@ const pageModule = await import("./page");
 async function renderDashboard(slug: string) {
   const page = pageModule.default({
     params: Promise.resolve({ courseSlug: slug }),
+    searchParams: Promise.resolve({}),
   } as never);
   const dashboard = (
     page.props as {

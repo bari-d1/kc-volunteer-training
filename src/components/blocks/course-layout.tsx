@@ -7,10 +7,10 @@ import { MobileDrawer } from "@/components/blocks/mobile-drawer";
 import { ModuleSidebar } from "@/components/blocks/module-sidebar";
 import { TopBar } from "@/components/blocks/top-bar";
 import { cn } from "@/lib/cn";
-import { courseProgress, type Course } from "@/lib/mock-course";
+import { courseProgress, type CourseNav } from "@/lib/course-nav";
 
 export type CourseLayoutProps = {
-  course: Course;
+  course: CourseNav;
   /** Defaults to the route's moduleId, then the in-progress module. */
   currentModuleId?: string;
   /** The dashboard has no module sidebar or mobile drawer. */
@@ -52,6 +52,7 @@ export function CourseLayout({
     <div className="flex min-h-dvh flex-col">
       <TopBar
         courseTitle={course.title}
+        homeHref={course.homeHref}
         progress={progress}
         menuOpen={drawerOpen}
         onMenuClick={showSidebar ? () => setDrawerOpen(true) : undefined}

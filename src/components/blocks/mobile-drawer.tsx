@@ -5,12 +5,12 @@ import { AnimatePresence, motion } from "motion/react";
 import { ProgressBar } from "@/components/ui/progress-bar";
 import { ModuleList } from "@/components/blocks/module-list";
 import { useReturnFocus } from "@/components/ui/use-return-focus";
-import type { CourseModule } from "@/lib/mock-course";
+import type { NavModule } from "@/lib/course-nav";
 
 export type MobileDrawerProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  modules: CourseModule[];
+  modules: NavModule[];
   currentModuleId: string;
   progress: number;
 };

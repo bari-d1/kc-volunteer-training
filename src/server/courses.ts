@@ -64,12 +64,20 @@ export type VolunteerModuleSummary = Awaited<
   ReturnType<typeof getModulesWithProgress>
 >[number];
 
+/** Every published module in order, for the lesson sidebar. */
+export type ModuleOutline = Array<{
+  slug: string;
+  title: string;
+  status: ModuleStatus;
+}>;
+
 export type ModuleForVolunteer =
   | { status: "not-found" }
   | {
       status: "locked";
       module: { id: string; slug: string; title: string };
       unlockedBy: { slug: string; title: string } | null;
+      outline: ModuleOutline;
     }
   | {
       status: Exclude<ModuleStatus, "locked">;
@@ -90,6 +98,9 @@ export type ModuleForVolunteer =
       } | null;
       previous: { slug: string; title: string } | null;
       next: { slug: string; title: string; status: ModuleStatus } | null;
+      /** 1-based position among published modules. */
+      number: number;
+      outline: ModuleOutline;
     };
 
 /**
@@ -106,6 +117,11 @@ export async function getModuleForVolunteer(
   const index = modules.findIndex((m) => m.slug === moduleSlug);
   if (index === -1) return { status: "not-found" };
   const summary = modules[index];
+  const outline: ModuleOutline = modules.map(({ slug, title, status }) => ({
+    slug,
+    title,
+    status,
+  }));
 
   if (summary.status === "locked") {
     return {
@@ -114,6 +130,7 @@ export async function getModuleForVolunteer(
       unlockedBy: summary.unlockedBy
         ? { slug: summary.unlockedBy.slug, title: summary.unlockedBy.title }
         : null,
+      outline,
     };
   }
 
@@ -171,5 +188,7 @@ export async function getModuleForVolunteer(
     next: next
       ? { slug: next.slug, title: next.title, status: next.status }
       : null,
+    number: index + 1,
+    outline,
   };
 }

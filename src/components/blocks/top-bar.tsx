@@ -3,6 +3,8 @@ import { ProgressBar } from "@/components/ui/progress-bar";
 
 export type TopBarProps = {
   courseTitle: string;
+  /** The course dashboard. */
+  homeHref?: string;
   progress: number;
   menuOpen?: boolean;
   /** Omit when there is no module menu (e.g. the dashboard). */
@@ -25,6 +27,7 @@ function LogoMark() {
 
 export function TopBar({
   courseTitle,
+  homeHref = "/",
   progress,
   menuOpen,
   onMenuClick,
@@ -56,7 +59,10 @@ export function TopBar({
             </svg>
           </button>
         )}
-        <Link href="/" className="flex min-w-0 items-center gap-3 rounded-pill">
+        <Link
+          href={homeHref}
+          className="flex min-w-0 items-center gap-3 rounded-pill"
+        >
           <LogoMark />
           <span className="sr-only">Kingdom Culture: </span>
           <span className="truncate text-small font-extrabold tracking-[0.04em] uppercase">

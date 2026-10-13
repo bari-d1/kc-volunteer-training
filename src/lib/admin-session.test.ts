@@ -34,7 +34,9 @@ describe("admin session token", () => {
       false,
     );
     expect(
-      await verifyAdminToken(`${header}.${payload}.x${signature.slice(1)}`),
+      await verifyAdminToken(
+        `${header}.${payload}.${signature[0] === "A" ? "B" : "A"}${signature.slice(1)}`,
+      ),
     ).toBe(false);
     expect(await verifyAdminToken(undefined)).toBe(false);
     expect(await verifyAdminToken("not-a-jwt")).toBe(false);

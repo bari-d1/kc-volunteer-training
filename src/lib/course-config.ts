@@ -1,5 +1,33 @@
+import type { CourseNav, ModuleStatus } from "./course-nav";
+
 /** The course volunteers land on from /course. */
 export const DEFAULT_COURSE_SLUG = "volunteers-onboarding";
 
 export const moduleHref = (courseSlug: string, moduleSlug: string) =>
   `/course/${courseSlug}/${moduleSlug}`;
+
+export const courseHref = (courseSlug: string) => `/course/${courseSlug}`;
+
+/** Modules whose content arrives in Phase 6 (final quiz and completion). */
+export const PLACEHOLDER_MODULE_SLUGS = new Set([
+  "final-quiz",
+  "part-of-the-family",
+]);
+
+/** Sidebar/top bar navigation from a course's modules (ids are slugs). */
+export function courseNav(
+  courseSlug: string,
+  title: string,
+  modules: Array<{ slug: string; title: string; status: ModuleStatus }>,
+): CourseNav {
+  return {
+    title,
+    homeHref: courseHref(courseSlug),
+    modules: modules.map((m) => ({
+      id: m.slug,
+      title: m.title,
+      status: m.status,
+      href: moduleHref(courseSlug, m.slug),
+    })),
+  };
+}

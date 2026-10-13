@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { CourseLayout } from "@/components/blocks/course-layout";
-import { mockCourse } from "@/lib/mock-course";
+import { mockCourseNav } from "@/lib/mock-course";
 
 export const metadata: Metadata = {
   title: "Lesson preview",
@@ -11,5 +11,5 @@ export const metadata: Metadata = {
 export default function LessonPreviewLayout({
   children,
 }: LayoutProps<"/preview/lesson">) {
-  return <CourseLayout course={mockCourse}>{children}</CourseLayout>;
+  return <CourseLayout course={mockCourseNav()}>{children}</CourseLayout>;
 }

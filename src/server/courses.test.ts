@@ -124,6 +124,13 @@ describe("getModuleForVolunteer", () => {
     if (result.status !== "in-progress")
       throw new Error(`unexpected ${result.status}`);
     expect(result.blocks.map((b) => b.type)).toEqual(["HEADING", "TEXT"]);
+    expect(result.blocks.map((b) => b.order)).toEqual([0, 1]);
+    expect(result.number).toBe(2);
+    expect(result.outline.map((m) => [m.slug, m.status])).toEqual([
+      ["welcome", "completed"],
+      ["about-kc", "in-progress"],
+      ["our-values", "locked"],
+    ]);
     expect(result.previous?.slug).toBe("welcome");
     expect(result.next).toMatchObject({ slug: "our-values", status: "locked" });
   });

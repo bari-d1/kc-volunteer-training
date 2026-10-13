@@ -1,6 +1,13 @@
 // Hard-coded preview data until the real data model lands in Phase 3.
 
-export type ModuleStatus = "locked" | "in-progress" | "completed";
+import {
+  courseProgress,
+  type CourseNav,
+  type ModuleStatus,
+} from "./course-nav";
+
+export { courseProgress };
+export type { ModuleStatus };
 
 export type CourseModule = {
   id: string;
@@ -47,9 +54,14 @@ export const mockCourse: Course = {
   ],
 };
 
-/** Percentage of modules completed, rounded. */
-export function courseProgress(modules: CourseModule[]) {
-  if (modules.length === 0) return 0;
-  const completed = modules.filter((m) => m.status === "completed").length;
-  return Math.round((completed / modules.length) * 100);
+/** The mock course as sidebar navigation for the /preview/lesson pages. */
+export function mockCourseNav(): CourseNav {
+  return {
+    title: mockCourse.title,
+    homeHref: "/preview/lesson",
+    modules: mockCourse.modules.map((m) => ({
+      ...m,
+      href: `/preview/lesson/${m.id}`,
+    })),
+  };
 }

@@ -6,10 +6,10 @@ import { ProgressRing } from "@/components/ui/progress-ring";
 import { ModuleList } from "@/components/blocks/module-list";
 import { useSidebarCollapsed } from "@/components/blocks/use-sidebar-collapsed";
 import { cn } from "@/lib/cn";
-import type { CourseModule } from "@/lib/mock-course";
+import type { NavModule } from "@/lib/course-nav";
 
 export type ModuleSidebarProps = {
-  modules: CourseModule[];
+  modules: NavModule[];
   currentModuleId: string;
   progress: number;
   className?: string;

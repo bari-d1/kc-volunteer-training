@@ -288,6 +288,8 @@ const volunteerBlock = <T extends BlockType>(type: T) =>
     id: z.string(),
     type: z.literal(type),
     content: volunteerBlockContentSchemas[type],
+    /** Position in the module, used for progress tracking. */
+    order: z.number().int().optional(),
   });
 
 export const VolunteerBlockSchema = z.discriminatedUnion("type", [
@@ -321,11 +323,12 @@ void volunteerUnionIsComplete;
  * knowledge-check answers and explanations never leave the server.
  */
 export function toVolunteerBlock(
-  block: BlockData & { id: string },
+  block: BlockData & { id: string; order?: number },
 ): VolunteerBlock {
   return VolunteerBlockSchema.parse({
     id: block.id,
     type: block.type,
     content: block.content,
+    order: block.order,
   });
 }

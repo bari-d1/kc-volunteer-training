@@ -34,6 +34,7 @@ describe("toPublicBlock", () => {
     expect(result).toEqual({
       id: base.id,
       type: "KNOWLEDGE_CHECK",
+      order: 0,
       content: {
         questions: [
           {
@@ -61,6 +62,7 @@ describe("toPublicBlock", () => {
       id: base.id,
       type: "TEXT",
       content: { markdown: "Hi" },
+      order: 0,
     });
   });
 });

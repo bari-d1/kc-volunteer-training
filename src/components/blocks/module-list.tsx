@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { cn } from "@/lib/cn";
-import type { CourseModule, ModuleStatus } from "@/lib/mock-course";
+import type { ModuleStatus, NavModule } from "@/lib/course-nav";
 
 const statusLabels: Record<ModuleStatus, string> = {
   completed: "Completed",
@@ -63,7 +63,7 @@ export function ModuleStatusIcon({ status }: { status: ModuleStatus }) {
 }
 
 export type ModuleListProps = {
-  modules: CourseModule[];
+  modules: NavModule[];
   currentModuleId: string;
   /** Icon-only rail; titles stay available to screen readers and as tooltips. */
   collapsed?: boolean;
@@ -113,7 +113,7 @@ export function ModuleList({
               </span>
             ) : (
               <Link
-                href={`/preview/lesson/${module.id}`}
+                href={module.href}
                 aria-current={current ? "page" : undefined}
                 title={collapsed ? module.title : undefined}
                 onClick={onNavigate}

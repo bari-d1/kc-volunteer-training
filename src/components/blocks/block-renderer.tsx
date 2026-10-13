@@ -59,7 +59,12 @@ export function BlockRenderer({
           Record<string, unknown>
         >;
         return (
-          <Reveal key={id} data-block-type={blockType} data-block-id={id}>
+          <Reveal
+            key={id}
+            data-block-type={blockType}
+            data-block-id={id}
+            data-block-order={parsed.data.order}
+          >
             <BlockErrorBoundary blockId={id} type={blockType}>
               <Component {...content} blockId={id} moduleId={moduleId} />
             </BlockErrorBoundary>

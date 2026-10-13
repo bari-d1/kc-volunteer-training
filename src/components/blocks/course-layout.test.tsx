@@ -2,7 +2,7 @@ import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { CourseLayout } from "@/components/blocks/course-layout";
-import { mockCourse } from "@/lib/mock-course";
+import { mockCourseNav } from "@/lib/mock-course";
 
 beforeEach(() => {
   // jsdom has no matchMedia.
@@ -16,7 +16,7 @@ beforeEach(() => {
 
 function renderLayout() {
   return render(
-    <CourseLayout course={mockCourse} currentModuleId="what-we-believe">
+    <CourseLayout course={mockCourseNav()} currentModuleId="what-we-believe">
       <p>Lesson body</p>
     </CourseLayout>,
   );
