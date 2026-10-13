@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import { getSiteUrl } from "@/lib/site-url";
 import { MotionProvider } from "@/components/ui/motion-provider";
 import { ToastProvider } from "@/components/ui/toast";
 import "./globals.css";
@@ -13,15 +14,8 @@ const inter = Inter({
 const description =
   "Onboarding and training for Kingdom Culture volunteers: who we are, what we believe and how we serve together.";
 
-// Absolute base for social image URLs.
-const siteUrl =
-  process.env.SITE_URL ??
-  (process.env.VERCEL_PROJECT_PRODUCTION_URL
-    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
-    : "http://localhost:3000");
-
 export const metadata: Metadata = {
-  metadataBase: new URL(siteUrl),
+  metadataBase: new URL(getSiteUrl()),
   title: {
     default: "KC Volunteers' Onboarding",
     template: "%s | KC Volunteers",

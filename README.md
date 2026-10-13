@@ -35,6 +35,28 @@ The easiest way to deploy your Next.js app is to use the [Vercel Platform](https
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
 
+## Volunteer sign-in (Supabase magic links)
+
+Volunteers sign in with a one-time email link; there are no passwords. The flow:
+
+1. `/sign-in` calls `signInWithOtp` (rate limited to 3 links per email per 10 minutes, stored hashed in `SignInAttempt`).
+2. The email links to `/auth/confirm`, which calls `verifyOtp` with the `token_hash`.
+3. New volunteers (no `Profile` row) go to `/onboarding`; everyone else to the `next` path or `/course`.
+
+`src/proxy.ts` refreshes the session on every request and sends signed-out visitors on `/course/**` and `/onboarding` to `/sign-in?next=<path>`. In server code, use `getCurrentUser()` and `requireVolunteer()` from `src/lib/auth.ts`.
+
+One-time Supabase dashboard setup:
+
+- **Authentication → URL Configuration**: set Site URL to `SITE_URL`, and add `<SITE_URL>/auth/confirm**` and `http://localhost:3000/auth/confirm**` to Redirect URLs.
+- **Authentication → Email Templates**: in both **Magic Link** and **Confirm signup**, change the link to:
+  ```html
+  <a href="{{ .RedirectTo }}&token_hash={{ .TokenHash }}&type=email"
+    >Sign in to KC Volunteers</a
+  >
+  ```
+  (`RedirectTo` already contains `/auth/confirm?next=…`.) This lets links work even when opened in a different browser from the one that requested them. With the default template, links still work but only in the same browser.
+- **Authentication → Emails → SMTP**: configure a custom SMTP provider. Supabase's built-in sender is heavily rate limited and only meant for testing.
+
 ## Security
 
 All data access goes through the server: route handlers and server code query Postgres via Prisma ([src/lib/prisma.ts](src/lib/prisma.ts)). The browser never talks to the database directly.
