@@ -3,6 +3,7 @@
 import * as Dialog from "@radix-ui/react-dialog";
 import type { ReactNode } from "react";
 import { cn } from "@/lib/cn";
+import { useReturnFocus } from "@/components/ui/use-return-focus";
 
 export type ModalProps = {
   open?: boolean;
@@ -31,12 +32,16 @@ export function Modal({
   children,
   className,
 }: ModalProps) {
+  const returnFocus = useReturnFocus();
+
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       {trigger && <Dialog.Trigger asChild>{trigger}</Dialog.Trigger>}
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 z-50 bg-black/75" />
         <Dialog.Content
+          // Without a trigger, return focus to whatever opened the modal.
+          {...(!trigger && returnFocus)}
           // Radix warns without a description; opt out explicitly when absent.
           {...(!description && { "aria-describedby": undefined })}
           className={cn(

@@ -1,4 +1,5 @@
 import { render, screen } from "@testing-library/react";
+import { useState } from "react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 import { Button } from "@/components/ui/button";
@@ -59,5 +60,30 @@ describe("Modal", () => {
     await userEvent.click(screen.getByRole("button", { name: "Open" }));
     await userEvent.click(screen.getByRole("button", { name: "Close" }));
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+  });
+});
+
+describe("Modal without a trigger", () => {
+  it("returns focus to the element that opened it", async () => {
+    function Controlled() {
+      const [open, setOpen] = useState(false);
+      return (
+        <>
+          <Button onClick={() => setOpen(true)}>External opener</Button>
+          <Modal open={open} onOpenChange={setOpen} title="Controlled" />
+        </>
+      );
+    }
+    render(<Controlled />);
+    const opener = screen.getByRole("button", { name: "External opener" });
+
+    await userEvent.click(opener);
+    expect(
+      screen.getByRole("dialog", { name: "Controlled" }),
+    ).toBeInTheDocument();
+
+    await userEvent.keyboard("{Escape}");
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(opener).toHaveFocus();
   });
 });
