@@ -14,7 +14,8 @@
     "postinstall": "prisma generate",
     "db:migrate": "prisma migrate dev",
     "db:deploy": "prisma migrate deploy",
-    "db:studio": "prisma studio"
+    "db:studio": "prisma studio",
+    "db:check-rls": "node scripts/check-rls.mts"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.10.0",

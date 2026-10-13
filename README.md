@@ -34,3 +34,16 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## Security
+
+All data access goes through the server: route handlers and server code query Postgres via Prisma ([src/lib/prisma.ts](src/lib/prisma.ts)). The browser never talks to the database directly.
+
+Supabase also exposes the `public` schema through its Data API, which anyone holding the anon key could call. To close that off, the `lock_down_supabase_api` migration:
+
+- enables Row Level Security on every table with **no policies**, so API queries see zero rows, and
+- revokes all privileges (current and default) on those tables from the `anon` and `authenticated` roles.
+
+Prisma connects as the table owner, which bypasses RLS, so the app is unaffected.
+
+Run `pnpm db:check-rls` after migrating to confirm the anon key is denied on every table. New tables need RLS enabled in their migration too, or rerun the lock-down loop.

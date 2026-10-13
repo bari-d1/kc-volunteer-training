@@ -310,21 +310,3 @@ ALTER TABLE "Team" ADD CONSTRAINT "Team_branchId_fkey" FOREIGN KEY ("branchId") 
 -- AddForeignKey
 ALTER TABLE "Leader" ADD CONSTRAINT "Leader_branchId_fkey" FOREIGN KEY ("branchId") REFERENCES "Branch"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
-
--- Supabase exposes the public schema through its Data API (PostgREST).
--- Enable RLS with no policies so anon/authenticated API keys can't read or
--- write these tables. Prisma connects as the table owner, which bypasses RLS.
-ALTER TABLE "Profile" ENABLE ROW LEVEL SECURITY;
-ALTER TABLE "Course" ENABLE ROW LEVEL SECURITY;
-ALTER TABLE "Module" ENABLE ROW LEVEL SECURITY;
-ALTER TABLE "Block" ENABLE ROW LEVEL SECURITY;
-ALTER TABLE "ModuleProgress" ENABLE ROW LEVEL SECURITY;
-ALTER TABLE "QuizQuestion" ENABLE ROW LEVEL SECURITY;
-ALTER TABLE "QuizAttempt" ENABLE ROW LEVEL SECURITY;
-ALTER TABLE "Certificate" ENABLE ROW LEVEL SECURITY;
-ALTER TABLE "Branch" ENABLE ROW LEVEL SECURITY;
-ALTER TABLE "Team" ENABLE ROW LEVEL SECURITY;
-ALTER TABLE "Leader" ENABLE ROW LEVEL SECURITY;
-ALTER TABLE "SiteSetting" ENABLE ROW LEVEL SECURITY;
-ALTER TABLE "ContentChange" ENABLE ROW LEVEL SECURITY;
-ALTER TABLE "AdminLoginAttempt" ENABLE ROW LEVEL SECURITY;
