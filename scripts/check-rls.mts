@@ -3,7 +3,7 @@
  * Every Prisma model table must be denied or return no rows.
  *
  * Usage: pnpm db:check-rls
- * Needs NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY (.env).
+ * Needs NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY (.env).
  */
 import { readFileSync } from "node:fs";
 import { createClient } from "@supabase/supabase-js";
@@ -15,11 +15,11 @@ try {
 }
 
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+const publishableKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
 
-if (!url || !anonKey) {
+if (!url || !publishableKey) {
   console.error(
-    "Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY first.",
+    "Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY first.",
   );
   process.exit(1);
 }
@@ -33,7 +33,7 @@ const tables = [
   ...models.filter((m) => m !== "Profile" && m !== "Course"),
 ];
 
-const supabase = createClient(url, anonKey, {
+const supabase = createClient(url, publishableKey, {
   auth: { persistSession: false, autoRefreshToken: false },
 });
 
