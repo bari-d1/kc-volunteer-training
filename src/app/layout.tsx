@@ -10,9 +10,35 @@ const inter = Inter({
   display: "swap",
 });
 
+const description =
+  "Onboarding and training for Kingdom Culture volunteers: who we are, what we believe and how we serve together.";
+
+// Absolute base for social image URLs.
+const siteUrl =
+  process.env.SITE_URL ??
+  (process.env.VERCEL_PROJECT_PRODUCTION_URL
+    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+    : "http://localhost:3000");
+
 export const metadata: Metadata = {
-  title: "KC Volunteers' Onboarding",
-  description: "Onboarding and training for KC volunteers",
+  metadataBase: new URL(siteUrl),
+  title: {
+    default: "KC Volunteers' Onboarding",
+    template: "%s | KC Volunteers",
+  },
+  description,
+  applicationName: "KC Volunteers",
+  openGraph: {
+    type: "website",
+    siteName: "KC Volunteers",
+    title: "KC Volunteers' Onboarding",
+    description,
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "KC Volunteers' Onboarding",
+    description,
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

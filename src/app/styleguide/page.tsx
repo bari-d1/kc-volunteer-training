@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
+import { LessonSkeleton } from "@/components/blocks/lesson-skeleton";
 import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { EmptyState } from "@/components/ui/empty-state";
 import { PillTag } from "@/components/ui/pill-tag";
 import { LoadingButtonDemo, ModalDemo, ProgressDemo, ToastDemo } from "./demos";
 
@@ -242,6 +244,43 @@ export default function StyleguidePage() {
           <Avatar name="Grace Mensah" size="lg" ring="ministry" />
           <Avatar name="Sam Lee" size="lg" ring="creative" src={sampleAvatar} />
           <Avatar name="Priya Shah" size="lg" ring="systems" />
+        </div>
+      </Section>
+
+      <Section title="Skeleton">
+        <Card padding="lg">
+          <LessonSkeleton />
+        </Card>
+      </Section>
+
+      <Section title="Empty state">
+        <div className="grid gap-6 md:grid-cols-2">
+          <EmptyState
+            headingLevel="h3"
+            title="No modules yet"
+            description="Modules will appear here once your course is set up."
+            action={<Button variant="secondary">Refresh</Button>}
+          />
+          <EmptyState
+            headingLevel="h3"
+            title="All caught up"
+            description="You've finished every module available to you."
+            icon={
+              <svg
+                aria-hidden="true"
+                width="28"
+                height="28"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M5 12.5l4.5 4.5L19 7.5" />
+              </svg>
+            }
+          />
         </div>
       </Section>
 
