@@ -4,8 +4,9 @@ import { ProgressBar } from "@/components/ui/progress-bar";
 export type TopBarProps = {
   courseTitle: string;
   progress: number;
-  menuOpen: boolean;
-  onMenuClick: () => void;
+  menuOpen?: boolean;
+  /** Omit when there is no module menu (e.g. the dashboard). */
+  onMenuClick?: () => void;
 };
 
 /** Placeholder until the real KC logo is supplied. */
@@ -31,28 +32,30 @@ export function TopBar({
   return (
     <header className="sticky top-0 z-40 border-b border-surface-2 bg-bg/95 backdrop-blur">
       <div className="flex h-16 items-center gap-4 px-gutter lg:px-6">
-        <button
-          type="button"
-          onClick={onMenuClick}
-          aria-label="Open modules menu"
-          aria-haspopup="dialog"
-          aria-expanded={menuOpen}
-          aria-controls={menuOpen ? "mobile-module-drawer" : undefined}
-          className="-ml-2 grid size-10 shrink-0 place-items-center rounded-pill transition-colors hover:bg-surface-2 lg:hidden"
-        >
-          <svg
-            aria-hidden="true"
-            width="20"
-            height="20"
-            viewBox="0 0 20 20"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
+        {onMenuClick && (
+          <button
+            type="button"
+            onClick={onMenuClick}
+            aria-label="Open modules menu"
+            aria-haspopup="dialog"
+            aria-expanded={menuOpen}
+            aria-controls={menuOpen ? "mobile-module-drawer" : undefined}
+            className="-ml-2 grid size-10 shrink-0 place-items-center rounded-pill transition-colors hover:bg-surface-2 lg:hidden"
           >
-            <path d="M3 5h14M3 10h14M3 15h14" />
-          </svg>
-        </button>
+            <svg
+              aria-hidden="true"
+              width="20"
+              height="20"
+              viewBox="0 0 20 20"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+            >
+              <path d="M3 5h14M3 10h14M3 15h14" />
+            </svg>
+          </button>
+        )}
         <Link href="/" className="flex min-w-0 items-center gap-3 rounded-pill">
           <LogoMark />
           <span className="sr-only">Kingdom Culture: </span>
