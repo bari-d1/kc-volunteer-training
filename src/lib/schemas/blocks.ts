@@ -258,3 +258,74 @@ export function parseBlock(
     isPublished: row.isPublished,
   };
 }
+
+// ─── Volunteer view ─────────────────────────────────────────────────────────
+
+/** Knowledge check as sent to volunteers: no answer key or explanations. */
+export const PublicKnowledgeCheckContentSchema = z.object({
+  questions: z
+    .array(
+      z.object({
+        prompt: NonEmptyString,
+        options: z.array(QuizOptionSchema).min(2),
+      }),
+    )
+    .min(1),
+});
+
+/** Same as blockContentSchemas, but safe to send to the browser. */
+export const volunteerBlockContentSchemas = {
+  ...blockContentSchemas,
+  KNOWLEDGE_CHECK: PublicKnowledgeCheckContentSchema,
+} as const satisfies Record<BlockType, z.ZodType>;
+
+export type VolunteerBlockContent<T extends BlockType> = z.infer<
+  (typeof volunteerBlockContentSchemas)[T]
+>;
+
+const volunteerBlock = <T extends BlockType>(type: T) =>
+  z.object({
+    id: z.string(),
+    type: z.literal(type),
+    content: volunteerBlockContentSchemas[type],
+  });
+
+export const VolunteerBlockSchema = z.discriminatedUnion("type", [
+  volunteerBlock("HEADING"),
+  volunteerBlock("TEXT"),
+  volunteerBlock("IMAGE"),
+  volunteerBlock("VIDEO"),
+  volunteerBlock("FLIP_CARDS"),
+  volunteerBlock("ACCORDION"),
+  volunteerBlock("TABS"),
+  volunteerBlock("TIMELINE"),
+  volunteerBlock("PYRAMID"),
+  volunteerBlock("PEOPLE"),
+  volunteerBlock("REFLECTION"),
+  volunteerBlock("CHECKLIST"),
+  volunteerBlock("CONTACT"),
+  volunteerBlock("LINK_QR"),
+  volunteerBlock("KNOWLEDGE_CHECK"),
+  volunteerBlock("NARRATOR_CALLOUT"),
+]);
+export type VolunteerBlock = z.infer<typeof VolunteerBlockSchema>;
+
+type MissingFromVolunteerUnion = Exclude<BlockType, VolunteerBlock["type"]>;
+const volunteerUnionIsComplete: [MissingFromVolunteerUnion] extends [never]
+  ? true
+  : never = true;
+void volunteerUnionIsComplete;
+
+/**
+ * The browser-safe version of a parsed block. Unknown keys are stripped, so
+ * knowledge-check answers and explanations never leave the server.
+ */
+export function toVolunteerBlock(
+  block: BlockData & { id: string },
+): VolunteerBlock {
+  return VolunteerBlockSchema.parse({
+    id: block.id,
+    type: block.type,
+    content: block.content,
+  });
+}

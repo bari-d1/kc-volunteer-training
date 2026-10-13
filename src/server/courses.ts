@@ -1,10 +1,13 @@
 import "server-only";
+
+export type { VolunteerBlock };
 import type { VolunteerId } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import {
   BlockValidationError,
   parseBlock,
-  type ParsedBlock,
+  toVolunteerBlock,
+  type VolunteerBlock,
 } from "@/lib/schemas/blocks";
 import { computeModuleStates, type ModuleStatus } from "./unlock";
 
@@ -60,34 +63,6 @@ export async function getModulesWithProgress(
 export type VolunteerModuleSummary = Awaited<
   ReturnType<typeof getModulesWithProgress>
 >[number];
-
-/**
- * A block as sent to volunteers. Knowledge-check answers and explanations
- * are removed; they're only revealed by grading (see progress.ts).
- */
-export type VolunteerBlock =
-  | Exclude<ParsedBlock, { type: "KNOWLEDGE_CHECK" }>
-  | (Omit<Extract<ParsedBlock, { type: "KNOWLEDGE_CHECK" }>, "content"> & {
-      content: {
-        questions: Array<{
-          prompt: string;
-          options: Array<{ id: string; text: string }>;
-        }>;
-      };
-    });
-
-function toVolunteerBlock(block: ParsedBlock): VolunteerBlock {
-  if (block.type !== "KNOWLEDGE_CHECK") return block;
-  return {
-    ...block,
-    content: {
-      questions: block.content.questions.map(({ prompt, options }) => ({
-        prompt,
-        options: options.map(({ id, text }) => ({ id, text })),
-      })),
-    },
-  };
-}
 
 export type ModuleForVolunteer =
   | { status: "not-found" }
