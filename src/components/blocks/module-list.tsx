@@ -1,9 +1,12 @@
 import Link from "next/link";
 import { cn } from "@/lib/cn";
-import type { ModuleStatus, NavModule } from "@/lib/course-nav";
+import type { NavModule } from "@/lib/course-nav";
+
+type ModuleStatus = NavModule["status"];
 
 const statusLabels: Record<ModuleStatus, string> = {
   completed: "Completed",
+  available: "Not started",
   "in-progress": "In progress",
   locked: "Locked",
 };
@@ -28,6 +31,21 @@ export function ModuleStatusIcon({ status }: { status: ModuleStatus }) {
           strokeLinecap="round"
           strokeLinejoin="round"
           className="stroke-ink"
+        />
+      </svg>
+    );
+  }
+
+  if (status === "available") {
+    return (
+      <svg {...common}>
+        <circle
+          cx="10"
+          cy="10"
+          r="8"
+          fill="none"
+          strokeWidth="2"
+          className="stroke-muted"
         />
       </svg>
     );

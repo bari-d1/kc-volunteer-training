@@ -39,8 +39,11 @@ export async function completeModuleAction(input: { moduleId: string }) {
   const parsed = CompleteInput.safeParse(input);
   if (!parsed.success) return { ok: false as const, error: "invalid" as const };
   try {
-    await completeModule(profile.id, parsed.data.moduleId);
-    return { ok: true as const };
+    const { newlyCompleted } = await completeModule(
+      profile.id,
+      parsed.data.moduleId,
+    );
+    return { ok: true as const, newlyCompleted };
   } catch (error) {
     if (error instanceof ProgressError)
       return { ok: false as const, error: error.code };

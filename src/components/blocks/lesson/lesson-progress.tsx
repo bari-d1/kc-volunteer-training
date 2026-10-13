@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   useEffect,
@@ -18,6 +19,7 @@ import {
   type KnowledgeCheckPassed,
 } from "@/components/blocks/content/knowledge-check-block";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/components/ui/toast";
 
 /** Saves progress at most this often while scrolling. */
 export const SAVE_INTERVAL_MS = 3000;
@@ -31,6 +33,10 @@ export type LessonProgressProps = {
   /** Where Continue goes after completing: the next module or the dashboard. */
   continueHref: string;
   nextTitle: string | null;
+  /** The module before this one (always unlocked if this one is). */
+  previous: { href: string; title: string } | null;
+  /** The module after this one, only when it's already unlocked. */
+  nextUnlocked: { href: string; title: string } | null;
   children: ReactNode;
 };
 
@@ -46,9 +52,12 @@ export function LessonProgress({
   firstBlockOrder,
   continueHref,
   nextTitle,
+  previous,
+  nextUnlocked,
   children,
 }: LessonProgressProps) {
   const router = useRouter();
+  const { toast } = useToast();
   const hintId = useId();
   const containerRef = useRef<HTMLDivElement>(null);
   const endRef = useRef<HTMLDivElement>(null);
@@ -182,6 +191,11 @@ export function LessonProgress({
           );
           return;
         }
+        if (result.newlyCompleted) {
+          toast({ variant: "success", title: "Module complete!" });
+        }
+        // Client navigation re-renders with fresh data, so the sidebar and
+        // progress bar update without a full reload.
         router.push(continueHref);
       } catch {
         setError("We couldn't save your progress. Please try again.");
@@ -201,28 +215,60 @@ export function LessonProgress({
 
       <div ref={endRef} aria-hidden="true" />
 
-      <footer className="flex flex-col items-start gap-3 border-t border-surface-2 pt-8">
-        <Button
-          size="lg"
-          onClick={onContinue}
-          disabled={!canContinue}
-          loading={pending}
-          aria-describedby={hint ? hintId : undefined}
-          className="h-auto! min-h-14 py-3 text-left whitespace-normal!"
-        >
-          {nextTitle
-            ? `Continue: ${nextTitle}`
-            : "Finish and return to dashboard"}
-        </Button>
-        {hint && (
-          <p id={hintId} className="text-small text-muted">
-            {hint}
-          </p>
-        )}
-        {error && (
-          <p role="alert" className="text-small text-danger">
-            {error}
-          </p>
+      <footer className="flex flex-col gap-8 border-t border-surface-2 pt-8">
+        <div className="flex flex-col items-start gap-3">
+          <Button
+            size="lg"
+            onClick={onContinue}
+            disabled={!canContinue}
+            loading={pending}
+            aria-describedby={hint ? hintId : undefined}
+            className="h-auto! min-h-14 py-3 text-left whitespace-normal!"
+          >
+            {nextTitle
+              ? `Continue: ${nextTitle}`
+              : "Finish and return to dashboard"}
+          </Button>
+          {hint && (
+            <p id={hintId} className="text-small text-muted">
+              {hint}
+            </p>
+          )}
+          {error && (
+            <p role="alert" className="text-small text-danger">
+              {error}
+            </p>
+          )}
+        </div>
+
+        {(previous || nextUnlocked) && (
+          <nav
+            aria-label="Module navigation"
+            className="flex flex-wrap justify-between gap-4"
+          >
+            {previous ? (
+              <Link
+                href={previous.href}
+                className="flex max-w-[48%] flex-col gap-1 rounded-sm text-small text-muted hover:text-text"
+              >
+                <span className="text-label">← Previous</span>
+                <span className="font-bold text-text">{previous.title}</span>
+              </Link>
+            ) : (
+              <span />
+            )}
+            {nextUnlocked && (
+              <Link
+                href={nextUnlocked.href}
+                className="ml-auto flex max-w-[48%] flex-col items-end gap-1 rounded-sm text-right text-small text-muted hover:text-text"
+              >
+                <span className="text-label">Next →</span>
+                <span className="font-bold text-text">
+                  {nextUnlocked.title}
+                </span>
+              </Link>
+            )}
+          </nav>
         )}
       </footer>
     </div>

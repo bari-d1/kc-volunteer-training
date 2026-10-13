@@ -1,4 +1,5 @@
 import type { CourseNav, ModuleStatus } from "./course-nav";
+import { volunteerModuleStatus } from "./module-status";
 
 /** The course volunteers land on from /course. */
 export const DEFAULT_COURSE_SLUG = "volunteers-onboarding";
@@ -18,7 +19,12 @@ export const PLACEHOLDER_MODULE_SLUGS = new Set([
 export function courseNav(
   courseSlug: string,
   title: string,
-  modules: Array<{ slug: string; title: string; status: ModuleStatus }>,
+  modules: Array<{
+    slug: string;
+    title: string;
+    status: ModuleStatus;
+    started: boolean;
+  }>,
 ): CourseNav {
   return {
     title,
@@ -26,7 +32,7 @@ export function courseNav(
     modules: modules.map((m) => ({
       id: m.slug,
       title: m.title,
-      status: m.status,
+      status: volunteerModuleStatus(m),
       href: moduleHref(courseSlug, m.slug),
     })),
   };

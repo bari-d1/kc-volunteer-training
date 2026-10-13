@@ -1,4 +1,4 @@
-import { act, render, screen, waitFor } from "@testing-library/react";
+import { act, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -12,14 +12,18 @@ const saveProgressAction = vi.fn<
   }) => Promise<{ ok: boolean }>
 >(async () => ({ ok: true }));
 const completeModuleAction = vi.fn<
-  (input: { moduleId: string }) => Promise<{ ok: boolean; error?: string }>
->(async () => ({ ok: true }));
+  (input: {
+    moduleId: string;
+  }) => Promise<{ ok: boolean; error?: string; newlyCompleted?: boolean }>
+>(async () => ({ ok: true, newlyCompleted: true }));
 vi.mock("@/app/actions/progress", () => ({
   saveProgressAction: (i: { moduleId: string; lastBlockOrder: number }) =>
     saveProgressAction(i),
   completeModuleAction: (i: { moduleId: string }) => completeModuleAction(i),
 }));
 vi.mock("@/app/actions/knowledge-check", () => ({}));
+const toast = vi.fn();
+vi.mock("@/components/ui/toast", () => ({ useToast: () => ({ toast }) }));
 
 // Controllable IntersectionObserver.
 type Callback = (
@@ -85,6 +89,8 @@ function renderLesson(
       firstBlockOrder={0}
       continueHref="/course/kc/next"
       nextTitle="About KC"
+      previous={null}
+      nextUnlocked={null}
       {...props}
     >
       {blocks}
@@ -252,5 +258,55 @@ describe("Continue", () => {
       "Complete the check above to continue",
     );
     expect(push).not.toHaveBeenCalled();
+  });
+});
+
+describe("completion and navigation", () => {
+  it("shows Module complete! the first time only", async () => {
+    renderLesson({
+      initial: { lastBlockOrder: 3, checkPassed: false, completed: true },
+    });
+    await userEvent.click(
+      screen.getByRole("button", { name: "Continue: About KC" }),
+    );
+    await waitFor(() => expect(push).toHaveBeenCalled());
+    expect(toast).toHaveBeenCalledWith({
+      variant: "success",
+      title: "Module complete!",
+    });
+
+    toast.mockClear();
+    completeModuleAction.mockResolvedValueOnce({
+      ok: true,
+      newlyCompleted: false,
+    });
+    await userEvent.click(
+      screen.getByRole("button", { name: "Continue: About KC" }),
+    );
+    await waitFor(() => expect(push).toHaveBeenCalledTimes(2));
+    expect(toast).not.toHaveBeenCalled();
+  });
+
+  it("links to the previous module and to an unlocked next module", () => {
+    renderLesson({
+      previous: { href: "/course/kc/welcome", title: "Welcome" },
+      nextUnlocked: { href: "/course/kc/values", title: "Our Values" },
+    });
+    const nav = screen.getByRole("navigation", { name: "Module navigation" });
+    expect(
+      within(nav).getByRole("link", { name: /Previous.*Welcome/ }),
+    ).toHaveAttribute("href", "/course/kc/welcome");
+    expect(
+      within(nav).getByRole("link", { name: /Next.*Our Values/ }),
+    ).toHaveAttribute("href", "/course/kc/values");
+  });
+
+  it("has no Next link when the next module is locked", () => {
+    renderLesson({
+      previous: { href: "/course/kc/welcome", title: "Welcome" },
+    });
+    const nav = screen.getByRole("navigation", { name: "Module navigation" });
+    expect(within(nav).getAllByRole("link")).toHaveLength(1);
+    expect(within(nav).queryByRole("link", { name: /Next/ })).toBeNull();
   });
 });

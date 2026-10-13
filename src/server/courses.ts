@@ -69,6 +69,8 @@ export type ModuleOutline = Array<{
   slug: string;
   title: string;
   status: ModuleStatus;
+  /** Whether the volunteer has opened it (a progress row exists). */
+  started: boolean;
 }>;
 
 export type ModuleForVolunteer =
@@ -117,10 +119,11 @@ export async function getModuleForVolunteer(
   const index = modules.findIndex((m) => m.slug === moduleSlug);
   if (index === -1) return { status: "not-found" };
   const summary = modules[index];
-  const outline: ModuleOutline = modules.map(({ slug, title, status }) => ({
-    slug,
-    title,
-    status,
+  const outline: ModuleOutline = modules.map((m) => ({
+    slug: m.slug,
+    title: m.title,
+    status: m.status,
+    started: m.progress !== null,
   }));
 
   if (summary.status === "locked") {

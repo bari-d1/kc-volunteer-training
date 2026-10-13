@@ -1,7 +1,11 @@
-import type { ModuleStatus } from "@/server/unlock";
+import type { ModuleStatus } from "@/lib/course-nav";
+import {
+  nextAvailableModule,
+  volunteerModuleStatus,
+  type VolunteerModuleStatus,
+} from "@/lib/module-status";
 
-export type DashboardStatus =
-  "locked" | "available" | "in-progress" | "completed";
+export type DashboardStatus = VolunteerModuleStatus;
 
 type ModuleInput = {
   id: string;
@@ -32,15 +36,10 @@ export function buildDashboard(modules: ModuleInput[]) {
     number: index + 1,
     title: m.title,
     summary: m.summary,
-    status:
-      m.status === "completed"
-        ? "completed"
-        : m.status === "locked"
-          ? "locked"
-          : // Unlocked: "in progress" once they've opened it, else "available".
-            m.progress
-            ? "in-progress"
-            : "available",
+    status: volunteerModuleStatus({
+      status: m.status,
+      started: m.progress !== null,
+    }),
   }));
 
   const total = cards.length;
@@ -51,10 +50,7 @@ export function buildDashboard(modules: ModuleInput[]) {
     completed,
     percent: total === 0 ? 0 : Math.round((completed / total) * 100),
     /** The first incomplete, unlocked module. */
-    next:
-      cards.find(
-        (c) => c.status === "in-progress" || c.status === "available",
-      ) ?? null,
+    next: nextAvailableModule(cards),
     started: cards.some(
       (c) => c.status === "completed" || c.status === "in-progress",
     ),

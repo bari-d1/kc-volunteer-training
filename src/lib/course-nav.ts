@@ -1,11 +1,13 @@
 /** Course navigation shown in the sidebar, drawer and top bar. */
 
+/** Unlock status from the server: locked / in-progress / completed. */
 export type ModuleStatus = "locked" | "in-progress" | "completed";
 
 export type NavModule = {
   id: string;
   title: string;
-  status: ModuleStatus;
+  /** locked / available / in-progress / completed (see module-status.ts). */
+  status: ModuleStatus | "available";
   href: string;
 };
 

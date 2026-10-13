@@ -5,7 +5,10 @@ const requireVolunteer = vi.fn(async () => ({ id: "v1" }));
 vi.mock("@/lib/auth", () => ({ requireVolunteer: () => requireVolunteer() }));
 
 const saveProgress = vi.fn(async () => {});
-const completeModule = vi.fn(async () => ({ completedAt: new Date() }));
+const completeModule = vi.fn(async () => ({
+  completedAt: new Date(),
+  newlyCompleted: true,
+}));
 vi.mock("@/server/progress", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/server/progress")>()),
   saveProgress: (...a: unknown[]) => saveProgress(...(a as [])),
@@ -52,6 +55,7 @@ describe("completeModuleAction", () => {
   it("completes for the signed-in volunteer", async () => {
     expect(await completeModuleAction({ moduleId: MODULE_ID })).toEqual({
       ok: true,
+      newlyCompleted: true,
     });
     expect(completeModule).toHaveBeenCalledWith("v1", MODULE_ID);
   });

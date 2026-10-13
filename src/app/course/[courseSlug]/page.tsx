@@ -44,7 +44,11 @@ async function Dashboard({
   const modules = await getModulesWithProgress(course.id, profile.id);
   return (
     <CourseLayout
-      course={courseNav(courseSlug, course.title, modules)}
+      course={courseNav(
+        courseSlug,
+        course.title,
+        modules.map((m) => ({ ...m, started: m.progress !== null })),
+      )}
       showSidebar={false}
       width="wide"
     >

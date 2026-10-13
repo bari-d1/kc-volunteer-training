@@ -4,6 +4,7 @@ import { notFound, redirect } from "next/navigation";
 import { Suspense } from "react";
 import { BlockRenderer } from "@/components/blocks/block-renderer";
 import { CourseLayout } from "@/components/blocks/course-layout";
+import { LessonHeading } from "@/components/blocks/lesson/lesson-heading";
 import { LessonProgress } from "@/components/blocks/lesson/lesson-progress";
 import { LessonSkeleton } from "@/components/blocks/lesson-skeleton";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -45,7 +46,7 @@ async function Lesson({
   if (lesson.status === "locked")
     redirect(`${courseHref(courseSlug)}?notice=locked`);
 
-  const { module, progress, next } = lesson;
+  const { module, progress, next, previous } = lesson;
   // The module's narratorIntro opens the lesson as a narrator callout.
   const blocks: VolunteerBlock[] = module.narratorIntro
     ? [
@@ -74,7 +75,7 @@ async function Lesson({
             <span aria-hidden="true">← </span>All modules
           </Link>
           <PillTag>Module {lesson.number}</PillTag>
-          <h1 className="text-display">{module.title}</h1>
+          <LessonHeading>{module.title}</LessonHeading>
           {module.summary && (
             <p className="text-body-lg text-muted">{module.summary}</p>
           )}
@@ -93,6 +94,19 @@ async function Lesson({
             next ? moduleHref(courseSlug, next.slug) : courseHref(courseSlug)
           }
           nextTitle={next?.title ?? null}
+          previous={
+            previous
+              ? {
+                  href: moduleHref(courseSlug, previous.slug),
+                  title: previous.title,
+                }
+              : null
+          }
+          nextUnlocked={
+            next && next.status !== "locked"
+              ? { href: moduleHref(courseSlug, next.slug), title: next.title }
+              : null
+          }
         >
           {placeholder ? (
             <EmptyState

@@ -147,7 +147,10 @@ export async function completeModule(profileId: VolunteerId, moduleId: string) {
     where: where(profileId, moduleId),
     select: { checkPassed: true, completedAt: true },
   });
-  if (progress?.completedAt) return { completedAt: progress.completedAt };
+  // Revisiting a completed module never resets it.
+  if (progress?.completedAt) {
+    return { completedAt: progress.completedAt, newlyCompleted: false };
+  }
   if (courseModule.requiresCheck && !progress?.checkPassed) {
     throw new ProgressError("check-required", "Pass the knowledge check first");
   }
@@ -158,5 +161,5 @@ export async function completeModule(profileId: VolunteerId, moduleId: string) {
     create: { profileId, moduleId, completedAt },
     update: { completedAt },
   });
-  return { completedAt };
+  return { completedAt, newlyCompleted: true };
 }

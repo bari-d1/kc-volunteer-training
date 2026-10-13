@@ -16,6 +16,9 @@ vi.mock("next/navigation", () => ({
 }));
 vi.mock("@/app/actions/progress", () => ({}));
 vi.mock("@/app/actions/knowledge-check", () => ({}));
+vi.mock("@/components/ui/toast", () => ({
+  useToast: () => ({ toast: () => {} }),
+}));
 
 const requireVolunteer = vi.fn(async () => ({
   id: "v1",
@@ -49,9 +52,14 @@ async function renderLesson(moduleSlug: string) {
 }
 
 const outline = [
-  { slug: "welcome", title: "Welcome", status: "completed" },
-  { slug: "what-we-believe", title: "What We Believe", status: "in-progress" },
-  { slug: "final-quiz", title: "Final Quiz", status: "locked" },
+  { slug: "welcome", title: "Welcome", status: "completed", started: true },
+  {
+    slug: "what-we-believe",
+    title: "What We Believe",
+    status: "in-progress",
+    started: true,
+  },
+  { slug: "final-quiz", title: "Final Quiz", status: "locked", started: false },
 ];
 const okLesson = (slug = "what-we-believe", overrides = {}) => ({
   status: "in-progress",
@@ -180,5 +188,74 @@ describe("lesson page", () => {
     });
     await renderLesson("what-we-believe");
     expect(screen.queryByText("Let's dig into what we believe.")).toBeNull();
+  });
+
+  it("links Previous always and Next only once it's unlocked", async () => {
+    const { unmount } = await renderLesson("what-we-believe");
+    let nav = screen.getByRole("navigation", { name: "Module navigation" });
+    expect(
+      within(nav).getByRole("link", { name: /Previous.*Welcome/ }),
+    ).toHaveAttribute("href", "/course/kc/welcome");
+    expect(within(nav).queryByRole("link", { name: /Next/ })).toBeNull();
+    unmount();
+
+    getModuleForVolunteer.mockResolvedValue(
+      okLesson("what-we-believe", {
+        next: {
+          slug: "final-quiz",
+          title: "Final Quiz",
+          status: "in-progress",
+        },
+      }),
+    );
+    await renderLesson("what-we-believe");
+    nav = screen.getByRole("navigation", { name: "Module navigation" });
+    expect(
+      within(nav).getByRole("link", { name: /Next.*Final Quiz/ }),
+    ).toHaveAttribute("href", "/course/kc/final-quiz");
+  });
+
+  it("shows available and locked statuses in the sidebar", async () => {
+    getModuleForVolunteer.mockResolvedValue(
+      okLesson("what-we-believe", {
+        outline: [
+          {
+            slug: "welcome",
+            title: "Welcome",
+            status: "completed",
+            started: true,
+          },
+          {
+            slug: "what-we-believe",
+            title: "What We Believe",
+            status: "in-progress",
+            started: false,
+          },
+          {
+            slug: "final-quiz",
+            title: "Final Quiz",
+            status: "locked",
+            started: false,
+          },
+        ],
+      }),
+    );
+    await renderLesson("what-we-believe");
+    const sidebar = screen.getByRole("complementary", {
+      name: "Course modules",
+    });
+    expect(
+      within(sidebar).getByRole("link", { name: /Welcome.*Completed/ }),
+    ).toBeInTheDocument();
+    expect(
+      within(sidebar).getByRole("link", {
+        name: /What We Believe.*Not started/,
+      }),
+    ).toBeInTheDocument();
+    expect(
+      within(sidebar)
+        .getByText(/Final Quiz/)
+        .closest("a"),
+    ).toBeNull();
   });
 });

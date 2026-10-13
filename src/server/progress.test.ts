@@ -142,3 +142,24 @@ describe("knowledge check gate", () => {
     expect(firstTime.completedAt).toBeInstanceOf(Date);
   });
 });
+
+describe("revisiting a completed module", () => {
+  it("keeps its completion and furthest position", async () => {
+    await saveProgress(volunteer, first.id, 5);
+    const done = await completeModule(volunteer, first.id);
+    expect(done.newlyCompleted).toBe(true);
+
+    // Come back later and scroll from the top again.
+    await saveProgress(volunteer, first.id, 0);
+    const again = await completeModule(volunteer, first.id);
+
+    const row = fake.db.progress.find((p) => p.moduleId === first.id)!;
+    expect(row.lastBlockOrder).toBe(5);
+    expect(row.completedAt).toEqual(done.completedAt);
+    expect(again).toEqual({
+      completedAt: done.completedAt,
+      newlyCompleted: false,
+    });
+    expect(await statuses()).toEqual(["completed", "in-progress", "locked"]);
+  });
+});
