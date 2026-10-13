@@ -57,26 +57,36 @@ Volunteers sign in with a one-time email link; there are no passwords. The flow:
 
 `src/proxy.ts` refreshes the session on every request and sends signed-out visitors on `/course/**` and `/onboarding` to `/sign-in?next=<path>`. In server code, use `getCurrentUser()` and `requireVolunteer()` from `src/lib/auth.ts`.
 
-One-time Supabase dashboard setup:
+Supabase's auth settings (site URL, redirect URLs, email templates) are applied by `pnpm auth:configure`; see below.
 
-- **Authentication → URL Configuration**: set Site URL to `SITE_URL`, and add `<SITE_URL>/auth/confirm**` and `http://localhost:3000/auth/confirm**` to Redirect URLs.
-- **Authentication → Email Templates**: in both **Magic Link** and **Confirm signup**, change the link to:
-  ```html
-  <a href="{{ .RedirectTo }}&token_hash={{ .TokenHash }}&type=email"
-    >Sign in to KC Volunteers</a
-  >
-  ```
-  (`RedirectTo` already contains `/auth/confirm?next=…`.) This lets links work even when opened in a different browser from the one that requested them. With the default template, links still work but only in the same browser.
-- **Authentication → Emails → SMTP**: configure a custom SMTP provider. Supabase's built-in sender is heavily rate limited and only meant for testing.
+## Supabase Auth setup
 
-## Admin access (temporary shared password)
+`pnpm auth:configure` sets this project's Supabase Auth config through the Management API, so it's repeatable rather than clicked by hand. It:
 
-`/admin/**` is protected by one shared password until individual admin accounts exist. All of it lives in `src/lib/admin-auth.ts` and `src/lib/admin-session.ts`, so it can be swapped out in one place.
+- keeps email sign-in on and requires email confirmation (no auto-confirm),
+- sets the Site URL to `SITE_URL` (default `http://localhost:3000`),
+- adds `SITE_URL/**` and `http://localhost:3000/**` to the redirect allow list, keeping existing entries,
+- sets the KC magic-link email (subject and template), and uses it for "Confirm signup" too, since first-time volunteers get that one.
 
-1. `pnpm admin:hash-password` and paste the printed `ADMIN_PASSWORD_HASH` line into `.env` (and your host's env vars).
-2. Set `ADMIN_SESSION_SECRET` to 32+ random characters (`openssl rand -base64 32`).
+It fetches the current config, prints what will change, then applies it.
 
-Signing in sets a signed, httpOnly, 12-hour `kc_admin` cookie. Five wrong passwords from one IP within 15 minutes locks that IP out for the rest of the window. The proxy guards `/admin/**`, but every admin server action and route handler must still call `requireAdmin()`.
+**Locally**
+
+1. Create a personal access token at <https://supabase.com/dashboard/account/tokens> and add it to `.env` as `SUPABASE_ACCESS_TOKEN`. It can manage every project on your account, so keep it out of git and out of your hosting provider's env vars. `SUPABASE_PROJECT_REF` is optional; it defaults to the ref in `NEXT_PUBLIC_SUPABASE_URL`.
+2. `pnpm auth:configure --dry-run` to see the changes, then `pnpm auth:configure` to apply.
+
+**At launch**, run it again against the production project with the real domain:
+
+```bash
+SITE_URL=https://volunteers.yourdomain.org pnpm auth:configure --dry-run
+SITE_URL=https://volunteers.yourdomain.org pnpm auth:configure
+```
+
+Notes:
+
+- On Supabase's free plan, email templates can't be changed until custom SMTP is set up (Authentication → Emails → SMTP). Until then, `pnpm auth:configure --skip-templates` applies everything else.
+- The email links to `{{ .SiteURL }}/auth/confirm`, which works in any browser but doesn't carry a `next` path; volunteers land on `/course` (or `/onboarding` the first time).
+- Supabase has no separate switch for password sign-in; the app simply never offers passwords.
 
 ## Security
 
