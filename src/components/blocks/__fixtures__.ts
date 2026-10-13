@@ -38,26 +38,62 @@ const samples: {
   FLIP_CARDS: {
     cards: [
       {
-        front: "Honour",
-        back: "We treat everyone as someone God values.",
+        front: "Kingdom.",
+        back: "We seek God's kingdom first, in every room we serve.",
+        reference: "Matthew 6:33",
+      },
+      {
+        front: "Family.",
+        back: "We belong to each other. Nobody serves alone.",
+        reference: "Ephesians 2:19",
+      },
+      {
+        front: "Excellence.",
+        back: "We give our best because God gave His best.",
+        reference: "Colossians 3:23",
+      },
+      {
+        front: "Honour.",
+        back: "We treat every person as someone God values.",
         reference: "Romans 12:10",
       },
       {
-        front: "Excellence",
-        back: "We give our best because God gave His best.",
+        front: "Generosity.",
+        back: "We give our time, gifts and resources freely.",
+        reference: "2 Corinthians 9:7",
       },
-      { front: "Family", back: "We belong to each other, not just to a rota." },
+      {
+        front: "Faith.",
+        back: "We trust God for more than we can see.",
+        reference: "Hebrews 11:6",
+      },
     ],
   },
   ACCORDION: {
     items: [
       {
-        title: "What is a branch?",
-        body: "One of our four areas of serving: Experience, Ministry, Creative and Systems.",
+        title: "The Bible",
+        body: "We believe the Bible is the inspired Word of God and our final authority for faith and life.",
       },
       {
-        title: "Can I serve in more than one team?",
-        body: "Yes. Talk to your branch lead once you've settled into your first team.",
+        title: "God",
+        body: "We believe in one God, eternally existing as Father, Son and Holy Spirit.",
+      },
+      {
+        title: "Jesus Christ",
+        body: "We believe Jesus is the Son of God, who died for our sins and rose again.",
+      },
+      {
+        title: "Salvation",
+        body: "We believe salvation is a gift of God's grace, received through faith in Jesus.",
+      },
+      {
+        title: "The Holy Spirit",
+        body: "We believe the Holy Spirit lives in every believer and empowers us to serve.",
+      },
+      {
+        title: "The Church",
+        body: "We believe the Church is God's family, called to worship, grow and reach others.",
       },
     ],
   },
@@ -66,25 +102,30 @@ const samples: {
       {
         label: "Experience",
         colour: "experience",
-        body: "First impressions and Sunday flow.",
-        items: ["Welcome & Hosting", "Ushering", "Hospitality"],
+        body: "**First impressions and Sunday flow.** From the car park to the coffee, Experience makes everyone feel at home.",
+        items: [
+          "Welcome & Hosting",
+          "Ushering",
+          "Hospitality",
+          "Service Management",
+        ],
       },
       {
         label: "Ministry",
         colour: "ministry",
-        body: "Prayer, care and kids.",
-        items: ["Prayer", "Kids", "Pastoral Care"],
+        body: "**Prayer, care and the next generation.** Ministry looks after people's hearts.",
+        items: ["Prayer", "Kids", "Youth", "Pastoral Care"],
       },
       {
         label: "Creative",
         colour: "creative",
-        body: "Worship, media and design.",
-        items: ["Worship", "Media & Photography", "Design"],
+        body: "**Worship, media and design.** Creative helps people encounter God and tells KC's story.",
+        items: ["Worship", "Media & Photography", "Design", "Social Media"],
       },
       {
         label: "Systems",
         colour: "systems",
-        body: "Tech and everything behind the scenes.",
+        body: "**Tech and everything behind the scenes.** Systems keeps Sundays running and online.",
         items: ["Tech & Production", "Livestream", "Data & Admin"],
       },
     ],
@@ -92,38 +133,87 @@ const samples: {
   TIMELINE: {
     events: [
       {
-        year: "Year 1",
-        title: "KC begins",
-        body: "A small group with a big vision for Manchester.",
+        year: "2015",
+        title: "A new beginning",
+        body: "Kingdom Culture starts as a young adults' gathering at Jubilee Church Manchester.",
       },
       {
-        year: "Today",
+        year: "2017",
+        title: "Sundays together",
+        body: "Monthly gatherings become weekly Sunday services.",
+      },
+      {
+        year: "2019",
+        title: "Building teams",
+        body: "The first volunteer teams form around welcome, worship and tech.",
+      },
+      {
+        year: "2020",
+        title: "Church online",
+        body: "Services move online and the livestream team is born.",
+      },
+      {
+        year: "2022",
+        title: "Four branches",
+        body: "Teams are organised into Experience, Ministry, Creative and Systems.",
+      },
+      {
+        year: "2025",
         title: "One family",
-        body: "Volunteers across four branches.",
+        body: "Hundreds of volunteers, one vision. And now you.",
       },
     ],
   },
   PYRAMID: {
     levels: [
-      { title: "Jesus", body: "At the centre of everything." },
-      { title: "Leadership", body: "Pastors and branch leads." },
-      { title: "Teams", body: "Where you serve week to week." },
+      {
+        title: "Senior Pastors",
+        body: "Set the vision and lead the church family.",
+      },
+      {
+        title: "Leadership Team",
+        body: "Pastors and directors who turn vision into plans.",
+      },
+      {
+        title: "Branch Leads",
+        body: "Lead Experience, Ministry, Creative and Systems.",
+      },
+      {
+        title: "Team Leads",
+        body: "Run each team week to week and look after their volunteers.",
+      },
+      { title: "Volunteers", body: "You. The heart of every Sunday." },
     ],
   },
   PEOPLE: {
     people: [
-      { name: "Pastor Placeholder", role: "Senior Pastor", ringColour: "lime" },
+      {
+        name: "Experience Lead",
+        role: "Branch Lead, Experience",
+        ringColour: "experience",
+      },
+      {
+        name: "Ministry Lead",
+        role: "Branch Lead, Ministry",
+        ringColour: "ministry",
+      },
       {
         name: "Creative Lead",
         role: "Branch Lead, Creative",
         ringColour: "creative",
       },
+      {
+        name: "Systems Lead",
+        role: "Branch Lead, Systems",
+        ringColour: "systems",
+      },
     ],
   },
   REFLECTION: {
-    prompt: "Why do you want to serve at KC?",
-    revealTitle: "Something to think about",
-    revealBody: "Knowing your why keeps you going on the hard Sundays.",
+    prompt: "What do you think is required to serve?",
+    revealTitle: "A willing heart",
+    revealBody:
+      "You don't need experience or a title. Serving starts with availability and a heart to love people. Skills can be taught; we'll train you.",
   },
   CHECKLIST: {
     title: "Before you serve",
