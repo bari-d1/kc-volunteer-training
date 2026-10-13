@@ -1,6 +1,7 @@
 import "server-only";
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
+import { connection } from "next/server";
 import { supabaseEnv } from "./env";
 
 /**
@@ -8,6 +9,9 @@ import { supabaseEnv } from "./env";
  * Create one per request; never share it between requests.
  */
 export async function createClient() {
+  // Auth checks session expiry with Date.now(), so it must run per request,
+  // never during prerendering (Cache Components).
+  await connection();
   const cookieStore = await cookies();
   const { url, key } = supabaseEnv();
 
