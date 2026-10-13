@@ -3,6 +3,7 @@ import { LessonSkeleton } from "@/components/blocks/lesson-skeleton";
 import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Logo } from "@/components/ui/logo";
 import { EmptyState } from "@/components/ui/empty-state";
 import { PillTag } from "@/components/ui/pill-tag";
 import { LoadingButtonDemo, ModalDemo, ProgressDemo, ToastDemo } from "./demos";
@@ -88,6 +89,27 @@ export default function StyleguidePage() {
           Every KC token, rendered from the Tailwind theme in globals.css.
         </p>
       </header>
+
+      <Section title="Logo">
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="flex flex-col gap-3">
+            <div className="grid h-48 place-items-center rounded-md bg-bg ring-1 ring-surface-2">
+              <Logo className="h-24" />
+            </div>
+            <span className="font-mono text-small text-muted">
+              kc-logo-white.png · dark backgrounds (the app)
+            </span>
+          </div>
+          <div className="flex flex-col gap-3">
+            <div className="grid h-48 place-items-center rounded-md bg-text">
+              <Logo variant="black" className="h-24" />
+            </div>
+            <span className="font-mono text-small text-muted">
+              kc-logo-black.png · light backgrounds (print, certificates)
+            </span>
+          </div>
+        </div>
+      </Section>
 
       <Section title="Colours">
         <ul className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">

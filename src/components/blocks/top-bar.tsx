@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Logo } from "@/components/ui/logo";
 import { ProgressBar } from "@/components/ui/progress-bar";
 
 export type TopBarProps = {
@@ -10,20 +11,6 @@ export type TopBarProps = {
   /** Omit when there is no module menu (e.g. the dashboard). */
   onMenuClick?: () => void;
 };
-
-/** Placeholder until the real KC logo is supplied. */
-function LogoMark() {
-  return (
-    <span
-      aria-hidden="true"
-      className="grid size-12 shrink-0 place-items-center rounded-pill border-2 border-lime text-center text-[7px] leading-[1.1] font-extrabold tracking-[0.08em] text-lime"
-    >
-      KINGDOM
-      <br />
-      CULTURE
-    </span>
-  );
-}
 
 export function TopBar({
   courseTitle,
@@ -63,8 +50,8 @@ export function TopBar({
           href={homeHref}
           className="flex min-w-0 items-center gap-3 rounded-pill"
         >
-          <LogoMark />
-          <span className="sr-only">Kingdom Culture: </span>
+          <Logo priority className="h-9 shrink-0" />
+          <span aria-hidden="true" className="h-6 w-px shrink-0 bg-surface-2" />
           <span className="truncate text-small font-extrabold tracking-[0.04em] uppercase">
             {courseTitle}
           </span>

@@ -6,6 +6,13 @@ export const alt = "KC Volunteers' Onboarding";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
+// The real white wordmark (1028×618), shown at 110px tall.
+const logo = `data:image/png;base64,${(
+  await readFile(join(process.cwd(), "src/assets/brand/kc-logo-white.png"))
+).toString("base64")}`;
+const LOGO_HEIGHT = 110;
+const LOGO_WIDTH = Math.round((LOGO_HEIGHT * 1028) / 618);
+
 const interExtraBold = await readFile(
   join(process.cwd(), "src/assets/fonts/Inter-ExtraBold.woff"),
 );
@@ -26,27 +33,7 @@ export default function OpengraphImage() {
         fontWeight: 800,
       }}
     >
-      <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            width: 72,
-            height: 72,
-            borderRadius: 16,
-            background: "#D9FF3D",
-            color: "#191919",
-            fontSize: 34,
-            letterSpacing: "-0.02em",
-          }}
-        >
-          KC
-        </div>
-        <div style={{ fontSize: 26, letterSpacing: "0.12em" }}>
-          KINGDOM CULTURE
-        </div>
-      </div>
+      <img src={logo} alt="" width={LOGO_WIDTH} height={LOGO_HEIGHT} />
       <div
         style={{
           display: "flex",

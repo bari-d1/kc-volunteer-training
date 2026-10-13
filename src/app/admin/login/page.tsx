@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import { Logo } from "@/components/ui/logo";
 import { PillTag } from "@/components/ui/pill-tag";
 import { safeNextPath } from "@/lib/safe-next-path";
 import { AdminLoginForm } from "./admin-login-form";
@@ -16,6 +17,7 @@ export default function AdminLoginPage({
     <main className="flex flex-1 items-center justify-center px-gutter py-16">
       <div className="flex w-full max-w-md flex-col gap-8">
         <div className="flex flex-col gap-4">
+          <Logo priority className="mb-4 h-16 self-start" />
           <PillTag>KC Admin</PillTag>
           <h1 className="text-h1">Admin sign in</h1>
           <p className="text-body-lg text-muted">
