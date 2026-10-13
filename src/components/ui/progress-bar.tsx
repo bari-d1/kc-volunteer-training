@@ -1,3 +1,6 @@
+"use client";
+
+import { motion } from "motion/react";
 import { cn } from "@/lib/cn";
 
 export type ProgressBarProps = {
@@ -30,9 +33,11 @@ export function ProgressBar({
         className,
       )}
     >
-      <div
-        className="h-full rounded-pill bg-lime transition-[width] duration-500 ease-out motion-reduce:transition-none"
-        style={{ width: `${percent}%` }}
+      <motion.div
+        className="h-full rounded-pill bg-lime"
+        initial={{ width: 0 }}
+        animate={{ width: `${percent}%` }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
       />
     </div>
   );

@@ -29,32 +29,6 @@
 
   /* Page gutter: 16px mobile, 64px from lg. Overridden below. */
   --spacing-gutter: 16px;
-
-  --animate-drawer-in: drawer-in 220ms ease-out;
-  --animate-drawer-out: drawer-out 180ms ease-in;
-  --animate-fade-in: fade-in 220ms ease-out;
-  --animate-fade-out: fade-out 180ms ease-in;
-
-  @keyframes drawer-in {
-    from {
-      transform: translateX(-100%);
-    }
-  }
-  @keyframes drawer-out {
-    to {
-      transform: translateX(-100%);
-    }
-  }
-  @keyframes fade-in {
-    from {
-      opacity: 0;
-    }
-  }
-  @keyframes fade-out {
-    to {
-      opacity: 0;
-    }
-  }
 }
 
 /* Inter is loaded by next/font in layout.tsx as --font-inter. */
@@ -73,6 +47,14 @@
     background-color: var(--color-bg);
     color: var(--color-text);
     font-family: var(--font-sans);
+  }
+
+  /* Reveal starts hidden in server HTML; never hide it for reduced motion. */
+  @media (prefers-reduced-motion: reduce) {
+    [data-reveal] {
+      opacity: 1 !important;
+      transform: none !important;
+    }
   }
 
   ::selection {

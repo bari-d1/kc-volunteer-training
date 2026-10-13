@@ -1,4 +1,4 @@
-import { render, screen, within } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { CourseLayout } from "@/components/blocks/course-layout";
@@ -35,7 +35,10 @@ describe("CourseLayout", () => {
     ).toHaveAttribute("aria-current", "page");
 
     await userEvent.keyboard("{Escape}");
-    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    // Waits for the slide-out exit animation to finish unmounting.
+    await waitFor(() =>
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument(),
+    );
     expect(menu).toHaveFocus();
   });
 

@@ -1,5 +1,7 @@
 "use client";
 
+import { motion } from "motion/react";
+import { useState } from "react";
 import { ProgressRing } from "@/components/ui/progress-ring";
 import { ModuleList } from "@/components/blocks/module-list";
 import { useSidebarCollapsed } from "@/components/blocks/use-sidebar-collapsed";
@@ -20,13 +22,19 @@ export function ModuleSidebar({
   className,
 }: ModuleSidebarProps) {
   const [collapsed, setCollapsed] = useSidebarCollapsed();
+  // Only animate user toggles, not the stored state restored on load.
+  const [animate, setAnimate] = useState(false);
+  const transition = { duration: animate ? 0.2 : 0, ease: "easeOut" } as const;
 
   return (
-    <aside
+    <motion.aside
       aria-label="Course modules"
+      initial={false}
+      animate={{ width: collapsed ? 80 : 320 }}
+      transition={transition}
       className={cn(
-        "flex shrink-0 flex-col gap-6 border-r border-surface-2 bg-bg py-6 transition-[width] duration-200 motion-reduce:transition-none",
-        collapsed ? "w-20 px-3" : "w-80 px-4",
+        "flex shrink-0 flex-col gap-6 overflow-x-hidden border-r border-surface-2 bg-bg py-6",
+        collapsed ? "px-3" : "px-4",
         className,
       )}
     >
@@ -55,13 +63,16 @@ export function ModuleSidebar({
         </div>
         <button
           type="button"
-          onClick={() => setCollapsed(!collapsed)}
+          onClick={() => {
+            setAnimate(true);
+            setCollapsed(!collapsed);
+          }}
           aria-expanded={!collapsed}
           aria-controls="module-sidebar-list"
           aria-label={collapsed ? "Expand module list" : "Collapse module list"}
           className="grid size-10 shrink-0 place-items-center rounded-pill text-muted transition-colors hover:bg-surface-2 hover:text-text"
         >
-          <svg
+          <motion.svg
             aria-hidden="true"
             width="16"
             height="16"
@@ -71,13 +82,12 @@ export function ModuleSidebar({
             strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
-            className={cn(
-              "transition-transform motion-reduce:transition-none",
-              collapsed && "rotate-180",
-            )}
+            initial={false}
+            animate={{ rotate: collapsed ? 180 : 0 }}
+            transition={transition}
           >
             <path d="M10 3L5 8l5 5" />
-          </svg>
+          </motion.svg>
         </button>
       </div>
       <nav id="module-sidebar-list" aria-label="Modules">
@@ -87,6 +97,6 @@ export function ModuleSidebar({
           collapsed={collapsed}
         />
       </nav>
-    </aside>
+    </motion.aside>
   );
 }

@@ -86,7 +86,7 @@ export function ModuleList({
           "flex min-h-11 items-center gap-3 rounded-md px-3 py-2 text-small transition-colors",
           collapsed && "justify-center px-0",
           current
-            ? "bg-lime font-bold text-ink [&_.fill-lime]:fill-ink [&_.stroke-lime]:stroke-ink"
+            ? "bg-lime font-bold text-ink [&_.fill-lime]:fill-ink [&_.stroke-ink]:stroke-lime [&_.stroke-lime]:stroke-ink"
             : locked
               ? "text-muted"
               : "hover:bg-surface-2",
@@ -113,8 +113,7 @@ export function ModuleList({
               </span>
             ) : (
               <Link
-                // Every unlocked module previews the same lesson for now.
-                href="/preview/lesson"
+                href={`/preview/lesson/${module.id}`}
                 aria-current={current ? "page" : undefined}
                 title={collapsed ? module.title : undefined}
                 onClick={onNavigate}

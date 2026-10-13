@@ -1,3 +1,6 @@
+"use client";
+
+import { motion } from "motion/react";
 import { cn } from "@/lib/cn";
 
 export type ProgressRingProps = {
@@ -51,7 +54,7 @@ export function ProgressRing({
           strokeWidth={strokeWidth}
           className="stroke-surface-2"
         />
-        <circle
+        <motion.circle
           cx={size / 2}
           cy={size / 2}
           r={radius}
@@ -59,8 +62,10 @@ export function ProgressRing({
           strokeWidth={strokeWidth}
           strokeLinecap="round"
           strokeDasharray={circumference}
-          strokeDashoffset={offset}
-          className="stroke-lime transition-[stroke-dashoffset] duration-500 ease-out motion-reduce:transition-none"
+          initial={{ strokeDashoffset: circumference }}
+          animate={{ strokeDashoffset: offset }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+          className="stroke-lime"
         />
       </svg>
       <span
