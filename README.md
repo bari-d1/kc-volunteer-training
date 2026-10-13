@@ -57,6 +57,15 @@ One-time Supabase dashboard setup:
   (`RedirectTo` already contains `/auth/confirm?next=…`.) This lets links work even when opened in a different browser from the one that requested them. With the default template, links still work but only in the same browser.
 - **Authentication → Emails → SMTP**: configure a custom SMTP provider. Supabase's built-in sender is heavily rate limited and only meant for testing.
 
+## Admin access (temporary shared password)
+
+`/admin/**` is protected by one shared password until individual admin accounts exist. All of it lives in `src/lib/admin-auth.ts` and `src/lib/admin-session.ts`, so it can be swapped out in one place.
+
+1. `pnpm admin:hash-password` and paste the printed `ADMIN_PASSWORD_HASH` line into `.env` (and your host's env vars).
+2. Set `ADMIN_SESSION_SECRET` to 32+ random characters (`openssl rand -base64 32`).
+
+Signing in sets a signed, httpOnly, 12-hour `kc_admin` cookie. Five wrong passwords from one IP within 15 minutes locks that IP out for the rest of the window. The proxy guards `/admin/**`, but every admin server action and route handler must still call `requireAdmin()`.
+
 ## Security
 
 All data access goes through the server: route handlers and server code query Postgres via Prisma ([src/lib/prisma.ts](src/lib/prisma.ts)). The browser never talks to the database directly.

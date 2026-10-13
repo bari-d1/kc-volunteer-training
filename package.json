@@ -15,14 +15,17 @@
     "db:migrate": "prisma migrate dev",
     "db:deploy": "prisma migrate deploy",
     "db:studio": "prisma studio",
-    "db:check-rls": "node scripts/check-rls.mts"
+    "db:check-rls": "node scripts/check-rls.mts",
+    "admin:hash-password": "node scripts/hash-admin-password.mts"
   },
   "dependencies": {
+    "@node-rs/argon2": "^2.2.2",
     "@prisma/adapter-pg": "^7.10.0",
     "@prisma/client": "^7.10.0",
     "@radix-ui/react-dialog": "^1.2.0",
     "@supabase/ssr": "^0.12.7",
     "@supabase/supabase-js": "^2.117.3",
+    "jose": "^6.2.12",
     "motion": "^14.0.0",
     "next": "16.4.0",
     "pg": "^8.23.1",
