@@ -1,14 +1,13 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { Prisma } from "@/generated/prisma/client";
 import { getCurrentUser } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
 import {
   NOT_SURE,
   OnboardingSchema,
   type OnboardingField,
 } from "@/lib/schemas/onboarding";
+import { createProfile, findActiveTeamName } from "@/server/profiles";
 
 export type OnboardingValues = {
   firstName: string;
@@ -70,16 +69,12 @@ export async function completeOnboarding(
   // Store the team's name; it must be active and in the chosen branch.
   let teamInterest: string | null = null;
   if (teamId && branch) {
-    const team = await prisma.team.findFirst({
-      where: { id: teamId, isActive: true, branch: { code: branch } },
-      select: { name: true },
-    });
-    if (!team) {
+    teamInterest = await findActiveTeamName(teamId, branch);
+    if (!teamInterest) {
       return fail({
         teamId: "That team isn't available. Pick another or leave it blank.",
       });
     }
-    teamInterest = team.name;
   }
 
   if (!user.email) {
@@ -89,37 +84,24 @@ export async function completeOnboarding(
     );
   }
 
+  let result: Awaited<ReturnType<typeof createProfile>>;
   try {
-    await prisma.profile.create({
-      data: {
-        id: user.id,
-        email: user.email,
-        firstName,
-        lastName,
-        branchInterest: branch,
-        teamInterest,
-        consentAt: new Date(),
-      },
+    result = await createProfile(user, {
+      firstName,
+      lastName,
+      branchInterest: branch,
+      teamInterest,
     });
   } catch (error) {
-    const duplicate =
-      error instanceof Prisma.PrismaClientKnownRequestError &&
-      error.code === "P2002";
-    if (!duplicate) {
-      console.error("Profile create failed", error);
-      return fail({}, "We couldn't save your details. Please try again.");
-    }
-    // Double submit: the profile already exists, so carry on.
-    const existing = await prisma.profile.findUnique({
-      where: { id: user.id },
-      select: { id: true },
-    });
-    if (!existing) {
-      return fail(
-        {},
-        "This email is already linked to another volunteer profile. Please contact the KC team.",
-      );
-    }
+    console.error("Profile create failed", error);
+    return fail({}, "We couldn't save your details. Please try again.");
+  }
+  // "exists" is a double submit: the profile is already there, so carry on.
+  if (result === "email-taken") {
+    return fail(
+      {},
+      "This email is already linked to another volunteer profile. Please contact the KC team.",
+    );
   }
 
   redirect("/course");

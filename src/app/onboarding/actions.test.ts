@@ -1,4 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+
+vi.mock("server-only", () => ({}));
 import { Prisma } from "@/generated/prisma/client";
 
 const user = {

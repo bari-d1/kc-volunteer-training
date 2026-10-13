@@ -5,8 +5,8 @@ import { SignOutButton } from "@/components/blocks/sign-out-button";
 import { PillTag } from "@/components/ui/pill-tag";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getCurrentUser, getProfile } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
 import { BRANCH_CODES, NOT_SURE } from "@/lib/schemas/onboarding";
+import { getOnboardingOptions } from "@/server/profiles";
 import { OnboardingForm, type BranchOption } from "./onboarding-form";
 
 export const metadata: Metadata = { title: "Welcome" };
@@ -41,16 +41,7 @@ async function Onboarding() {
   if (!user) redirect("/sign-in?next=/onboarding");
   if (await getProfile(user.id)) redirect("/course");
 
-  const [branchRows, teams] = await Promise.all([
-    prisma.branch.findMany({
-      select: { code: true, name: true, description: true },
-    }),
-    prisma.team.findMany({
-      where: { isActive: true },
-      orderBy: [{ order: "asc" }, { name: "asc" }],
-      select: { id: true, name: true, branch: { select: { code: true } } },
-    }),
-  ]);
+  const { branches: branchRows, teams } = await getOnboardingOptions();
 
   // Names and descriptions come from the Branch table when it's populated.
   const byCode = new Map(branchRows.map((b) => [b.code, b]));
@@ -69,14 +60,7 @@ async function Onboarding() {
 
   return (
     <div className="flex flex-col gap-10">
-      <OnboardingForm
-        branches={branches}
-        teams={teams.map((t) => ({
-          id: t.id,
-          name: t.name,
-          branch: t.branch.code,
-        }))}
-      />
+      <OnboardingForm branches={branches} teams={teams} />
       <div className="flex items-center gap-3 border-t border-surface-2 pt-6 text-small text-muted">
         <span>
           Signed in as <strong className="text-text">{user.email}</strong>

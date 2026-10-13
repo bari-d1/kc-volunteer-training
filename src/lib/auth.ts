@@ -7,6 +7,12 @@ import { createClient } from "@/lib/supabase/server";
 export type CurrentUser = { id: string; email: string };
 
 /**
+ * A profile id that came from requireVolunteer(). Data-access functions in
+ * src/server take this type, so an id from a form or URL won't typecheck.
+ */
+export type VolunteerId = string & { readonly __brand: "VolunteerId" };
+
+/**
  * The signed-in Supabase user, or null. Verifies the JWT (getClaims), so it's
  * safe for authorisation. Cached per request.
  */
@@ -34,5 +40,5 @@ export async function requireVolunteer(next = "/course") {
   const profile = await getProfile(user.id);
   if (!profile) redirect("/onboarding");
 
-  return profile;
+  return { ...profile, id: profile.id as VolunteerId };
 }

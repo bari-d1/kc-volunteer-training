@@ -1,8 +1,8 @@
 import type { EmailOtpType } from "@supabase/supabase-js";
 import { NextResponse, type NextRequest } from "next/server";
-import { prisma } from "@/lib/prisma";
 import { safeNextPath } from "@/lib/safe-next-path";
 import { createClient } from "@/lib/supabase/server";
+import { hasProfile } from "@/server/profiles";
 
 /**
  * Magic-link landing. Handles the token_hash link from our email template,
@@ -36,11 +36,7 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  const profile = await prisma.profile.findUnique({
-    where: { id: userId },
-    select: { id: true },
-  });
-  return redirectTo(request, profile ? next : "/onboarding");
+  return redirectTo(request, (await hasProfile(userId)) ? next : "/onboarding");
 }
 
 function redirectTo(request: NextRequest, path: string) {

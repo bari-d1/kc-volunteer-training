@@ -35,6 +35,14 @@ The easiest way to deploy your Next.js app is to use the [Vercel Platform](https
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
 
+## Data access
+
+Pages, server actions, route handlers and components never import Prisma; ESLint enforces this. They call server-only functions in `src/server/`:
+
+- `courses.ts` and `progress.ts`: volunteer reads and writes. They take a `VolunteerId`, which only `requireVolunteer()` produces, so a profile id from a form or URL won't typecheck. Writes re-check the unlock rules (`unlock.ts`), and knowledge checks are graded on the server; answers are stripped from blocks sent to volunteers.
+- `profiles.ts`, `health.ts`: onboarding and the health check.
+- `admin/*.ts`: admin reads and writes. Each calls `requireAdmin()` first (a test checks every export) and logs writes to `ContentChange`.
+
 ## Volunteer sign-in (Supabase magic links)
 
 Volunteers sign in with a one-time email link; there are no passwords. The flow:
