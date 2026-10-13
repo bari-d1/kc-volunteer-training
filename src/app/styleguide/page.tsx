@@ -1,4 +1,9 @@
 import type { Metadata } from "next";
+import { Avatar } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { PillTag } from "@/components/ui/pill-tag";
+import { LoadingButtonDemo, ModalDemo, ProgressDemo, ToastDemo } from "./demos";
 
 export const metadata: Metadata = {
   title: "Styleguide",
@@ -43,6 +48,11 @@ const radii = [
   { name: "lg", value: "20px", className: "rounded-lg" },
   { name: "pill", value: "9999px", className: "rounded-pill" },
 ];
+
+// Inline SVG so the image avatar demo needs no external host.
+const sampleAvatar = `data:image/svg+xml,${encodeURIComponent(
+  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#33D6F5"/><stop offset="1" stop-color="#FF5FC8"/></linearGradient></defs><rect width="80" height="80" fill="url(#g)"/><circle cx="40" cy="32" r="14" fill="#191919" opacity=".6"/><rect x="16" y="52" width="48" height="40" rx="24" fill="#191919" opacity=".6"/></svg>',
+)}`;
 
 const shadows = [
   { name: "card", className: "shadow-card" },
@@ -149,6 +159,98 @@ export default function StyleguidePage() {
         >
           Tab to me to see the focus ring
         </button>
+      </Section>
+
+      <Section title="Button">
+        <div className="flex flex-col gap-6">
+          {(["primary", "secondary", "ghost"] as const).map((variant) => (
+            <div key={variant} className="flex flex-wrap items-center gap-4">
+              <span className="w-24 font-mono text-small text-muted">
+                {variant}
+              </span>
+              <Button variant={variant} size="sm">
+                Small
+              </Button>
+              <Button variant={variant}>Medium</Button>
+              <Button variant={variant} size="lg">
+                Large
+              </Button>
+              <Button variant={variant} disabled>
+                Disabled
+              </Button>
+            </div>
+          ))}
+          <div className="flex flex-wrap items-center gap-4">
+            <span className="w-24 font-mono text-small text-muted">states</span>
+            <LoadingButtonDemo />
+            <Button href="/">Link to home</Button>
+            <Button href="/" variant="secondary" disabled>
+              Disabled link
+            </Button>
+          </div>
+        </div>
+      </Section>
+
+      <Section title="Pill tag">
+        <div className="flex flex-wrap gap-3">
+          <PillTag>Our values</PillTag>
+          <PillTag branch="experience">Experience</PillTag>
+          <PillTag branch="ministry">Ministry</PillTag>
+          <PillTag branch="creative">Creative</PillTag>
+          <PillTag branch="systems">Systems</PillTag>
+        </div>
+        <div className="flex flex-wrap gap-3 rounded-lg bg-lime p-6">
+          <PillTag variant="filled">Our values</PillTag>
+          <PillTag variant="filled" branch="ministry">
+            Ministry
+          </PillTag>
+          <PillTag variant="filled" branch="systems">
+            Systems
+          </PillTag>
+        </div>
+      </Section>
+
+      <Section title="Card">
+        <div className="grid gap-6 md:grid-cols-3">
+          <Card>
+            <p className="text-body">Default card, md padding.</p>
+          </Card>
+          <Card header={<h3 className="text-h3">With header</h3>} padding="sm">
+            <p className="text-body text-muted">Small padding.</p>
+          </Card>
+          <Card interactive padding="lg">
+            <a href="#card" className="flex flex-col gap-2 rounded-sm">
+              <span className="text-h3">Interactive</span>
+              <span className="text-body text-muted">
+                Hover or focus the link.
+              </span>
+            </a>
+          </Card>
+        </div>
+      </Section>
+
+      <Section title="Progress">
+        <ProgressDemo />
+      </Section>
+
+      <Section title="Avatar">
+        <div className="flex flex-wrap items-center gap-6">
+          <Avatar name="Ada Okafor" size="sm" />
+          <Avatar name="Ada Okafor" />
+          <Avatar name="Ada Okafor" size="lg" src={sampleAvatar} />
+          <Avatar name="Tobi Adeyemi" size="lg" ring="experience" />
+          <Avatar name="Grace Mensah" size="lg" ring="ministry" />
+          <Avatar name="Sam Lee" size="lg" ring="creative" src={sampleAvatar} />
+          <Avatar name="Priya Shah" size="lg" ring="systems" />
+        </div>
+      </Section>
+
+      <Section title="Modal">
+        <ModalDemo />
+      </Section>
+
+      <Section title="Toast">
+        <ToastDemo />
       </Section>
     </main>
   );
