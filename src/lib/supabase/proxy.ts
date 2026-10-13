@@ -6,6 +6,8 @@ import { supabaseEnv } from "./env";
 function isProtected(pathname: string) {
   return (
     pathname === "/onboarding" ||
+    pathname === "/account" ||
+    pathname.startsWith("/account/") ||
     pathname === "/course" ||
     pathname.startsWith("/course/")
   );

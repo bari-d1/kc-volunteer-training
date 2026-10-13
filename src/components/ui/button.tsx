@@ -3,13 +3,14 @@ import type { ComponentPropsWithRef, ReactNode } from "react";
 import { cn } from "@/lib/cn";
 import { Spinner } from "@/components/ui/spinner";
 
-export type ButtonVariant = "primary" | "secondary" | "ghost";
+export type ButtonVariant = "primary" | "secondary" | "ghost" | "danger";
 export type ButtonSize = "sm" | "md" | "lg";
 
 const variantClasses: Record<ButtonVariant, string> = {
   primary: "bg-lime text-ink hover:bg-lime/85",
   secondary: "border-2 border-lime text-lime hover:bg-lime/10",
   ghost: "text-text hover:bg-surface-2",
+  danger: "bg-danger text-ink hover:bg-danger/85",
 };
 
 const sizeClasses: Record<ButtonSize, string> = {
