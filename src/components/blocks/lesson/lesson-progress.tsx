@@ -215,7 +215,11 @@ export function LessonProgress({
 
       <div ref={endRef} aria-hidden="true" />
 
-      <footer className="flex flex-col gap-8 border-t border-surface-2 pt-8">
+      {/* data-narrator-avoid: the narrator dock tucks away while this is visible. */}
+      <footer
+        data-narrator-avoid=""
+        className="flex flex-col gap-8 border-t border-surface-2 pt-8"
+      >
         <div className="flex flex-col items-start gap-3">
           <Button
             size="lg"

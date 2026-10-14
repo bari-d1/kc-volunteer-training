@@ -29,6 +29,76 @@
 
   /* Page gutter: 16px mobile, 64px from lg. Overridden below. */
   --spacing-gutter: 16px;
+
+  /* Narrator fallback (SVG) animations, one per state. */
+  --animate-narrator-float: narrator-float 4s ease-in-out infinite;
+  --animate-narrator-wave: narrator-wave 1.2s ease-in-out infinite;
+  --animate-narrator-point: narrator-point 1.4s ease-in-out infinite;
+  --animate-narrator-think: narrator-think 3s ease-in-out infinite;
+  --animate-narrator-bounce: narrator-bounce 0.8s ease-in-out infinite;
+  --animate-narrator-nod: narrator-nod 1.4s ease-in-out infinite;
+  --animate-narrator-talk: narrator-talk 0.28s ease-in-out infinite alternate;
+
+  @keyframes narrator-float {
+    50% {
+      transform: translateY(-4%);
+    }
+  }
+  @keyframes narrator-wave {
+    0%,
+    100% {
+      transform: rotate(-6deg);
+    }
+    50% {
+      transform: rotate(6deg);
+    }
+  }
+  @keyframes narrator-point {
+    50% {
+      transform: translateX(6%);
+    }
+  }
+  @keyframes narrator-think {
+    0%,
+    100% {
+      transform: rotate(-8deg);
+    }
+    50% {
+      transform: rotate(-12deg) translateY(-2%);
+    }
+  }
+  @keyframes narrator-bounce {
+    0%,
+    100% {
+      transform: translateY(0) scale(1, 1);
+    }
+    40% {
+      transform: translateY(-16%) scale(0.96, 1.04);
+    }
+    80% {
+      transform: translateY(0) scale(1.04, 0.96);
+    }
+  }
+  @keyframes narrator-nod {
+    0%,
+    100% {
+      transform: rotate(0);
+    }
+    30% {
+      transform: rotate(5deg) translateY(3%);
+    }
+    60% {
+      transform: rotate(-2deg);
+    }
+  }
+  @keyframes narrator-talk {
+    from {
+      transform: scaleY(0.35);
+    }
+    to {
+      transform: scaleY(1);
+    }
+  }
 }
 
 /* Inter is loaded by next/font in layout.tsx as --font-inter. */
