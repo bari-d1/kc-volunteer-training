@@ -12,6 +12,8 @@ import {
   Suspense,
   type ReactNode,
 } from "react";
+import { setGuideHidden } from "@/app/actions/narrator";
+import { useToast } from "@/components/ui/toast";
 import { NarratorDock } from "./narrator-dock";
 import type { NarratorState } from "./narrator-states";
 
@@ -43,6 +45,10 @@ export type NarratorApi = {
   present: boolean;
   /** Switched on: messages will show in the dock. */
   available: boolean;
+  /** The volunteer chose "Hide guide" (Profile.hideNarrator). */
+  hidden: boolean;
+  /** Hide or show the guide: updates instantly, saves in the background. */
+  setHidden: (hidden: boolean) => void;
   /** A message is showing right now. */
   speaking: boolean;
   /** Returns whether the message is now showing. */
@@ -54,6 +60,8 @@ export type NarratorApi = {
 const noop: NarratorApi = {
   present: false,
   available: false,
+  hidden: false,
+  setHidden: () => {},
   speaking: false,
   say: () => false,
   setState: () => {},
@@ -61,7 +69,7 @@ const noop: NarratorApi = {
 };
 
 const NarratorContext = createContext<NarratorApi>(noop);
-const NarratorConfigContext = createContext<(enabled: boolean) => void>(
+const NarratorConfigContext = createContext<(hidden: boolean) => void>(
   () => {},
 );
 
@@ -106,12 +114,14 @@ function rememberForSession(key: string) {
 
 /**
  * Holds the narrator's single current message and renders the dock. Mount
- * it in a layout that persists across lesson navigation; pages enable it
- * with <NarratorConfig enabled={!profile.hideNarrator} />.
+ * it in a layout that persists across lesson navigation; pages pass the
+ * volunteer's setting with <NarratorConfig hidden={profile.hideNarrator} />.
  */
 export function NarratorProvider({ children }: { children: ReactNode }) {
+  const { toast } = useToast();
   const [pathname, setPathname] = useState<string | null>(null);
-  const [enabled, setEnabled] = useState(false);
+  const [configured, setConfigured] = useState(false);
+  const [hidden, setHiddenState] = useState(false);
   const [message, setMessage] = useState<NarratorMessage | null>(null);
   const [pose, setPose] = useState<NarratorState>("idle");
   const [held, setHeld] = useState(false);
@@ -119,6 +129,8 @@ export function NarratorProvider({ children }: { children: ReactNode }) {
   const current = useRef<NarratorMessage | null>(null);
   const visitKeys = useRef(new Set<string>());
   const duration = useRef(0);
+  const saving = useRef(false);
+  const enabled = configured && !hidden;
 
   // A new page is a new visit for "once per visit" messages.
   useEffect(() => {
@@ -175,20 +187,53 @@ export function NarratorProvider({ children }: { children: ReactNode }) {
     return () => clearTimeout(timer);
   }, [message, held, dismiss]);
 
+  /** From the page: the saved setting (ignored while a change is saving). */
+  const configure = useCallback((savedHidden: boolean) => {
+    setConfigured(true);
+    if (!saving.current) setHiddenState(savedHidden);
+  }, []);
+
+  // Optimistic: switch now, save in the background, undo if saving fails.
+  const setHidden = useCallback(
+    (value: boolean) => {
+      setHiddenState(value);
+      if (value) dismiss();
+      saving.current = true;
+      setGuideHidden(value)
+        .then((result) => {
+          if (!result.ok) throw new Error("not saved");
+        })
+        .catch(() => {
+          setHiddenState(!value);
+          toast({
+            variant: "error",
+            title: "We couldn't save that",
+            description: "Please try again.",
+          });
+        })
+        .finally(() => {
+          saving.current = false;
+        });
+    },
+    [dismiss, toast],
+  );
+
   const api = useMemo<NarratorApi>(
     () => ({
       present: true,
       available: enabled,
+      hidden: configured && hidden,
+      setHidden,
       speaking: message !== null,
       say,
       setState: setPose,
       dismiss,
     }),
-    [enabled, message, say, dismiss],
+    [enabled, configured, hidden, setHidden, message, say, dismiss],
   );
 
   return (
-    <NarratorConfigContext.Provider value={setEnabled}>
+    <NarratorConfigContext.Provider value={configure}>
       <NarratorContext.Provider value={api}>
         {/* The URL is request data, so read it inside Suspense (Cache Components). */}
         <Suspense fallback={null}>
@@ -202,6 +247,7 @@ export function NarratorProvider({ children }: { children: ReactNode }) {
             state={pose}
             onHoldChange={setHeld}
             onDismiss={dismiss}
+            onHide={() => setHidden(true)}
             scanKey={pathname ?? undefined}
           />
         )}
@@ -222,11 +268,11 @@ function PathnameWatcher({
   return null;
 }
 
-/** Rendered by a page to switch the dock on or off (e.g. from hideNarrator). */
-export function NarratorConfig({ enabled }: { enabled: boolean }) {
+/** Rendered by course pages with the volunteer's saved Profile.hideNarrator. */
+export function NarratorConfig({ hidden }: { hidden: boolean }) {
   const configure = useContext(NarratorConfigContext);
   useEffect(() => {
-    configure(enabled);
-  }, [configure, enabled]);
+    configure(hidden);
+  }, [configure, hidden]);
   return null;
 }

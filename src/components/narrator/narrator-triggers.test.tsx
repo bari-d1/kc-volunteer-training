@@ -9,6 +9,16 @@ vi.mock("next/navigation", () => ({
   useRouter: () => ({ push: vi.fn() }),
 }));
 vi.mock("next/dynamic", () => ({ default: () => () => null }));
+const setGuideHidden = vi.hoisted(() =>
+  vi.fn<(hidden: boolean) => Promise<{ ok: boolean }>>(async () => ({
+    ok: true,
+  })),
+);
+vi.mock("@/app/actions/narrator", () => ({
+  setGuideHidden: (h: boolean) => setGuideHidden(h),
+}));
+const toast = vi.hoisted(() => vi.fn());
+vi.mock("@/components/ui/toast", () => ({ useToast: () => ({ toast }) }));
 
 type Entry = { isIntersecting: boolean; target: Element };
 const observers: Array<{ cb: (e: Entry[]) => void; els: Element[] }> = [];
@@ -78,7 +88,7 @@ function Grab() {
 function renderNarrated(ui: React.ReactNode = null, enabled = true) {
   return render(
     <NarratorProvider>
-      <NarratorConfig enabled={enabled} />
+      <NarratorConfig hidden={!enabled} />
       <Grab />
       {ui}
     </NarratorProvider>,
@@ -150,7 +160,7 @@ describe("NarratorProvider", () => {
     nav.pathname = "/course/kc/about-kc";
     rerender(
       <NarratorProvider>
-        <NarratorConfig enabled />
+        <NarratorConfig hidden={false} />
         <Grab />
       </NarratorProvider>,
     );
@@ -179,6 +189,7 @@ describe("NarratorProvider", () => {
     expect(dock()).toBeNull();
     expect(api.available).toBe(false);
     expect(api.present).toBe(true);
+    expect(api.hidden).toBe(true);
   });
 
   it("changes pose without a message", () => {
@@ -330,5 +341,92 @@ describe("course triggers", () => {
     first.unmount();
     renderNarrated(<NarratorWelcome firstName="Ada" />);
     expect(bubbleText()).toBeNull();
+  });
+});
+
+// ── Hide guide ─────────────────────────────────────────────────────────────
+const { ShowGuideButton } = await import("./show-guide-button");
+
+describe("hide guide", () => {
+  beforeEach(() => {
+    setGuideHidden.mockClear();
+    setGuideHidden.mockResolvedValue({ ok: true });
+    toast.mockClear();
+  });
+
+  it("hides from the dock instantly, saves it, and offers Show guide in its place", async () => {
+    renderNarrated(<ShowGuideButton />);
+    act(() => api.say("Hello!", "wave"));
+    expect(screen.queryByRole("button", { name: "Show guide" })).toBeNull();
+
+    await act(async () =>
+      fireEvent.click(screen.getByRole("button", { name: "Hide guide" })),
+    );
+    expect(dock()).toBeNull();
+    expect(setGuideHidden).toHaveBeenCalledWith(true);
+
+    await act(async () =>
+      fireEvent.click(screen.getByRole("button", { name: "Show guide" })),
+    );
+    expect(dock()).not.toBeNull();
+    expect(setGuideHidden).toHaveBeenLastCalledWith(false);
+  });
+
+  it("undoes the change and explains if saving fails", async () => {
+    setGuideHidden.mockResolvedValueOnce({ ok: false });
+    renderNarrated();
+    await act(async () =>
+      fireEvent.click(screen.getByRole("button", { name: "Hide guide" })),
+    );
+    expect(dock()).not.toBeNull();
+    expect(toast).toHaveBeenCalledWith(
+      expect.objectContaining({ variant: "error" }),
+    );
+  });
+
+  it("turns callouts into plain notes and skips hints and typing when hidden", () => {
+    const { container } = renderNarrated(
+      <BlockRenderer
+        moduleId="m1"
+        blocks={[
+          {
+            id: "c1",
+            type: "NARRATOR_CALLOUT",
+            content: { state: "wave", text: "Welcome!" },
+          },
+          {
+            id: "f1",
+            type: "FLIP_CARDS",
+            content: { cards: [{ front: "Kingdom.", back: "First." }] },
+          },
+        ]}
+      />,
+      false,
+    );
+    const note = container.querySelector("[data-narrator-note]")!;
+    expect(note).toHaveTextContent("Welcome!");
+    expect(container.querySelector("[data-narrator-trigger]")).toBeNull();
+    expect(
+      triggerIn(container.querySelector('[data-block-id="f1"]')!),
+    ).toBeNull();
+    expect(dock()).toBeNull();
+  });
+
+  it("ignores the page's saved value while a change is still saving", async () => {
+    let resolve!: (v: { ok: boolean }) => void;
+    setGuideHidden.mockReturnValueOnce(new Promise((r) => (resolve = r)));
+    const { rerender } = renderNarrated();
+    act(() =>
+      fireEvent.click(screen.getByRole("button", { name: "Hide guide" })),
+    );
+    // A navigation re-renders the page with the old (not yet saved) value.
+    rerender(
+      <NarratorProvider>
+        <NarratorConfig hidden={false} />
+        <Grab />
+      </NarratorProvider>,
+    );
+    expect(api.hidden).toBe(true);
+    await act(async () => resolve({ ok: true }));
   });
 });

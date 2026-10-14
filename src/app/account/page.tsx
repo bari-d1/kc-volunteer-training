@@ -3,6 +3,7 @@ import { Suspense } from "react";
 import { SignOutButton } from "@/components/blocks/sign-out-button";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { GuideSwitch } from "@/components/narrator/guide-switch";
 import { requireVolunteer } from "@/lib/auth";
 import { BRANCH_CODES, NOT_SURE } from "@/lib/schemas/onboarding";
 import { getAccount } from "@/server/account";
@@ -76,6 +77,10 @@ async function Account() {
             teamId,
           }}
         />
+      </Card>
+
+      <Card header={<h2 className="text-h3">Your guide</h2>} padding="lg">
+        <GuideSwitch initialHidden={profile.hideNarrator} />
       </Card>
 
       <Card header={<h2 className="text-h3">Your data</h2>} padding="lg">

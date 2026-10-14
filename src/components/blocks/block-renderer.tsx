@@ -14,8 +14,6 @@ export type BlockRendererProps = {
   /** Blocks in display order, as returned by getModuleForVolunteer. */
   blocks: readonly VolunteerBlock[];
   moduleId: string;
-  /** Profile.hideNarrator: drops narrator callouts entirely. */
-  hideNarrator?: boolean;
 };
 
 /**
@@ -23,11 +21,7 @@ export type BlockRendererProps = {
  * Reveal. Blocks are re-checked at runtime: anything unknown or invalid is
  * logged and replaced by a dev-only warning (nothing in production).
  */
-export function BlockRenderer({
-  blocks,
-  moduleId,
-  hideNarrator = false,
-}: BlockRendererProps) {
+export function BlockRenderer({ blocks, moduleId }: BlockRendererProps) {
   return (
     <div className="flex flex-col gap-8">
       {blocks.map((block, index) => {
@@ -55,7 +49,6 @@ export function BlockRenderer({
         }
 
         const { id, type: blockType, content } = parsed.data;
-        if (hideNarrator && blockType === "NARRATOR_CALLOUT") return null;
         // The schema guarantees content matches the registry entry for its type.
         const Component = blockRegistry[blockType] as ComponentType<
           Record<string, unknown>

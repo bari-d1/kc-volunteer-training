@@ -67,7 +67,7 @@ async function Lesson({
       course={courseNav(courseSlug, course.title, lesson.outline)}
       currentModuleId={module.slug}
     >
-      <NarratorConfig enabled={!profile.hideNarrator} />
+      <NarratorConfig hidden={profile.hideNarrator} />
       <article className="flex flex-col gap-10">
         <header className="flex flex-col gap-4">
           <Link
@@ -116,11 +116,7 @@ async function Lesson({
               description="This part of your training is still being built. You can continue for now."
             />
           ) : (
-            <BlockRenderer
-              blocks={blocks}
-              moduleId={module.id}
-              hideNarrator={profile.hideNarrator}
-            />
+            <BlockRenderer blocks={blocks} moduleId={module.id} />
           )}
         </LessonProgress>
       </article>

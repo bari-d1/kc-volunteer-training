@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Logo } from "@/components/ui/logo";
+import { ShowGuideButton } from "@/components/narrator/show-guide-button";
 import { ProgressBar } from "@/components/ui/progress-bar";
 
 export type TopBarProps = {
@@ -56,9 +57,14 @@ export function TopBar({
             {courseTitle}
           </span>
         </Link>
-        <div className="ml-auto hidden w-56 items-center gap-3 sm:flex">
-          <ProgressBar value={progress} label="Overall course progress" />
-          <span className="text-small font-bold tabular-nums">{progress}%</span>
+        <div className="ml-auto flex items-center gap-4">
+          <ShowGuideButton />
+          <div className="hidden w-56 items-center gap-3 sm:flex">
+            <ProgressBar value={progress} label="Overall course progress" />
+            <span className="text-small font-bold tabular-nums">
+              {progress}%
+            </span>
+          </div>
         </div>
       </div>
       {/* Edge-to-edge bar on phones where the inline bar is hidden. */}

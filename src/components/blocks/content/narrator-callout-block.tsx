@@ -23,22 +23,35 @@ function MascotPlaceholder() {
 }
 
 /**
- * In the course, the narrator says this text (once per visit) when the block
- * scrolls into view, so nothing renders in the page flow. Without a narrator
- * dock it falls back to an inline speech-bubble card.
+ * In the course the narrator says this text (once per visit) when the block
+ * scrolls into view, so nothing renders in the page flow. If the volunteer
+ * hid the guide it becomes a plain note so no content is lost, and outside
+ * the course (previews) it's an inline speech-bubble card.
  */
 export function NarratorCalloutBlock({
   state,
   text,
   blockId,
 }: BlockProps<"NARRATOR_CALLOUT">) {
-  const { present, available, say } = useNarrator();
+  const { present, available, hidden, say } = useNarrator();
   const ref = useInViewOnce<HTMLDivElement>(
     () => say(text, state, { key: `callout:${blockId}`, once: "visit" }),
     available,
-    // Callouts often open a lesson, so count them as soon as they\'re visible.
+    // Callouts often open a lesson, so count them as soon as they're visible.
     { rootMargin: "0px" },
   );
+
+  if (present && hidden) {
+    return (
+      <p
+        data-narrator-state={state}
+        data-narrator-note=""
+        className="rounded-md border-l-4 border-lime bg-surface px-5 py-4 text-body text-text"
+      >
+        {text}
+      </p>
+    );
+  }
 
   if (present) {
     return (

@@ -101,3 +101,14 @@ export async function deleteAccount(profileId: VolunteerId) {
     return { authUserDeleted: false as const };
   }
 }
+
+/** Profile.hideNarrator: hides the narrator guide everywhere. */
+export async function setNarratorHidden(
+  profileId: VolunteerId,
+  hidden: boolean,
+) {
+  await prisma.profile.update({
+    where: { id: profileId },
+    data: { hideNarrator: hidden },
+  });
+}

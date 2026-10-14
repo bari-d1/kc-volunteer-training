@@ -180,14 +180,16 @@ describe("lesson page", () => {
     ).toBeInTheDocument();
   });
 
-  it("hides the narrator for volunteers who turned it off", async () => {
+  it("keeps narrator content for volunteers who hid the guide", async () => {
     requireVolunteer.mockResolvedValueOnce({
       id: "v1",
       firstName: "Ada",
       hideNarrator: true,
     });
     await renderLesson("what-we-believe");
-    expect(screen.queryByText("Let's dig into what we believe.")).toBeNull();
+    expect(
+      screen.getByText("Let's dig into what we believe."),
+    ).toBeInTheDocument();
   });
 
   it("links Previous always and Next only once it's unlocked", async () => {

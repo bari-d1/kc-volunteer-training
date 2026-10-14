@@ -53,7 +53,7 @@ async function Dashboard({
       width="wide"
     >
       {isDashboardNotice(notice) && <DashboardNotice notice={notice} />}
-      <NarratorConfig enabled={!profile.hideNarrator} />
+      <NarratorConfig hidden={profile.hideNarrator} />
       <NarratorWelcome firstName={profile.firstName} />
       <CourseDashboard
         courseSlug={courseSlug}
