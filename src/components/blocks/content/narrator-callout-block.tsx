@@ -1,6 +1,10 @@
+"use client";
+
+import { useNarrator } from "@/components/narrator/narrator-context";
+import { useInViewOnce } from "@/components/narrator/use-in-view-once";
 import type { BlockProps } from "../block-props";
 
-/** Static stand-in for the animated narrator (Phase 5). */
+/** Static stand-in used inline when there's no narrator dock (e.g. previews). */
 function MascotPlaceholder() {
   return (
     <svg aria-hidden="true" viewBox="0 0 64 64" className="size-16 shrink-0">
@@ -18,10 +22,35 @@ function MascotPlaceholder() {
   );
 }
 
+/**
+ * In the course, the narrator says this text (once per visit) when the block
+ * scrolls into view, so nothing renders in the page flow. Without a narrator
+ * dock it falls back to an inline speech-bubble card.
+ */
 export function NarratorCalloutBlock({
   state,
   text,
+  blockId,
 }: BlockProps<"NARRATOR_CALLOUT">) {
+  const { present, available, say } = useNarrator();
+  const ref = useInViewOnce<HTMLDivElement>(
+    () => say(text, state, { key: `callout:${blockId}`, once: "visit" }),
+    available,
+    // Callouts often open a lesson, so count them as soon as they\'re visible.
+    { rootMargin: "0px" },
+  );
+
+  if (present) {
+    return (
+      <div
+        ref={ref}
+        data-narrator-state={state}
+        data-narrator-trigger=""
+        className="h-px"
+      />
+    );
+  }
+
   return (
     <aside
       aria-label="Your guide says"
@@ -30,7 +59,6 @@ export function NarratorCalloutBlock({
     >
       <MascotPlaceholder />
       <p className="relative flex-1 rounded-lg rounded-bl-sm bg-surface-2 px-5 py-4 text-body-lg text-text">
-        {/* Speech-bubble tail pointing at the mascot. */}
         <span
           aria-hidden="true"
           className="absolute bottom-0 -left-2 size-4 bg-surface-2 [clip-path:polygon(100%_0,100%_100%,0_100%)]"

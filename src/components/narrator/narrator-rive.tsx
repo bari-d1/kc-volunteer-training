@@ -44,7 +44,7 @@ export default function NarratorRive({
   const { rive, RiveComponent } = useRive({
     src: RIVE_SRC,
     artboard: RIVE_ARTBOARD,
-    stateMachines: RIVE_STATE_MACHINE,
+    stateMachine: RIVE_STATE_MACHINE,
     autoplay: true,
     layout: new Layout({ fit: Fit.Contain, alignment: Alignment.Center }),
     onLoad,

@@ -7,7 +7,16 @@ import type { NarratorState } from "./narrator-states";
 import { SpeechBubble } from "./speech-bubble";
 
 export type NarratorDockProps = {
-  text: string;
+  /** No text: the dock shows just the mascot. */
+  text?: string;
+  /** Changes for each new message so typing restarts even for repeated text. */
+  messageId?: number;
+  /** Paused auto-hide while the visitor hovers or focuses the dock. */
+  onHoldChange?: (held: boolean) => void;
+  /** Close the current message. */
+  onDismiss?: () => void;
+  /** Re-scan for data-narrator-avoid elements when this changes (e.g. pathname). */
+  scanKey?: string;
   state?: NarratorState;
   typing?: boolean;
   forceFallback?: boolean;
@@ -27,6 +36,10 @@ export const NARRATOR_AVOID_ATTR = "data-narrator-avoid";
  */
 export function NarratorDock({
   text,
+  messageId,
+  onHoldChange,
+  onDismiss,
+  scanKey,
   state = "idle",
   typing = true,
   forceFallback,
@@ -50,10 +63,14 @@ export function NarratorDock({
       setAvoiding(visible.size > 0);
     });
     targets.forEach((t) => observer.observe(t));
-    return () => observer.disconnect();
-  }, []);
+    return () => {
+      observer.disconnect();
+      setAvoiding(false);
+    };
+  }, [scanKey]);
 
   const minimised = collapsed || avoiding;
+  const showBubble = !minimised && Boolean(text);
 
   return (
     <>
@@ -61,6 +78,10 @@ export function NarratorDock({
       <div aria-hidden="true" className="h-28 lg:h-40" />
       <aside
         aria-label="Your guide"
+        onMouseEnter={() => onHoldChange?.(true)}
+        onMouseLeave={() => onHoldChange?.(false)}
+        onFocus={() => onHoldChange?.(true)}
+        onBlur={() => onHoldChange?.(false)}
         className={cn(
           "fixed z-30 flex items-end gap-3 transition-[opacity,transform] motion-reduce:transition-none",
           // Mobile: compact bar above the bottom edge. Desktop: corner card.
@@ -68,23 +89,45 @@ export function NarratorDock({
           minimised && "inset-x-auto right-3 lg:right-6",
         )}
       >
-        {!minimised && (
-          <div id={bubbleId} className="min-w-0 flex-1">
+        {showBubble && text && (
+          <div id={bubbleId} className="relative min-w-0 flex-1">
             <SpeechBubble
+              key={messageId}
               text={text}
               typing={typing}
               reducedMotion={reducedMotion}
               onTalkingChange={setTalking}
               tail="bottom"
-              className="max-h-40 overflow-y-auto text-small lg:text-body"
+              className="max-h-40 overflow-y-auto pr-9 text-small lg:text-body"
             />
+            {onDismiss && (
+              <button
+                type="button"
+                onClick={onDismiss}
+                aria-label="Close message"
+                className="absolute top-2 right-2 grid size-7 place-items-center rounded-pill text-muted hover:bg-surface-2 hover:text-text"
+              >
+                <svg
+                  aria-hidden="true"
+                  width="12"
+                  height="12"
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                >
+                  <path d="M3 3l10 10M13 3L3 13" />
+                </svg>
+              </button>
+            )}
           </div>
         )}
         <button
           type="button"
           onClick={() => setCollapsed(!collapsed)}
-          aria-expanded={!minimised}
-          aria-controls={bubbleId}
+          aria-expanded={showBubble}
+          aria-controls={showBubble ? bubbleId : undefined}
           aria-label={
             minimised
               ? "Show your guide's message"
@@ -94,7 +137,7 @@ export function NarratorDock({
         >
           <Narrator
             state={state}
-            talking={talking && !minimised}
+            talking={talking && showBubble}
             size={56}
             forceFallback={forceFallback}
             reducedMotion={reducedMotion}

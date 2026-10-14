@@ -21,6 +21,17 @@ const completeKnowledgeCheck = vi.fn(async () => ({
   blockPassed: true,
   modulePassed: true,
 }));
+const narrator = vi.hoisted(() => ({
+  available: true,
+  present: true,
+  say: vi.fn(),
+  setState: vi.fn(),
+  dismiss: vi.fn(),
+}));
+vi.mock("@/components/narrator/narrator-context", () => ({
+  useNarrator: () => narrator,
+}));
+
 vi.mock("@/app/actions/knowledge-check", () => ({
   checkKnowledgeAnswer,
   completeKnowledgeCheck,
@@ -142,5 +153,21 @@ describe("KnowledgeCheckBlock", () => {
     expect(await screen.findByRole("alert")).toHaveTextContent(
       "couldn't check your answer",
     );
+  });
+
+  it("has the narrator celebrate or encourage with the explanation", async () => {
+    render(
+      <KnowledgeCheckBlock blockId="b1" moduleId="m1" questions={questions} />,
+    );
+    await userEvent.click(screen.getByRole("radio", { name: "Nobody" }));
+    await userEvent.click(screen.getByRole("button", { name: "Check answer" }));
+    await screen.findByText("Not quite");
+    expect(narrator.say).toHaveBeenLastCalledWith("Explanation 1", "encourage");
+
+    await userEvent.click(screen.getByRole("button", { name: "Try again" }));
+    await userEvent.click(screen.getByRole("radio", { name: "The DSL" }));
+    await userEvent.click(screen.getByRole("button", { name: "Check answer" }));
+    await screen.findByText("Correct");
+    expect(narrator.say).toHaveBeenLastCalledWith("Explanation 1", "celebrate");
   });
 });

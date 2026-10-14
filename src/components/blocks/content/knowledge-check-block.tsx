@@ -5,6 +5,7 @@ import {
   checkKnowledgeAnswer,
   completeKnowledgeCheck,
 } from "@/app/actions/knowledge-check";
+import { useNarrator } from "@/components/narrator/narrator-context";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/cn";
 import type { BlockProps } from "../block-props";
@@ -57,6 +58,7 @@ export function KnowledgeCheckBlock({
   const [error, setError] = useState<string | null>(null);
   const [finished, setFinished] = useState<KnowledgeCheckPassed | null>(null);
   const [pending, startTransition] = useTransition();
+  const narrator = useNarrator();
   const correctAnswers = useRef(new Map<number, string>());
   const promptRef = useRef<HTMLLegendElement>(null);
 
@@ -85,6 +87,10 @@ export function KnowledgeCheckBlock({
           correct: response.correct,
           explanation: response.explanation,
         });
+        narrator.say(
+          response.explanation,
+          response.correct ? "celebrate" : "encourage",
+        );
         if (response.correct) correctAnswers.current.set(index, selected);
       } catch {
         setError("We couldn't check your answer. Please try again.");

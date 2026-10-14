@@ -1,4 +1,6 @@
 import type { ComponentType } from "react";
+import { NarratorHint } from "@/components/narrator/narrator-hint";
+import { isHintedBlock } from "@/components/narrator/narrator-hints";
 import { Reveal } from "@/components/ui/reveal";
 import {
   VolunteerBlockSchema,
@@ -66,7 +68,15 @@ export function BlockRenderer({
             data-block-order={parsed.data.order}
           >
             <BlockErrorBoundary blockId={id} type={blockType}>
-              <Component {...content} blockId={id} moduleId={moduleId} />
+              {isHintedBlock(blockType) &&
+              (blocks[index - 1] as { type?: string } | undefined)?.type !==
+                "NARRATOR_CALLOUT" ? (
+                <NarratorHint blockId={id} type={blockType}>
+                  <Component {...content} blockId={id} moduleId={moduleId} />
+                </NarratorHint>
+              ) : (
+                <Component {...content} blockId={id} moduleId={moduleId} />
+              )}
             </BlockErrorBoundary>
           </Reveal>
         );

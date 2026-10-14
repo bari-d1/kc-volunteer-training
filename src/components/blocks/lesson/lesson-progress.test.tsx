@@ -22,6 +22,16 @@ vi.mock("@/app/actions/progress", () => ({
   completeModuleAction: (i: { moduleId: string }) => completeModuleAction(i),
 }));
 vi.mock("@/app/actions/knowledge-check", () => ({}));
+const narrator = vi.hoisted(() => ({
+  available: false,
+  present: true,
+  say: vi.fn(),
+  setState: vi.fn(),
+  dismiss: vi.fn(),
+}));
+vi.mock("@/components/narrator/narrator-context", () => ({
+  useNarrator: () => narrator,
+}));
 const toast = vi.fn();
 vi.mock("@/components/ui/toast", () => ({ useToast: () => ({ toast }) }));
 
@@ -308,5 +318,22 @@ describe("completion and navigation", () => {
     const nav = screen.getByRole("navigation", { name: "Module navigation" });
     expect(within(nav).getAllByRole("link")).toHaveLength(1);
     expect(within(nav).queryByRole("link", { name: /Next/ })).toBeNull();
+  });
+
+  it("has the narrator celebrate instead of a toast when it's on", async () => {
+    narrator.available = true;
+    renderLesson({
+      initial: { lastBlockOrder: 3, checkPassed: false, completed: true },
+    });
+    await userEvent.click(
+      screen.getByRole("button", { name: "Continue: About KC" }),
+    );
+    await waitFor(() => expect(push).toHaveBeenCalled());
+    expect(narrator.say).toHaveBeenCalledWith(
+      "Module complete! On to the next one.",
+      "celebrate",
+    );
+    expect(toast).not.toHaveBeenCalled();
+    narrator.available = false;
   });
 });

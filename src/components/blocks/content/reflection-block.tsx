@@ -1,6 +1,7 @@
 "use client";
 
 import { useId, useState } from "react";
+import { useNarrator } from "@/components/narrator/narrator-context";
 import { Button } from "@/components/ui/button";
 import type { BlockProps } from "../block-props";
 
@@ -16,6 +17,7 @@ export function ReflectionBlock({
   const id = useId();
   const [answer, setAnswer] = useState("");
   const [revealed, setRevealed] = useState(false);
+  const narrator = useNarrator();
 
   return (
     <div className="flex flex-col gap-5 rounded-lg bg-surface p-6 md:p-8">
@@ -26,6 +28,8 @@ export function ReflectionBlock({
         id={`${id}-answer`}
         value={answer}
         onChange={(e) => setAnswer(e.target.value)}
+        onFocus={() => narrator.setState("think")}
+        onBlur={() => narrator.setState("idle")}
         placeholder="Type your answer"
         rows={4}
         aria-describedby={`${id}-note`}

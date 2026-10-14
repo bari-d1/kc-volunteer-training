@@ -5,6 +5,7 @@ import { Suspense } from "react";
 import { BlockRenderer } from "@/components/blocks/block-renderer";
 import { CourseLayout } from "@/components/blocks/course-layout";
 import { LessonHeading } from "@/components/blocks/lesson/lesson-heading";
+import { NarratorConfig } from "@/components/narrator/narrator-context";
 import { LessonProgress } from "@/components/blocks/lesson/lesson-progress";
 import { LessonSkeleton } from "@/components/blocks/lesson-skeleton";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -66,6 +67,7 @@ async function Lesson({
       course={courseNav(courseSlug, course.title, lesson.outline)}
       currentModuleId={module.slug}
     >
+      <NarratorConfig enabled={!profile.hideNarrator} />
       <article className="flex flex-col gap-10">
         <header className="flex flex-col gap-4">
           <Link

@@ -4,6 +4,8 @@ import { Suspense } from "react";
 import { CourseLayout } from "@/components/blocks/course-layout";
 import { CourseDashboard } from "@/components/blocks/dashboard/course-dashboard";
 import { DashboardNotice } from "@/components/blocks/dashboard/dashboard-notice";
+import { NarratorConfig } from "@/components/narrator/narrator-context";
+import { NarratorWelcome } from "@/components/narrator/narrator-welcome";
 import { isDashboardNotice } from "@/lib/dashboard-notices";
 import { DashboardSkeleton } from "@/components/blocks/dashboard/dashboard-skeleton";
 import { requireVolunteer } from "@/lib/auth";
@@ -51,6 +53,8 @@ async function Dashboard({
       width="wide"
     >
       {isDashboardNotice(notice) && <DashboardNotice notice={notice} />}
+      <NarratorConfig enabled={!profile.hideNarrator} />
+      <NarratorWelcome firstName={profile.firstName} />
       <CourseDashboard
         courseSlug={courseSlug}
         firstName={profile.firstName}

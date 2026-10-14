@@ -18,6 +18,7 @@ import {
   KNOWLEDGE_CHECK_PASSED_EVENT,
   type KnowledgeCheckPassed,
 } from "@/components/blocks/content/knowledge-check-block";
+import { useNarrator } from "@/components/narrator/narrator-context";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/toast";
 
@@ -58,6 +59,7 @@ export function LessonProgress({
 }: LessonProgressProps) {
   const router = useRouter();
   const { toast } = useToast();
+  const narrator = useNarrator();
   const hintId = useId();
   const containerRef = useRef<HTMLDivElement>(null);
   const endRef = useRef<HTMLDivElement>(null);
@@ -192,7 +194,11 @@ export function LessonProgress({
           return;
         }
         if (result.newlyCompleted) {
-          toast({ variant: "success", title: "Module complete!" });
+          if (narrator.available) {
+            narrator.say("Module complete! On to the next one.", "celebrate");
+          } else {
+            toast({ variant: "success", title: "Module complete!" });
+          }
         }
         // Client navigation re-renders with fresh data, so the sidebar and
         // progress bar update without a full reload.

@@ -45,7 +45,7 @@ describe("NarratorRive", () => {
     expect(useRive.mock.calls[0][0]).toMatchObject({
       src: "/narrator/kc_narrator.riv",
       artboard: "Narrator",
-      stateMachines: "NarratorMachine",
+      stateMachine: "NarratorMachine",
       onLoadError: props.onError,
     });
     expect(inputs).toEqual([
