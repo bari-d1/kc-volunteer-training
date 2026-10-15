@@ -17,11 +17,7 @@ import { courseHref, courseNav, moduleHref } from "@/lib/course-config";
 import type { VolunteerBlock } from "@/lib/schemas/blocks";
 import { getModuleForVolunteer, getPublishedCourse } from "@/server/courses";
 import { FINAL_QUIZ_SLUG, getQuizIntro } from "@/server/quiz";
-import {
-  COMPLETION_SLUG,
-  getCertificate,
-  getPlacement,
-} from "@/server/completion";
+import { COMPLETION_SLUG, getCertificate } from "@/server/completion";
 import { CompletionPage } from "@/components/completion/completion-page";
 
 export const metadata: Metadata = { title: "Lesson" };
@@ -55,7 +51,6 @@ async function Lesson({
     const certificate = await getCertificate(profile.id, course.id);
     if (lesson.status === "locked" || !certificate)
       redirect(moduleHref(courseSlug, FINAL_QUIZ_SLUG));
-    const placement = await getPlacement(profile);
     return (
       <CourseLayout
         course={courseNav(courseSlug, course.title, lesson.outline)}
@@ -70,7 +65,6 @@ async function Lesson({
           completed={Boolean(lesson.progress?.completedAt)}
           firstName={profile.firstName}
           certificate={certificate}
-          placement={placement}
           dashboardHref={courseHref(courseSlug)}
         />
       </CourseLayout>

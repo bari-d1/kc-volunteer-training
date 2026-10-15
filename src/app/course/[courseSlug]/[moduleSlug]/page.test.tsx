@@ -37,13 +37,6 @@ const getCertificate = vi.fn();
 vi.mock("@/server/completion", () => ({
   COMPLETION_SLUG: "part-of-the-family",
   getCertificate: (...a: unknown[]) => getCertificate(...a),
-  getPlacement: async () => ({
-    branchName: "Creative",
-    branchDescription: "Creativ // Bara.",
-    colour: "creative",
-    teamName: "Photography",
-    leads: [{ name: "Maame Ama Acquah", role: "Creative Lead" }],
-  }),
 }));
 vi.mock("@/server/quiz", () => ({
   FINAL_QUIZ_SLUG: "final-quiz",
@@ -257,12 +250,10 @@ describe("lesson page", () => {
         screen.getByRole("link", { name: "Download PDF" }),
       ).toHaveAttribute("href", "/api/certificates/KC-2026-000007/pdf");
       expect(screen.queryByText(/WhatsApp/)).toBeNull();
+      expect(screen.queryByText("Your branch and team")).toBeNull();
       expect(
-        screen.getByText(/KC onboarding team will contact you directly/),
+        screen.getByText(/KC onboarding team will be in touch/),
       ).toBeInTheDocument();
-      expect(screen.getByText("Photography")).toBeInTheDocument();
-      expect(screen.getByText("Maame Ama Acquah")).toBeInTheDocument();
-      expect(screen.getByText("Sundays at 1:30pm")).toBeInTheDocument();
       expect(screen.queryByText("Lesson body")).toBeNull();
     });
   });
