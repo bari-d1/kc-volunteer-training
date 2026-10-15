@@ -244,6 +244,24 @@ describe("PyramidBlock", () => {
     expect(leads).toHaveAttribute("aria-expanded", "false");
     expect(detail).not.toHaveTextContent("Run each team.");
   });
+
+  it("is a plain diagram, with nothing to tap, when no level has a description", () => {
+    instant(
+      <PyramidBlock
+        {...ids}
+        levels={[{ title: "Team Lead" }, { title: "Volunteers" }]}
+      />,
+    );
+    expect(screen.queryAllByRole("button")).toHaveLength(0);
+    expect(screen.queryByText(/Tap a level/)).toBeNull();
+    const items = screen.getAllByRole("listitem");
+    expect(items.map((i) => i.textContent)).toEqual([
+      "Team Lead",
+      "Volunteers",
+    ]);
+    expect(items.map((i) => i.style.width)).toEqual(["40%", "100%"]);
+    expect(items[0]).toHaveClass("bg-lime");
+  });
 });
 
 describe("PeopleBlock", () => {

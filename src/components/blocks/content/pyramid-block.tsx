@@ -4,13 +4,38 @@ import { useId, useState } from "react";
 import { cn } from "@/lib/cn";
 import type { BlockProps } from "../block-props";
 
-/** Narrow at the top, wide at the bottom; tap a level to read about it. */
+/**
+ * Narrow at the top, wide at the bottom. Levels with a description can be
+ * tapped to read it; without any, it's a plain diagram.
+ */
 export function PyramidBlock({ levels }: BlockProps<"PYRAMID">) {
   const detailId = useId();
   const [selected, setSelected] = useState<number | null>(null);
   const width = (index: number) =>
     levels.length === 1 ? 100 : 40 + (60 * index) / (levels.length - 1);
   const level = selected === null ? null : levels[selected];
+  const interactive = levels.some((item) => item.body);
+  const levelClasses = (index: number) =>
+    cn(
+      "flex min-h-12 items-center justify-center rounded-md px-4 py-3 text-center text-small font-extrabold uppercase",
+      index === 0 ? "bg-lime text-ink" : "bg-surface-2 text-text",
+    );
+
+  if (!interactive) {
+    return (
+      <ol className="flex flex-col items-center gap-2">
+        {levels.map((item, index) => (
+          <li
+            key={index}
+            style={{ width: `${width(index)}%` }}
+            className={levelClasses(index)}
+          >
+            {item.title}
+          </li>
+        ))}
+      </ol>
+    );
+  }
 
   return (
     <div className="flex flex-col gap-6">

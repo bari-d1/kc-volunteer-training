@@ -14,3 +14,19 @@ export type HintedBlockType = keyof typeof INTERACTIVE_HINTS;
 
 export const isHintedBlock = (type: string): type is HintedBlockType =>
   Object.hasOwn(INTERACTIVE_HINTS, type);
+
+/**
+ * Whether this block actually has something to tap. A pyramid whose levels
+ * have no descriptions is a static diagram, so it gets no hint.
+ */
+export function needsHint(
+  type: string,
+  content: unknown,
+): type is HintedBlockType {
+  if (!isHintedBlock(type)) return false;
+  if (type === "PYRAMID") {
+    const { levels } = content as { levels: Array<{ body?: string }> };
+    return levels.some((level) => level.body);
+  }
+  return true;
+}
