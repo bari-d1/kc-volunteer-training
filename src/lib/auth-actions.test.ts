@@ -21,6 +21,7 @@ vi.mock("@/lib/sign-in-rate-limit", () => ({}));
 vi.mock("@/lib/site-url", () => ({}));
 
 const { signInWithCode } = await import("./auth-actions");
+const { sendErrorMessage } = await import("./sign-in-errors");
 
 function submit(fields: Record<string, string>) {
   const form = new FormData();
@@ -96,5 +97,31 @@ describe("signInWithCode", () => {
     expect(
       await submit({ email: "ada@example.com", code: "123456" }),
     ).toMatchObject({ message: expect.stringMatching(/Too many tries/) });
+  });
+});
+
+describe("sendErrorMessage", () => {
+  it("asks for a short wait between emails to one address", () => {
+    expect(
+      sendErrorMessage({
+        status: 429,
+        message:
+          "For security purposes, you can only request this after 42 seconds.",
+      }),
+    ).toBe(
+      "We've just sent you a link. Please wait about 42 seconds before asking for another one.",
+    );
+  });
+
+  it("explains the hourly cap", () => {
+    expect(
+      sendErrorMessage({ status: 429, message: "email rate limit exceeded" }),
+    ).toMatch(/a lot of sign-in emails in the last hour/);
+  });
+
+  it("falls back to a general message", () => {
+    expect(sendErrorMessage({ status: 500, message: "SMTP error" })).toMatch(
+      /couldn't send your link/,
+    );
   });
 });

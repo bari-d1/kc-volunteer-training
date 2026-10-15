@@ -17,6 +17,12 @@ const subject = "Your KC Volunteers sign-in link";
 export const OTP_LENGTH = 6;
 /** Seconds the link and code stay valid. */
 export const OTP_EXPIRY_SECONDS = 15 * 60;
+/**
+ * Sign-in emails per hour for the whole project. Supabase's default (2) is
+ * for its built-in mailer; the app's own limit (3 per email per 10 minutes)
+ * stops anyone flooding one address.
+ */
+export const EMAILS_PER_HOUR = 100;
 
 /**
  * Inline-styled, image-free email used for magic link and signup
@@ -137,6 +143,7 @@ export function desiredConfig(
     site_url: site,
     mailer_otp_length: OTP_LENGTH,
     mailer_otp_exp: OTP_EXPIRY_SECONDS,
+    rate_limit_email_sent: EMAILS_PER_HOUR,
     uri_allow_list: mergeAllowList(current.uri_allow_list, [
       `${site}/**`,
       `${LOCAL_URL}/**`,

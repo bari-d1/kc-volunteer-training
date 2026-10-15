@@ -45,6 +45,7 @@ describe("desiredConfig", () => {
       site_url: "https://kc.example.org",
       mailer_otp_length: 6,
       mailer_otp_exp: 900,
+      rate_limit_email_sent: 100,
       uri_allow_list: "https://kc.example.org/**,http://localhost:3000/**",
       mailer_subjects_magic_link: "Your KC Volunteers sign-in link",
       mailer_subjects_confirmation: "Your KC Volunteers sign-in link",

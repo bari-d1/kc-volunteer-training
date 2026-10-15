@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { safeNextPath } from "@/lib/safe-next-path";
 import { normaliseSignInCode } from "@/lib/sign-in-code";
+import { sendErrorMessage } from "@/lib/sign-in-errors";
 import { checkSignInRateLimit } from "@/lib/sign-in-rate-limit";
 import { getSiteUrl } from "@/lib/site-url";
 import { createClient } from "@/lib/supabase/server";
@@ -68,14 +69,7 @@ export async function signInWithMagicLink(
 
   if (error) {
     console.error("signInWithOtp failed", error.code, error.message);
-    return {
-      status: "error",
-      email,
-      message:
-        error.status === 429
-          ? "Lots of people are signing in right now. Please try again in a few minutes."
-          : "We couldn't send your link right now. Please try again in a moment.",
-    };
+    return { status: "error", email, message: sendErrorMessage(error) };
   }
 
   return { status: "sent", email };
