@@ -290,7 +290,9 @@ describe("review and submit", () => {
     expect(narrator.say).toHaveBeenCalledWith(expect.any(String), "encourage");
 
     // Retaking starts a fresh attempt.
-    await user.click(screen.getByRole("button", { name: "Try again" }));
+    await user.click(
+      screen.getByRole("button", { name: "Try again with new questions" }),
+    );
     await waitFor(() => expect(startQuizAction).toHaveBeenCalledTimes(2));
   });
 
@@ -312,7 +314,7 @@ describe("review and submit", () => {
     ).toBeInTheDocument();
     expect(screen.getByText("Certificate number KC-2026-000001")).toBeVisible();
     expect(
-      screen.getByRole("link", { name: "Continue: Family" }),
+      screen.getByRole("link", { name: "Finish your training" }),
     ).toHaveAttribute("href", "/course/kc/part-of-the-family");
     expect(narrator.say).toHaveBeenCalledWith(expect.any(String), "celebrate");
     expect(refresh).toHaveBeenCalled();

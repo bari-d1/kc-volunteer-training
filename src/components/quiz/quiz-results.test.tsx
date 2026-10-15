@@ -57,37 +57,62 @@ describe("QuizResults", () => {
     expect(screen.getByText("8 out of 10")).toBeVisible();
   });
 
-  it("offers the certificate and badge after a pass", () => {
+  it("leads on to the rest of the training after a pass, with the PDF second", () => {
     renderResults();
     expect(
       screen.getByRole("heading", { name: "You passed!" }),
     ).toBeInTheDocument();
-    const certificate = screen.getByRole("link", {
-      name: "Get your certificate",
-    });
-    expect(certificate).toHaveAttribute(
+    const links = screen.getAllByRole("link");
+    expect(links.map((l) => l.textContent)).toEqual([
+      "Finish your training →",
+      "Download certificate (PDF)",
+    ]);
+    expect(links[0]).toHaveAttribute("href", "/course/kc/part-of-the-family");
+    expect(links[0]).toHaveClass("bg-lime");
+    expect(links[1]).toHaveAttribute(
       "href",
       "/api/certificates/KC-2026-000123/pdf",
     );
-    expect(certificate).toHaveAttribute("download");
-    expect(
-      screen.getByRole("link", { name: "Download share badge" }),
-    ).toHaveAttribute("href", "/api/certificates/KC-2026-000123/badge");
-    expect(screen.queryByRole("button", { name: "Try again" })).toBeNull();
+    expect(links[1]).toHaveAttribute("download");
+    expect(links[1]).not.toHaveClass("bg-lime");
+    expect(screen.getByText(/See your certificate, your branch/)).toBeVisible();
+    expect(screen.queryByRole("button", { name: /Try again/ })).toBeNull();
   });
 
-  it("offers a retry and revision after a fail", async () => {
+  it("makes the PDF the main action if there's nowhere to continue", () => {
+    render(
+      <QuizResults
+        result={attempt()}
+        headingRef={createRef()}
+        modulesHref="/course/kc"
+        next={null}
+        onRetry={vi.fn()}
+        retrying={false}
+        error={null}
+      />,
+    );
+    expect(
+      screen.getByRole("link", { name: "Download certificate (PDF)" }),
+    ).toHaveClass("bg-lime");
+  });
+
+  it("offers a fresh retry first after a fail, then revision", async () => {
     const onRetry = renderResults(
       attempt({ passed: false, score: 7, certificateNumber: null }),
     );
     expect(
       screen.getByRole("heading", { name: "Not quite this time" }),
     ).toBeInTheDocument();
+    const retry = screen.getByRole("button", {
+      name: "Try again with new questions",
+    });
+    expect(retry).toHaveClass("bg-lime");
     expect(
-      screen.getByRole("link", { name: "Revise the modules" }),
+      screen.getByRole("link", { name: "Revise the modules first" }),
     ).toHaveAttribute("href", "/course/kc");
+    expect(screen.getByText(/You need 80% to pass/)).toBeVisible();
     expect(screen.queryByRole("link", { name: /certificate/ })).toBeNull();
-    await userEvent.click(screen.getByRole("button", { name: "Try again" }));
+    await userEvent.click(retry);
     expect(onRetry).toHaveBeenCalledTimes(1);
   });
 

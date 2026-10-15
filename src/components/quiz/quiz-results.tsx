@@ -3,10 +3,7 @@
 import type { ReactNode, RefObject } from "react";
 import { Button } from "@/components/ui/button";
 import { ProgressRing } from "@/components/ui/progress-ring";
-import {
-  certificateBadgeHref,
-  certificatePdfHref,
-} from "@/lib/certificate-links";
+import { certificatePdfHref } from "@/lib/certificate-links";
 import { cn } from "@/lib/cn";
 import type { QuestionResult, SubmittedAttempt } from "@/server/quiz";
 
@@ -82,63 +79,70 @@ export function QuizResults({
             <p className="text-body text-muted">
               {result.passed
                 ? "Your training is complete. Welcome to the team!"
-                : "Look over the answers below, revise the modules if you like, then try again with a fresh set of questions."}
+                : "Look over the answers below to see what you missed."}
             </p>
           </div>
         </div>
 
         {error}
 
-        {result.passed && result.certificateNumber ? (
-          <div className="flex flex-col gap-3">
+        {result.passed ? (
+          <div className="flex flex-col gap-4 border-t border-surface-2 pt-6">
+            <p className="text-label text-lime">What&apos;s next</p>
+            {next ? (
+              <div className="flex flex-col gap-2">
+                <Button size="lg" href={next.href} className="w-full sm:w-fit">
+                  Finish your training <span aria-hidden="true">→</span>
+                </Button>
+                <p className="text-small text-muted">
+                  See your certificate, your branch and team, and what to expect
+                  on your first Sunday.
+                </p>
+              </div>
+            ) : null}
+            {result.certificateNumber && (
+              <div className="flex flex-col gap-2">
+                <Button
+                  variant={next ? "secondary" : "primary"}
+                  size="lg"
+                  href={certificatePdfHref(result.certificateNumber)}
+                  prefetch={false}
+                  download
+                  className="w-full sm:w-fit"
+                >
+                  Download certificate (PDF)
+                </Button>
+                <p className="text-small text-muted">
+                  Certificate number {result.certificateNumber}
+                </p>
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="flex flex-col gap-4 border-t border-surface-2 pt-6">
+            <p className="text-label text-lime">What&apos;s next</p>
             <div className="flex flex-col gap-3 sm:flex-row">
               <Button
                 size="lg"
-                href={certificatePdfHref(result.certificateNumber)}
-                prefetch={false}
-                download
+                onClick={onRetry}
+                loading={retrying}
                 className="w-full sm:w-fit"
               >
-                Get your certificate
+                Try again with new questions
               </Button>
               <Button
                 variant="secondary"
                 size="lg"
-                href={certificateBadgeHref(result.certificateNumber)}
-                prefetch={false}
-                download
+                href={modulesHref}
                 className="w-full sm:w-fit"
               >
-                Download share badge
+                Revise the modules first
               </Button>
             </div>
             <p className="text-small text-muted">
-              Certificate number {result.certificateNumber}
+              You need {result.passMark}% to pass, and you can retake the quiz
+              as many times as you need.
             </p>
-            {next && (
-              <Button variant="ghost" href={next.href} className="w-fit">
-                Continue: {next.title} <span aria-hidden="true">→</span>
-              </Button>
-            )}
-          </div>
-        ) : (
-          <div className="flex flex-col gap-3 sm:flex-row">
-            <Button
-              size="lg"
-              onClick={onRetry}
-              loading={retrying}
-              className="w-full sm:w-fit"
-            >
-              Try again
-            </Button>
-            <Button
-              variant="secondary"
-              size="lg"
-              href={modulesHref}
-              className="w-full sm:w-fit"
-            >
-              Revise the modules
-            </Button>
           </div>
         )}
       </div>
