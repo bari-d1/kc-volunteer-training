@@ -55,7 +55,8 @@ export async function updateSession(request: NextRequest) {
     return withSessionCookies(NextResponse.redirect(signIn), response);
   }
 
-  if (signedIn && pathname === "/sign-in") {
+  // Signed-in volunteers skip the landing and sign-in pages.
+  if (signedIn && (pathname === "/" || pathname === "/sign-in")) {
     const course = request.nextUrl.clone();
     course.pathname = "/course";
     course.search = "";

@@ -53,9 +53,14 @@ describe("updateSession", () => {
     expect(response.headers.get("location")).toBeNull();
   });
 
-  it("sends signed-in volunteers away from sign-in", async () => {
-    signedIn = true;
-    const response = await updateSession(request("/sign-in"));
-    expect(new URL(response.headers.get("location")!).pathname).toBe("/course");
-  });
+  it.each(["/sign-in", "/"])(
+    "sends signed-in volunteers from %s to their training",
+    async (path) => {
+      signedIn = true;
+      const response = await updateSession(request(path));
+      expect(new URL(response.headers.get("location")!).pathname).toBe(
+        "/course",
+      );
+    },
+  );
 });
