@@ -38,8 +38,8 @@ export async function updateAccountDetails(
 
 /**
  * Everything we hold about the volunteer, for a subject access request:
- * profile, module progress, reflection answers, quiz attempts and
- * certificates.
+ * profile, module progress, reflection answers, quiz attempts,
+ * certificates and the emails we've sent them.
  */
 export async function exportAccountData(profileId: VolunteerId) {
   const profile = await prisma.profile.findUniqueOrThrow({
@@ -71,6 +71,10 @@ export async function exportAccountData(profileId: VolunteerId) {
         orderBy: { issuedAt: "asc" },
         include: { course: { select: { title: true } } },
       },
+      emailLogs: {
+        orderBy: { createdAt: "asc" },
+        select: { to: true, template: true, status: true, createdAt: true },
+      },
     },
   });
 
@@ -79,6 +83,7 @@ export async function exportAccountData(profileId: VolunteerId) {
     reflectionAnswers,
     quizAttempts,
     certificates,
+    emailLogs,
     ...details
   } = profile;
   return {
@@ -101,6 +106,7 @@ export async function exportAccountData(profileId: VolunteerId) {
       ...row,
       course: course.title,
     })),
+    emailsSent: emailLogs,
   };
 }
 

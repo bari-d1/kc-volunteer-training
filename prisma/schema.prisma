@@ -61,6 +61,7 @@ model Profile {
   quizAttempts      QuizAttempt[]
   certificates      Certificate[]
   reflectionAnswers ReflectionAnswer[]
+  emailLogs         EmailLog[]
 }
 
 // ─── Course content ──────────────────────────────────────────────────────────
@@ -351,5 +352,34 @@ model SignInAttempt {
   updatedAt DateTime @updatedAt
 
   @@index([emailHash, createdAt])
+  @@index([createdAt])
+}
+
+// ─── Email ───────────────────────────────────────────────────────────────────
+
+enum EmailStatus {
+  SENT
+  FAILED
+  /// Not sent: no RESEND_API_KEY (the email was printed to the console).
+  SKIPPED
+}
+
+/// Every transactional email the app tried to send (src/server/email.ts).
+model EmailLog {
+  id        String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  /// The volunteer it was for, when there is one.
+  profileId String?     @db.Uuid
+  /// The intended recipient (before any EMAIL_REDIRECT_TO in development).
+  to        String
+  template  String
+  status    EmailStatus
+  resendId  String?
+  error     String?
+  createdAt DateTime    @default(now())
+
+  // Logs hold an email address, so they go with the volunteer's account.
+  profile Profile? @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@index([profileId])
   @@index([createdAt])
 }

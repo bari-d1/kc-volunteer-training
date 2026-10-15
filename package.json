@@ -21,7 +21,8 @@
     "auth:configure": "tsx scripts/configure-supabase-auth.ts",
     "quiz:validate": "tsx scripts/quiz-validate.ts",
     "quiz:schema": "tsx scripts/quiz-schema.ts",
-    "quiz:import": "tsx scripts/quiz-import.ts"
+    "quiz:import": "tsx scripts/quiz-import.ts",
+    "email:dev": "email dev --dir src/emails --port 3001"
   },
   "dependencies": {
     "@node-rs/argon2": "^2.2.2",
@@ -39,11 +40,14 @@
     "qrcode.react": "^4.2.0",
     "react": "19.3.0",
     "react-dom": "19.3.0",
+    "react-email": "^6.11.2",
     "react-markdown": "^10.1.0",
+    "resend": "^6.33.0",
     "server-only": "^0.0.1",
     "zod": "^4.6.5"
   },
   "devDependencies": {
+    "@react-email/ui": "^6.11.2",
     "@tailwindcss/turbopack": "^4",
     "@testing-library/dom": "^10.4.2",
     "@testing-library/jest-dom": "^7.0.1",
