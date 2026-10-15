@@ -184,23 +184,29 @@ model QuizSection {
 }
 
 model QuizAttempt {
-  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  profileId   String   @db.Uuid
-  courseId    String   @db.Uuid
-  /// Question ids served in this attempt, in order.
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  profileId   String    @db.Uuid
+  courseId    String    @db.Uuid
+  /// Question ids drawn for this attempt, in the order shown.
   questionIds Json
-  /// Map of questionId → chosen optionId.
-  answers     Json
-  score       Int
+  /// Map of questionId → option ids in the order shown.
+  optionOrder Json      @default("{}")
+  /// Map of questionId → chosen optionId. Empty until submitted.
+  answers     Json      @default("{}")
+  /// Null until submitted.
+  score       Int?
   total       Int
-  passed      Boolean
-  submittedAt DateTime @default(now())
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  passed      Boolean   @default(false)
+  startedAt   DateTime  @default(now())
+  /// Null while the attempt is in progress.
+  submittedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 
   profile Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
   course  Course  @relation(fields: [courseId], references: [id], onDelete: Cascade)
 
+  @@index([profileId, courseId])
   @@index([profileId, courseId, submittedAt])
   @@index([courseId])
 }

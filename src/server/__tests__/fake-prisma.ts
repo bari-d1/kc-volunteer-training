@@ -1,5 +1,5 @@
 /** Minimal in-memory stand-in for the Prisma calls src/server makes. */
-type Course = { id: string; isPublished: boolean };
+type Course = { id: string; isPublished: boolean; slug?: string };
 type Module = {
   id: string;
   courseId: string;
@@ -41,12 +41,14 @@ export function createFakePrisma() {
   type ModuleWhere = {
     id?: string;
     courseId?: string;
+    slug?: string;
     isPublished?: boolean;
     course?: { isPublished: boolean };
   };
   const moduleMatches = (m: Module, w: ModuleWhere = {}) =>
     (w.id === undefined || m.id === w.id) &&
     (w.courseId === undefined || m.courseId === w.courseId) &&
+    (w.slug === undefined || m.slug === w.slug) &&
     (w.isPublished === undefined || m.isPublished === w.isPublished) &&
     (w.course === undefined ||
       coursePublished(m.courseId) === w.course.isPublished);

@@ -60,8 +60,8 @@ export type PublicQuizQuestion = z.infer<typeof PublicQuizQuestionSchema>;
 
 export const QuizSubmissionSchema = z
   .object({
-    /** Opaque token issued with the attempt's questions. */
-    attemptToken: NonEmptyString,
+    /** QuizAttempt.id, returned by startAttempt. */
+    attemptId: z.uuid(),
     answers: z
       .array(z.object({ questionId: z.uuid(), optionId: NonEmptyString }))
       .min(1),

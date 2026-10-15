@@ -96,15 +96,15 @@ describe("QuizSubmissionSchema", () => {
   it("accepts a submission", () => {
     expect(
       QuizSubmissionSchema.parse({
-        attemptToken: "tok_123",
+        attemptId: question.id,
         answers: [answer],
       }),
-    ).toEqual({ attemptToken: "tok_123", answers: [answer] });
+    ).toEqual({ attemptId: question.id, answers: [answer] });
   });
 
   it("rejects answering the same question twice", () => {
     const result = QuizSubmissionSchema.safeParse({
-      attemptToken: "tok_123",
+      attemptId: question.id,
       answers: [answer, { ...answer, optionId: "b" }],
     });
     expect(result.error?.issues[0].path).toEqual(["answers", 1, "questionId"]);
@@ -112,18 +112,18 @@ describe("QuizSubmissionSchema", () => {
 
   it("rejects an empty submission or missing token", () => {
     expect(
-      QuizSubmissionSchema.safeParse({ attemptToken: "t", answers: [] })
+      QuizSubmissionSchema.safeParse({ attemptId: question.id, answers: [] })
         .success,
     ).toBe(false);
     expect(
-      QuizSubmissionSchema.safeParse({ attemptToken: "", answers: [answer] })
+      QuizSubmissionSchema.safeParse({ attemptId: "nope", answers: [answer] })
         .success,
     ).toBe(false);
   });
 
   it("rejects non-uuid question ids", () => {
     const result = QuizSubmissionSchema.safeParse({
-      attemptToken: "t",
+      attemptId: question.id,
       answers: [{ questionId: "1", optionId: "a" }],
     });
     expect(result.success).toBe(false);
