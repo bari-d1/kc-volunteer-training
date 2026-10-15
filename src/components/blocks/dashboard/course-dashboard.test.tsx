@@ -17,12 +17,16 @@ const mod = (
   progress: status === "completed" || opened ? { completedAt: null } : null,
 });
 
-function renderDashboard(modules: ReturnType<typeof mod>[]) {
+function renderDashboard(
+  modules: ReturnType<typeof mod>[],
+  certificate: { certificateNumber: string; issuedAt: Date } | null = null,
+) {
   return render(
     <CourseDashboard
       courseSlug="volunteers-onboarding"
       firstName="Ada"
       dashboard={buildDashboard(modules)}
+      certificate={certificate}
     />,
   );
 }
@@ -106,5 +110,40 @@ describe("CourseDashboard", () => {
       screen.getByRole("heading", { name: "No modules yet" }),
     ).toBeInTheDocument();
     expect(screen.queryByRole("list")).toBeNull();
+  });
+
+  it("switches to a Completed hero with the certificate once passed", () => {
+    renderDashboard(
+      [
+        mod("final-quiz", "Final Quiz", "completed"),
+        mod("part-of-the-family", "You're Part of the Family", "in-progress"),
+      ],
+      {
+        certificateNumber: "KC-2026-000007",
+        issuedAt: new Date("2026-10-15T09:30:00Z"),
+      },
+    );
+    const heading = screen.getByRole("heading", {
+      level: 1,
+      name: "You did it, Ada!",
+    });
+    expect(
+      within(heading.parentElement!).getByText("Completed"),
+    ).toBeInTheDocument();
+    expect(screen.getByText("KC-2026-000007")).toBeInTheDocument();
+    expect(screen.getByText("15 October 2026")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Download PDF" })).toHaveAttribute(
+      "href",
+      "/api/certificates/KC-2026-000007/pdf",
+    );
+    expect(
+      screen.getByRole("link", { name: "See your next steps" }),
+    ).toHaveAttribute(
+      "href",
+      "/course/volunteers-onboarding/part-of-the-family",
+    );
+    expect(
+      screen.queryByRole("progressbar", { name: "Course progress" }),
+    ).toBeNull();
   });
 });

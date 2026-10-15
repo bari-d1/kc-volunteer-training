@@ -11,6 +11,7 @@ import { DashboardSkeleton } from "@/components/blocks/dashboard/dashboard-skele
 import { requireVolunteer } from "@/lib/auth";
 import { courseNav } from "@/lib/course-config";
 import { buildDashboard } from "@/lib/dashboard";
+import { getCertificate } from "@/server/completion";
 import { getModulesWithProgress, getPublishedCourse } from "@/server/courses";
 
 export const metadata: Metadata = { title: "Your training" };
@@ -41,7 +42,10 @@ async function Dashboard({
   const course = await getPublishedCourse(courseSlug);
   if (!course) notFound();
 
-  const modules = await getModulesWithProgress(course.id, profile.id);
+  const [modules, certificate] = await Promise.all([
+    getModulesWithProgress(course.id, profile.id),
+    getCertificate(profile.id, course.id),
+  ]);
   return (
     <CourseLayout
       course={courseNav(
@@ -59,6 +63,7 @@ async function Dashboard({
         courseSlug={courseSlug}
         firstName={profile.firstName}
         dashboard={buildDashboard(modules)}
+        certificate={certificate}
       />
     </CourseLayout>
   );

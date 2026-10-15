@@ -9,18 +9,19 @@ import { NarratorConfig } from "@/components/narrator/narrator-context";
 import { FinalQuiz } from "@/components/quiz/final-quiz";
 import { LessonProgress } from "@/components/blocks/lesson/lesson-progress";
 import { LessonSkeleton } from "@/components/blocks/lesson-skeleton";
-import { EmptyState } from "@/components/ui/empty-state";
 import { PillTag } from "@/components/ui/pill-tag";
 import { requireVolunteer } from "@/lib/auth";
-import {
-  courseHref,
-  courseNav,
-  moduleHref,
-  PLACEHOLDER_MODULE_SLUGS,
-} from "@/lib/course-config";
+import { courseHref, courseNav, moduleHref } from "@/lib/course-config";
 import type { VolunteerBlock } from "@/lib/schemas/blocks";
 import { getModuleForVolunteer, getPublishedCourse } from "@/server/courses";
 import { FINAL_QUIZ_SLUG, getQuizIntro } from "@/server/quiz";
+import {
+  COMPLETION_SLUG,
+  getCertificate,
+  getPlacement,
+  getWhatsappUrl,
+} from "@/server/completion";
+import { CompletionPage } from "@/components/completion/completion-page";
 
 export const metadata: Metadata = { title: "Lesson" };
 
@@ -46,6 +47,36 @@ async function Lesson({
 
   const lesson = await getModuleForVolunteer(course.id, moduleSlug, profile.id);
   if (lesson.status === "not-found") notFound();
+
+  // The last module opens only once the quiz is passed (which issues the
+  // certificate); until then, send them to the quiz.
+  if (moduleSlug === COMPLETION_SLUG) {
+    const certificate = await getCertificate(profile.id, course.id);
+    if (lesson.status === "locked" || !certificate)
+      redirect(moduleHref(courseSlug, FINAL_QUIZ_SLUG));
+    const [whatsappUrl, placement] = await Promise.all([
+      getWhatsappUrl(),
+      getPlacement(profile),
+    ]);
+    return (
+      <CourseLayout
+        course={courseNav(courseSlug, course.title, lesson.outline)}
+        currentModuleId={lesson.module.slug}
+      >
+        <NarratorConfig hidden={profile.hideNarrator} />
+        <CompletionPage
+          moduleId={lesson.module.id}
+          completed={Boolean(lesson.progress?.completedAt)}
+          firstName={profile.firstName}
+          certificate={certificate}
+          whatsappUrl={whatsappUrl}
+          placement={placement}
+          dashboardHref={courseHref(courseSlug)}
+        />
+      </CourseLayout>
+    );
+  }
+
   if (lesson.status === "locked")
     redirect(`${courseHref(courseSlug)}?notice=locked`);
 
@@ -62,7 +93,6 @@ async function Lesson({
       ]
     : lesson.blocks;
   const orders = lesson.blocks.map((b) => b.order ?? 0);
-  const placeholder = PLACEHOLDER_MODULE_SLUGS.has(module.slug);
 
   return (
     <CourseLayout
@@ -126,14 +156,7 @@ async function Lesson({
                 : null
             }
           >
-            {placeholder ? (
-              <EmptyState
-                title="Coming in Phase 6"
-                description="This part of your training is still being built. You can continue for now."
-              />
-            ) : (
-              <BlockRenderer blocks={blocks} moduleId={module.id} />
-            )}
+            <BlockRenderer blocks={blocks} moduleId={module.id} />
           </LessonProgress>
         )}
       </article>

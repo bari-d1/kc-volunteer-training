@@ -32,6 +32,16 @@ vi.mock("@/server/courses", () => ({
   getModulesWithProgress: (...a: unknown[]) => getModulesWithProgress(...a),
 }));
 
+const getCertificate = vi.fn<
+  (
+    profileId: string,
+    courseId: string,
+  ) => Promise<{ certificateNumber: string; issuedAt: Date } | null>
+>(async () => null);
+vi.mock("@/server/completion", () => ({
+  getCertificate: (p: string, c: string) => getCertificate(p, c),
+}));
+
 const pageModule = await import("./page");
 
 // Render the async inner component directly (Suspense isn't needed in tests).

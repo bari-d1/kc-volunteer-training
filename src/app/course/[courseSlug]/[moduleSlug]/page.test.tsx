@@ -14,7 +14,9 @@ vi.mock("next/navigation", () => ({
   useParams: () => ({}),
   useRouter: () => ({ push: () => {} }),
 }));
-vi.mock("@/app/actions/progress", () => ({}));
+vi.mock("@/app/actions/progress", () => ({
+  completeModuleAction: async () => ({ ok: true, newlyCompleted: false }),
+}));
 vi.mock("@/app/actions/knowledge-check", () => ({}));
 vi.mock("@/app/actions/quiz", () => ({}));
 const getQuizIntro = vi.fn<
@@ -30,6 +32,19 @@ const getQuizIntro = vi.fn<
   passMark: 80,
   questionsPerAttempt: 10,
   hasOpenAttempt: true,
+}));
+const getCertificate = vi.fn();
+vi.mock("@/server/completion", () => ({
+  COMPLETION_SLUG: "part-of-the-family",
+  getCertificate: (...a: unknown[]) => getCertificate(...a),
+  getWhatsappUrl: async () => "https://chat.whatsapp.com/abc",
+  getPlacement: async () => ({
+    branchName: "Creative",
+    branchDescription: "Creativ // Bara.",
+    colour: "creative",
+    teamName: "Photography",
+    leads: [{ name: "Maame Ama Acquah", role: "Creative Lead" }],
+  }),
 }));
 vi.mock("@/server/quiz", () => ({
   FINAL_QUIZ_SLUG: "final-quiz",
@@ -197,17 +212,59 @@ describe("lesson page", () => {
     expect(screen.queryByRole("button", { name: /Continue/ })).toBeNull();
   });
 
-  it("still shows the Phase 6 placeholder for the last module", async () => {
-    getModuleForVolunteer.mockResolvedValue(
-      okLesson("part-of-the-family", { next: null }),
-    );
-    await renderLesson("part-of-the-family");
-    expect(
-      screen.getByRole("heading", { name: "Coming in Phase 6" }),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole("button", { name: "Finish and return to dashboard" }),
-    ).toBeInTheDocument();
+  describe("the completion module", () => {
+    const completion = () =>
+      okLesson("part-of-the-family", {
+        next: null,
+        previous: { slug: "final-quiz", title: "Final Quiz" },
+      });
+
+    it("sends volunteers without a certificate to the quiz", async () => {
+      getModuleForVolunteer.mockResolvedValue(completion());
+      getCertificate.mockResolvedValue(null);
+      await expect(renderLesson("part-of-the-family")).rejects.toMatchObject({
+        message: "/course/kc/final-quiz",
+      });
+    });
+
+    it("sends volunteers to the quiz while it's still locked", async () => {
+      getModuleForVolunteer.mockResolvedValue({
+        status: "locked",
+        module: { id: "m", slug: "part-of-the-family", title: "Family" },
+        unlockedBy: null,
+        outline,
+      });
+      getCertificate.mockResolvedValue(null);
+      await expect(renderLesson("part-of-the-family")).rejects.toMatchObject({
+        message: "/course/kc/final-quiz",
+      });
+    });
+
+    it("celebrates and shows the certificate and next steps", async () => {
+      getModuleForVolunteer.mockResolvedValue(completion());
+      getCertificate.mockResolvedValue({
+        certificateNumber: "KC-2026-000007",
+        issuedAt: new Date("2026-10-15T09:30:00Z"),
+      });
+      await renderLesson("part-of-the-family");
+      expect(
+        screen.getByRole("heading", {
+          level: 1,
+          name: "You're part of the family now. Welcome to KC!",
+        }),
+      ).toBeInTheDocument();
+      expect(screen.getByText("KC-2026-000007")).toBeInTheDocument();
+      expect(
+        screen.getByRole("link", { name: "Download PDF" }),
+      ).toHaveAttribute("href", "/api/certificates/KC-2026-000007/pdf");
+      expect(
+        screen.getByRole("link", { name: /Join the WhatsApp group/ }),
+      ).toHaveAttribute("href", "https://chat.whatsapp.com/abc");
+      expect(screen.getByText("Photography")).toBeInTheDocument();
+      expect(screen.getByText("Maame Ama Acquah")).toBeInTheDocument();
+      expect(screen.getByText("Sundays at 1:30pm")).toBeInTheDocument();
+      expect(screen.queryByText("Lesson body")).toBeNull();
+    });
   });
 
   it("keeps narrator content for volunteers who hid the guide", async () => {

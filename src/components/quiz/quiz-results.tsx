@@ -3,13 +3,12 @@
 import type { ReactNode, RefObject } from "react";
 import { Button } from "@/components/ui/button";
 import { ProgressRing } from "@/components/ui/progress-ring";
+import {
+  certificateBadgeHref,
+  certificatePdfHref,
+} from "@/lib/certificate-links";
 import { cn } from "@/lib/cn";
 import type { QuestionResult, SubmittedAttempt } from "@/server/quiz";
-
-export const certificatePdfHref = (number: string) =>
-  `/api/certificates/${encodeURIComponent(number)}/pdf`;
-export const certificateBadgeHref = (number: string) =>
-  `/api/certificates/${encodeURIComponent(number)}/badge`;
 
 /** Missed questions first, each keeping its number from the quiz. */
 export function orderResults(results: QuestionResult[]) {

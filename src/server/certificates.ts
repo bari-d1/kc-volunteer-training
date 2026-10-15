@@ -4,15 +4,7 @@ import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { isCertificateNumber } from "./certificate-number";
 
-/** "15 October 2026", in UK time. */
-export function formatCertificateDate(date: Date) {
-  return new Intl.DateTimeFormat("en-GB", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-    timeZone: "Europe/London",
-  }).format(date);
-}
+export { formatCertificateDate } from "@/lib/certificate-links";
 
 export type CertificateDetails = {
   certificateNumber: string;
