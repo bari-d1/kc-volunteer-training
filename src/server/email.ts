@@ -44,7 +44,7 @@ function toResendTags(tags: Record<string, string> = {}) {
 
 /**
  * Renders a template to HTML and plain text and sends it through Resend from
- * EMAIL_FROM, replying to EMAIL_REPLY_TO. Never throws: failures are logged
+ * EMAIL_FROM (with no reply-to: the inbox isn't monitored). Never throws: failures are logged
  * and recorded in EmailLog, and the caller's request carries on.
  *
  * In development, EMAIL_REDIRECT_TO sends everything to that address instead,
@@ -130,7 +130,6 @@ async function deliver<T extends EmailTemplateName>({
   const { data, error } = await new Resend(apiKey).emails.send({
     from: formatFrom(from),
     to: recipient,
-    replyTo: process.env.EMAIL_REPLY_TO || undefined,
     subject,
     html,
     text,

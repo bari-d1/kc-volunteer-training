@@ -78,20 +78,20 @@ const styles = {
 
 /**
  * The frame every KC email shares: dark background, KC wordmark as text,
- * content up to 560px wide, and a footer with who it's from and where to
- * reply. Inline styles only, for Gmail, Outlook and Apple Mail. It declares
+ * content up to 560px wide, and a footer with who it's from, that replies
+ * aren't read, and a number to call instead. Inline styles only, for Gmail, Outlook and Apple Mail. It declares
  * a dark colour scheme so clients that respect it don't invert the colours.
  */
 export function KcEmailLayout({
   preview,
   children,
-  replyTo = process.env.EMAIL_REPLY_TO,
+  contactPhone = process.env.CONTACT_PHONE,
 }: {
   /** Inbox preview text shown after the subject. */
   preview: string;
   children: ReactNode;
-  /** Shown in the footer. Defaults to EMAIL_REPLY_TO. */
-  replyTo?: string;
+  /** For questions, since the sending inbox isn't monitored. Defaults to CONTACT_PHONE. */
+  contactPhone?: string;
 }) {
   return (
     <Html lang="en" dir="ltr">
@@ -112,15 +112,23 @@ export function KcEmailLayout({
           <Text style={styles.footer}>
             Kingdom Culture, Jubilee Church Manchester (RCCG)
           </Text>
-          {replyTo && (
-            <Text style={styles.footer}>
-              Questions? Reply to this email or write to{" "}
-              <Link href={`mailto:${replyTo}`} style={styles.link}>
-                {replyTo}
-              </Link>
-              .
-            </Text>
-          )}
+          <Text style={styles.footer}>
+            This inbox isn&apos;t monitored, so please don&apos;t reply to this
+            email.
+            {contactPhone && (
+              <>
+                {" "}
+                Questions? Call or text{" "}
+                <Link
+                  href={`tel:${contactPhone.replace(/[^\d+]/g, "")}`}
+                  style={{ ...styles.link, whiteSpace: "nowrap" }}
+                >
+                  {contactPhone}
+                </Link>
+                .
+              </>
+            )}
+          </Text>
         </Container>
       </Body>
     </Html>
