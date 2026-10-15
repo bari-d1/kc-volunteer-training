@@ -170,6 +170,7 @@ vi.mock("@/lib/auth", () => ({
 const {
   drawQuestions,
   explain,
+  getQuizIntro,
   hasPassed,
   nextCertificateNumber,
   startAttempt,
@@ -515,6 +516,20 @@ describe("submitAttempt", () => {
       false,
     );
     expect(quiz.certificates).toHaveLength(0);
+  });
+});
+
+describe("getQuizIntro", () => {
+  it("returns the settings and whether there's an attempt to resume", async () => {
+    quiz.settings = { passMark: 70, questionsPerAttempt: 12 };
+    expect(await getQuizIntro(alice, courseId)).toEqual({
+      passMark: 70,
+      questionsPerAttempt: 12,
+      hasOpenAttempt: false,
+    });
+    await startAttempt(SLUG);
+    expect((await getQuizIntro(alice, courseId)).hasOpenAttempt).toBe(true);
+    expect((await getQuizIntro(bob, courseId)).hasOpenAttempt).toBe(false);
   });
 });
 

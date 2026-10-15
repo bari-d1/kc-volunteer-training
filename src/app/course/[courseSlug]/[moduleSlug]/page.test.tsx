@@ -16,6 +16,25 @@ vi.mock("next/navigation", () => ({
 }));
 vi.mock("@/app/actions/progress", () => ({}));
 vi.mock("@/app/actions/knowledge-check", () => ({}));
+vi.mock("@/app/actions/quiz", () => ({}));
+const getQuizIntro = vi.fn<
+  (
+    profileId: string,
+    courseId: string,
+  ) => Promise<{
+    passMark: number;
+    questionsPerAttempt: number;
+    hasOpenAttempt: boolean;
+  }>
+>(async () => ({
+  passMark: 80,
+  questionsPerAttempt: 10,
+  hasOpenAttempt: true,
+}));
+vi.mock("@/server/quiz", () => ({
+  FINAL_QUIZ_SLUG: "final-quiz",
+  getQuizIntro: (p: string, c: string) => getQuizIntro(p, c),
+}));
 vi.mock("@/components/ui/toast", () => ({
   useToast: () => ({ toast: () => {} }),
 }));
@@ -166,15 +185,26 @@ describe("lesson page", () => {
     await expect(renderLesson("welcome")).rejects.toBeInstanceOf(NotFound);
   });
 
-  it("shows the Phase 6 placeholder for the final quiz", async () => {
-    getModuleForVolunteer.mockResolvedValue(
-      okLesson("final-quiz", { next: null }),
-    );
+  it("shows the quiz instead of the lesson body for the final quiz", async () => {
+    getModuleForVolunteer.mockResolvedValue(okLesson("final-quiz"));
     await renderLesson("final-quiz");
+    expect(getQuizIntro).toHaveBeenCalledWith("v1", expect.any(String));
+    expect(
+      screen.getByRole("button", { name: "Resume quiz" }),
+    ).toBeInTheDocument();
+    expect(screen.queryByText("Lesson body")).toBeNull();
+    // Only passing the quiz completes the module.
+    expect(screen.queryByRole("button", { name: /Continue/ })).toBeNull();
+  });
+
+  it("still shows the Phase 6 placeholder for the last module", async () => {
+    getModuleForVolunteer.mockResolvedValue(
+      okLesson("part-of-the-family", { next: null }),
+    );
+    await renderLesson("part-of-the-family");
     expect(
       screen.getByRole("heading", { name: "Coming in Phase 6" }),
     ).toBeInTheDocument();
-    expect(screen.queryByText("Lesson body")).toBeNull();
     expect(
       screen.getByRole("button", { name: "Finish and return to dashboard" }),
     ).toBeInTheDocument();

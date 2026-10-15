@@ -9,11 +9,8 @@ export const moduleHref = (courseSlug: string, moduleSlug: string) =>
 
 export const courseHref = (courseSlug: string) => `/course/${courseSlug}`;
 
-/** Modules whose content arrives in Phase 6 (final quiz and completion). */
-export const PLACEHOLDER_MODULE_SLUGS = new Set([
-  "final-quiz",
-  "part-of-the-family",
-]);
+/** Modules whose content arrives in Phase 6 (completion). */
+export const PLACEHOLDER_MODULE_SLUGS = new Set(["part-of-the-family"]);
 
 /** Sidebar/top bar navigation from a course's modules (ids are slugs). */
 export function courseNav(

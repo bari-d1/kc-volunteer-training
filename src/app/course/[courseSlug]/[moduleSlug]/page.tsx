@@ -6,6 +6,7 @@ import { BlockRenderer } from "@/components/blocks/block-renderer";
 import { CourseLayout } from "@/components/blocks/course-layout";
 import { LessonHeading } from "@/components/blocks/lesson/lesson-heading";
 import { NarratorConfig } from "@/components/narrator/narrator-context";
+import { FinalQuiz } from "@/components/quiz/final-quiz";
 import { LessonProgress } from "@/components/blocks/lesson/lesson-progress";
 import { LessonSkeleton } from "@/components/blocks/lesson-skeleton";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -19,6 +20,7 @@ import {
 } from "@/lib/course-config";
 import type { VolunteerBlock } from "@/lib/schemas/blocks";
 import { getModuleForVolunteer, getPublishedCourse } from "@/server/courses";
+import { FINAL_QUIZ_SLUG, getQuizIntro } from "@/server/quiz";
 
 export const metadata: Metadata = { title: "Lesson" };
 
@@ -83,42 +85,56 @@ async function Lesson({
           )}
         </header>
 
-        <LessonProgress
-          moduleId={module.id}
-          requiresCheck={module.requiresCheck}
-          initial={{
-            lastBlockOrder: progress?.lastBlockOrder ?? 0,
-            checkPassed: progress?.checkPassed ?? false,
-            completed: Boolean(progress?.completedAt),
-          }}
-          firstBlockOrder={orders.length ? Math.min(...orders) : 0}
-          continueHref={
-            next ? moduleHref(courseSlug, next.slug) : courseHref(courseSlug)
-          }
-          nextTitle={next?.title ?? null}
-          previous={
-            previous
-              ? {
-                  href: moduleHref(courseSlug, previous.slug),
-                  title: previous.title,
-                }
-              : null
-          }
-          nextUnlocked={
-            next && next.status !== "locked"
-              ? { href: moduleHref(courseSlug, next.slug), title: next.title }
-              : null
-          }
-        >
-          {placeholder ? (
-            <EmptyState
-              title="Coming in Phase 6"
-              description="This part of your training is still being built. You can continue for now."
-            />
-          ) : (
-            <BlockRenderer blocks={blocks} moduleId={module.id} />
-          )}
-        </LessonProgress>
+        {module.slug === FINAL_QUIZ_SLUG ? (
+          // The quiz replaces the lesson body and its Continue button: only
+          // passing the quiz completes this module.
+          <FinalQuiz
+            courseSlug={courseSlug}
+            {...await getQuizIntro(profile.id, course.id)}
+            next={
+              next
+                ? { href: moduleHref(courseSlug, next.slug), title: next.title }
+                : null
+            }
+          />
+        ) : (
+          <LessonProgress
+            moduleId={module.id}
+            requiresCheck={module.requiresCheck}
+            initial={{
+              lastBlockOrder: progress?.lastBlockOrder ?? 0,
+              checkPassed: progress?.checkPassed ?? false,
+              completed: Boolean(progress?.completedAt),
+            }}
+            firstBlockOrder={orders.length ? Math.min(...orders) : 0}
+            continueHref={
+              next ? moduleHref(courseSlug, next.slug) : courseHref(courseSlug)
+            }
+            nextTitle={next?.title ?? null}
+            previous={
+              previous
+                ? {
+                    href: moduleHref(courseSlug, previous.slug),
+                    title: previous.title,
+                  }
+                : null
+            }
+            nextUnlocked={
+              next && next.status !== "locked"
+                ? { href: moduleHref(courseSlug, next.slug), title: next.title }
+                : null
+            }
+          >
+            {placeholder ? (
+              <EmptyState
+                title="Coming in Phase 6"
+                description="This part of your training is still being built. You can continue for now."
+              />
+            ) : (
+              <BlockRenderer blocks={blocks} moduleId={module.id} />
+            )}
+          </LessonProgress>
+        )}
       </article>
     </CourseLayout>
   );

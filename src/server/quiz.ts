@@ -469,3 +469,30 @@ export async function nextCertificateNumber(
     : 1;
   return `${prefix}${String(next).padStart(6, "0")}`;
 }
+
+// ─── Intro ──────────────────────────────────────────────────────────────────
+
+export type QuizIntro = QuizSetting & {
+  /** An unsubmitted attempt from the last two hours can be resumed. */
+  hasOpenAttempt: boolean;
+};
+
+/** What the quiz intro screen shows. Reads only. */
+export async function getQuizIntro(
+  profileId: VolunteerId,
+  courseId: string,
+): Promise<QuizIntro> {
+  const [settings, open] = await Promise.all([
+    getSettings(prisma),
+    prisma.quizAttempt.findFirst({
+      where: {
+        profileId,
+        courseId,
+        submittedAt: null,
+        startedAt: { gte: new Date(Date.now() - RESUME_WINDOW_MS) },
+      },
+      select: { id: true },
+    }),
+  ]);
+  return { ...settings, hasOpenAttempt: open !== null };
+}
