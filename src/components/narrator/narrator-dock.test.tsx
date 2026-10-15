@@ -45,7 +45,7 @@ describe("NarratorDock", () => {
 
     await userEvent.click(toggle);
     expect(
-      screen.getByRole("button", { name: "Show your guide's message" }),
+      screen.getByRole("button", { name: "Ask your guide" }),
     ).toHaveAttribute("aria-expanded", "false");
     expect(screen.queryByText("Hi! I'm your guide.")).toBeNull();
   });
@@ -60,12 +60,41 @@ describe("NarratorDock", () => {
     expect(targets).toHaveLength(1);
     act(() => observe([{ isIntersecting: true, target: targets[0] }]));
     expect(
-      screen.getByRole("button", { name: "Show your guide's message" }),
+      screen.getByRole("button", { name: "Ask your guide" }),
     ).toBeInTheDocument();
     act(() => observe([{ isIntersecting: false, target: targets[0] }]));
     expect(
       screen.getByRole("button", { name: "Hide your guide's message" }),
     ).toBeInTheDocument();
+  });
+
+  it("asks for a message when the mascot is tapped with none showing", async () => {
+    const onSummon = vi.fn();
+    render(<NarratorDock onSummon={onSummon} />);
+    await userEvent.click(
+      screen.getByRole("button", { name: "Ask your guide" }),
+    );
+    expect(onSummon).toHaveBeenCalledTimes(1);
+  });
+
+  it("shows a message the volunteer asked for, even over Continue", () => {
+    const { rerender } = render(
+      <>
+        <footer data-narrator-avoid="">Continue</footer>
+        <NarratorDock text="Hello" />
+      </>,
+    );
+    act(() => observe([{ isIntersecting: true, target: targets[0] }]));
+    expect(screen.queryByText("Hello")).toBeNull();
+    rerender(
+      <>
+        <footer data-narrator-avoid="">Continue</footer>
+        <NarratorDock text="Hello" summoned />
+      </>,
+    );
+    expect(
+      screen.getByRole("complementary", { name: "Your guide" }),
+    ).toHaveTextContent("Hello");
   });
 
   it("reserves space at the end of the page", () => {

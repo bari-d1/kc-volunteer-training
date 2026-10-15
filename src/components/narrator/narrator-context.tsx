@@ -38,7 +38,13 @@ export type NarratorMessage = {
   text: string;
   state: NarratorState;
   priority: "normal" | "low";
+  /** The volunteer tapped the guide for it, so it shows even over Continue. */
+  summoned?: boolean;
 };
+
+/** Said when the guide is tapped on a page with nothing else to say. */
+export const FALLBACK_TIP =
+  "Hi! I'm your guide. I'll pop up with tips as you go. Tap me any time to hear the last one again.";
 
 export type NarratorApi = {
   /** Inside a NarratorProvider (the course), whether or not it's switched on. */
@@ -55,6 +61,11 @@ export type NarratorApi = {
   say: (text: string, state?: NarratorState, options?: SayOptions) => boolean;
   setState: (state: NarratorState) => void;
   dismiss: () => void;
+  /**
+   * The volunteer tapped the guide: show the current message, or repeat the
+   * last one said on this page, or the page's tip.
+   */
+  summon: () => void;
 };
 
 const noop: NarratorApi = {
@@ -66,12 +77,13 @@ const noop: NarratorApi = {
   say: () => false,
   setState: () => {},
   dismiss: () => {},
+  summon: () => {},
 };
 
 const NarratorContext = createContext<NarratorApi>(noop);
-const NarratorConfigContext = createContext<(hidden: boolean) => void>(
-  () => {},
-);
+const NarratorConfigContext = createContext<
+  (hidden: boolean, tip?: string) => void
+>(() => {});
 
 /** Safe anywhere: outside a provider every call is a no-op. */
 export function useNarrator() {
@@ -130,12 +142,45 @@ export function NarratorProvider({ children }: { children: ReactNode }) {
   const visitKeys = useRef(new Set<string>());
   const duration = useRef(0);
   const saving = useRef(false);
+  const tip = useRef<string | undefined>(undefined);
+  const page = useRef<string | null>(null);
+  /** The last thing said on each page, for tapping the guide later. */
+  const lastSaid = useRef(
+    new Map<string, { text: string; state: NarratorState }>(),
+  );
   const enabled = configured && !hidden;
 
   // A new page is a new visit for "once per visit" messages.
   useEffect(() => {
     visitKeys.current = new Set();
+    page.current = pathname;
   }, [pathname]);
+
+  const show = useCallback(
+    (
+      text: string,
+      state: NarratorState,
+      options: Pick<SayOptions, "durationMs" | "priority"> & {
+        summoned?: boolean;
+      } = {},
+    ) => {
+      const next: NarratorMessage = {
+        id: nextId.current++,
+        text,
+        state,
+        priority: options.priority ?? "normal",
+        summoned: options.summoned,
+      };
+      current.current = next;
+      duration.current = options.durationMs ?? readableDuration(text);
+      if (page.current !== null) {
+        lastSaid.current.set(page.current, { text, state });
+      }
+      setMessage(next);
+      setPose(state);
+    },
+    [],
+  );
 
   const say = useCallback<NarratorApi["say"]>(
     (text, state = "idle", options = {}) => {
@@ -159,20 +204,27 @@ export function NarratorProvider({ children }: { children: ReactNode }) {
         if (once === "session") rememberForSession(key);
       }
       // Never queue: the newest message replaces whatever is showing.
-      const next: NarratorMessage = {
-        id: nextId.current++,
-        text,
-        state,
-        priority: options.priority ?? "normal",
-      };
-      current.current = next;
-      duration.current = options.durationMs ?? readableDuration(text);
-      setMessage(next);
-      setPose(state);
+      show(text, state, options);
       return true;
     },
-    [enabled],
+    [enabled, show],
   );
+
+  const summon = useCallback(() => {
+    if (!enabled) return;
+    const showing = current.current;
+    if (showing) {
+      // Keep it on screen (and its typing) but let it show over Continue.
+      const next = { ...showing, summoned: true };
+      current.current = next;
+      setMessage(next);
+      return;
+    }
+    const last =
+      page.current !== null ? lastSaid.current.get(page.current) : undefined;
+    if (last) show(last.text, last.state, { summoned: true });
+    else show(tip.current ?? FALLBACK_TIP, "wave", { summoned: true });
+  }, [enabled, show]);
 
   const dismiss = useCallback(() => {
     current.current = null;
@@ -187,9 +239,13 @@ export function NarratorProvider({ children }: { children: ReactNode }) {
     return () => clearTimeout(timer);
   }, [message, held, dismiss]);
 
-  /** From the page: the saved setting (ignored while a change is saving). */
-  const configure = useCallback((savedHidden: boolean) => {
+  /**
+   * From the page: the saved setting (ignored while a change is saving) and
+   * what the guide says when tapped before it has said anything.
+   */
+  const configure = useCallback((savedHidden: boolean, pageTip?: string) => {
     setConfigured(true);
+    tip.current = pageTip;
     if (!saving.current) setHiddenState(savedHidden);
   }, []);
 
@@ -228,8 +284,9 @@ export function NarratorProvider({ children }: { children: ReactNode }) {
       say,
       setState: setPose,
       dismiss,
+      summon,
     }),
-    [enabled, configured, hidden, setHidden, message, say, dismiss],
+    [enabled, configured, hidden, setHidden, message, say, dismiss, summon],
   );
 
   return (
@@ -247,6 +304,8 @@ export function NarratorProvider({ children }: { children: ReactNode }) {
             state={pose}
             onHoldChange={setHeld}
             onDismiss={dismiss}
+            onSummon={summon}
+            summoned={message?.summoned ?? false}
             onHide={() => setHidden(true)}
             scanKey={pathname ?? undefined}
           />
@@ -268,11 +327,20 @@ function PathnameWatcher({
   return null;
 }
 
-/** Rendered by course pages with the volunteer's saved Profile.hideNarrator. */
-export function NarratorConfig({ hidden }: { hidden: boolean }) {
+/**
+ * Rendered by course pages with the volunteer's saved Profile.hideNarrator,
+ * and optionally what the guide says if tapped before it has spoken.
+ */
+export function NarratorConfig({
+  hidden,
+  tip,
+}: {
+  hidden: boolean;
+  tip?: string;
+}) {
   const configure = useContext(NarratorConfigContext);
   useEffect(() => {
-    configure(hidden);
-  }, [configure, hidden]);
+    configure(hidden, tip);
+  }, [configure, hidden, tip]);
   return null;
 }

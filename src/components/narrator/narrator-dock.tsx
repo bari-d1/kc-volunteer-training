@@ -17,6 +17,10 @@ export type NarratorDockProps = {
   onDismiss?: () => void;
   /** "Hide guide": turn the narrator off (saved to the profile). */
   onHide?: () => void;
+  /** The mascot was tapped with no message showing: ask for one. */
+  onSummon?: () => void;
+  /** The message was asked for, so it shows even over data-narrator-avoid. */
+  summoned?: boolean;
   /** Re-scan for data-narrator-avoid elements when this changes (e.g. pathname). */
   scanKey?: string;
   state?: NarratorState;
@@ -42,6 +46,8 @@ export function NarratorDock({
   onHoldChange,
   onDismiss,
   onHide,
+  onSummon,
+  summoned = false,
   scanKey,
   state = "idle",
   typing = true,
@@ -72,7 +78,7 @@ export function NarratorDock({
     };
   }, [scanKey]);
 
-  const minimised = collapsed || avoiding;
+  const minimised = collapsed || (avoiding && !summoned);
   const showBubble = !minimised && Boolean(text);
 
   return (
@@ -129,13 +135,18 @@ export function NarratorDock({
         <div className="flex shrink-0 flex-col items-center gap-1">
           <button
             type="button"
-            onClick={() => setCollapsed(!collapsed)}
+            onClick={() => {
+              if (showBubble) {
+                setCollapsed(true);
+              } else {
+                setCollapsed(false);
+                onSummon?.();
+              }
+            }}
             aria-expanded={showBubble}
             aria-controls={showBubble ? bubbleId : undefined}
             aria-label={
-              minimised
-                ? "Show your guide's message"
-                : "Hide your guide's message"
+              showBubble ? "Hide your guide's message" : "Ask your guide"
             }
             className="shrink-0 rounded-pill bg-bg/80 p-1 shadow-card backdrop-blur"
           >

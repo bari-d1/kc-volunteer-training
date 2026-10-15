@@ -57,7 +57,14 @@ async function Dashboard({
       width="wide"
     >
       {isDashboardNotice(notice) && <DashboardNotice notice={notice} />}
-      <NarratorConfig hidden={profile.hideNarrator} />
+      <NarratorConfig
+        hidden={profile.hideNarrator}
+        tip={
+          certificate
+            ? `You've finished your training, ${profile.firstName}! Your certificate is ready to download.`
+            : `Hi ${profile.firstName}! Pick up where you left off with your next module.`
+        }
+      />
       <NarratorWelcome firstName={profile.firstName} />
       <CourseDashboard
         courseSlug={courseSlug}

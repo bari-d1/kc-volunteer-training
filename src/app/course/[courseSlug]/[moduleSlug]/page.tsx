@@ -59,7 +59,10 @@ async function Lesson({
         course={courseNav(courseSlug, course.title, lesson.outline)}
         currentModuleId={lesson.module.slug}
       >
-        <NarratorConfig hidden={profile.hideNarrator} />
+        <NarratorConfig
+          hidden={profile.hideNarrator}
+          tip="You did it! Welcome to the family. Your certificate and next steps are all here."
+        />
         <CompletionPage
           moduleId={lesson.module.id}
           completed={Boolean(lesson.progress?.completedAt)}
@@ -94,7 +97,10 @@ async function Lesson({
       course={courseNav(courseSlug, course.title, lesson.outline)}
       currentModuleId={module.slug}
     >
-      <NarratorConfig hidden={profile.hideNarrator} />
+      <NarratorConfig
+        hidden={profile.hideNarrator}
+        tip={module.narratorIntro ?? undefined}
+      />
       <article className="flex flex-col gap-10">
         <header className="flex flex-col gap-4">
           <Link

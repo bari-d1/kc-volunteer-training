@@ -192,6 +192,58 @@ describe("NarratorProvider", () => {
     expect(api.hidden).toBe(true);
   });
 
+  describe("tapping the guide", () => {
+    const tap = () =>
+      fireEvent.click(screen.getByRole("button", { name: "Ask your guide" }));
+
+    it("repeats the last thing said on this page", () => {
+      renderNarrated();
+      act(() => api.say("Tap a card to flip it.", "point"));
+      act(() => vi.advanceTimersByTime(30_000));
+      expect(bubbleText()).toBeNull();
+
+      tap();
+      expect(bubbleText()).toBe("Tap a card to flip it.");
+      expect(pose()).toBe("point");
+    });
+
+    it("gives the page's tip before anything has been said", () => {
+      render(
+        <NarratorProvider>
+          <NarratorConfig hidden={false} tip="Here's how KC fits together." />
+          <Grab />
+        </NarratorProvider>,
+      );
+      tap();
+      expect(bubbleText()).toBe("Here's how KC fits together.");
+    });
+
+    it("falls back to a general greeting, then repeats per page", () => {
+      const { rerender } = renderNarrated();
+      tap();
+      expect(bubbleText()).toMatch(/I'm your guide/);
+      act(() => api.say("About KC callout", "wave"));
+      act(() => vi.advanceTimersByTime(30_000));
+
+      // A new page doesn't repeat the last page's message.
+      nav.pathname = "/course/kc/about-kc";
+      rerender(
+        <NarratorProvider>
+          <NarratorConfig hidden={false} tip="Our story so far." />
+          <Grab />
+        </NarratorProvider>,
+      );
+      tap();
+      expect(bubbleText()).toBe("Our story so far.");
+    });
+
+    it("does nothing when the guide is hidden", () => {
+      renderNarrated(null, false);
+      act(() => api.summon());
+      expect(dock()).toBeNull();
+    });
+  });
+
   it("changes pose without a message", () => {
     renderNarrated();
     act(() => api.setState("think"));
