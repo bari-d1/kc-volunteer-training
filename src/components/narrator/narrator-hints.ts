@@ -7,7 +7,7 @@ export const INTERACTIVE_HINTS = {
   TABS: "Tap each tab to explore.",
   TIMELINE: "Tap a year to see what happened.",
   PYRAMID: "Tap a level to learn more about it.",
-  REFLECTION: "Have a think, then tap Compare.",
+  REFLECTION: "Have a think, then tap Save to see KC's answer.",
 } as const;
 
 export type HintedBlockType = keyof typeof INTERACTIVE_HINTS;

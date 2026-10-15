@@ -37,6 +37,9 @@ function renderInLesson(answers: Record<string, string> = {}) {
 const box = () => screen.getByRole("textbox", { name: props.prompt });
 const type = (text: string) =>
   fireEvent.change(box(), { target: { value: text } });
+const save = () =>
+  fireEvent.click(screen.getByRole("button", { name: "Save" }));
+const revealed = () => screen.queryByText("What isn't required");
 
 beforeEach(() => {
   vi.useFakeTimers();
@@ -45,15 +48,38 @@ beforeEach(() => {
 afterEach(() => vi.useRealTimers());
 
 describe("saving reflection answers", () => {
-  it("shows the volunteer's saved answer when they come back", () => {
+  it("fills in a saved answer, with KC's answer already showing", () => {
     renderInLesson({ [BLOCK]: "A willing heart" });
     expect(box()).toHaveValue("A willing heart");
-    expect(box()).toHaveAccessibleDescription(
-      "Your answer is saved to your training record as you type.",
+    expect(revealed()).toBeInTheDocument();
+  });
+
+  it("saves on Save, says Saved and reveals KC's answer as a list", async () => {
+    renderInLesson();
+    expect(revealed()).toBeNull();
+    type("Experience");
+    save();
+    await act(() => vi.advanceTimersByTimeAsync(0));
+
+    expect(saveReflectionAction).toHaveBeenCalledWith({
+      blockId: BLOCK,
+      answer: "Experience",
+    });
+    expect(screen.getByText("Saved")).toBeVisible();
+    expect(revealed()).toBeInTheDocument();
+    expect(screen.getAllByRole("listitem").map((li) => li.textContent)).toEqual(
+      ["Perfection", "Experience"],
     );
   });
 
-  it("saves a moment after typing stops, then says so", async () => {
+  it("can't be saved empty", () => {
+    renderInLesson();
+    expect(screen.getByRole("button", { name: "Save" })).toBeDisabled();
+    type("   ");
+    expect(screen.getByRole("button", { name: "Save" })).toBeDisabled();
+  });
+
+  it("also saves quietly in the background, without a message", async () => {
     renderInLesson();
     type("Being on time");
     type("Being on time and humble");
@@ -65,53 +91,34 @@ describe("saving reflection answers", () => {
       blockId: BLOCK,
       answer: "Being on time and humble",
     });
-    expect(box()).toHaveAccessibleDescription("Saved to your training record.");
-  });
+    expect(screen.queryByText("Saved")).toBeNull();
+    expect(revealed()).toBeNull();
 
-  it("saves straight away on leaving the box, and not again if unchanged", async () => {
-    renderInLesson({ [BLOCK]: "Old answer" });
-    fireEvent.blur(box());
-    await act(() => vi.advanceTimersByTimeAsync(0));
-    expect(saveReflectionAction).not.toHaveBeenCalled();
-
-    type("New answer");
-    fireEvent.blur(box());
+    // Save afterwards doesn't send it again, but confirms it.
+    save();
     await act(() => vi.advanceTimersByTimeAsync(0));
     expect(saveReflectionAction).toHaveBeenCalledTimes(1);
-    // The pending typing save was replaced by the blur save.
-    await act(() => vi.advanceTimersByTimeAsync(REFLECTION_SAVE_DELAY_MS));
-    expect(saveReflectionAction).toHaveBeenCalledTimes(1);
-  });
-
-  it("saves before revealing KC's answer, shown as a list", async () => {
-    renderInLesson();
-    type("Experience");
-    fireEvent.click(screen.getByRole("button", { name: "Compare" }));
-    await act(() => vi.advanceTimersByTimeAsync(0));
-    expect(saveReflectionAction).toHaveBeenCalledWith({
-      blockId: BLOCK,
-      answer: "Experience",
-    });
-    expect(screen.getAllByRole("listitem").map((li) => li.textContent)).toEqual(
-      ["Perfection", "Experience"],
-    );
+    expect(screen.getByText("Saved")).toBeVisible();
   });
 
   it("says when saving fails", async () => {
     saveReflectionAction.mockResolvedValueOnce({ ok: false, error: "locked" });
     renderInLesson();
     type("Something");
-    await act(() => vi.advanceTimersByTimeAsync(REFLECTION_SAVE_DELAY_MS));
-    expect(box()).toHaveAccessibleDescription(
-      "We couldn't save your answer. Keep typing to try again.",
-    );
+    save();
+    await act(() => vi.advanceTimersByTimeAsync(0));
+    expect(
+      screen.getByText("We couldn't save your answer. Please try again."),
+    ).toBeVisible();
   });
 
   it("never saves outside a lesson", async () => {
     render(<ReflectionBlock {...props} />);
     type("Preview answer");
+    save();
     fireEvent.blur(box());
     await act(() => vi.advanceTimersByTimeAsync(REFLECTION_SAVE_DELAY_MS));
     expect(saveReflectionAction).not.toHaveBeenCalled();
+    expect(revealed()).toBeInTheDocument();
   });
 });

@@ -8,16 +8,16 @@ import type { BlockProps } from "../block-props";
 import { Markdown } from "./markdown";
 import { useReflectionAnswer } from "./reflection-answers";
 
-/** Wait this long after typing stops before saving. */
+/** Wait this long after typing stops before saving in the background. */
 export const REFLECTION_SAVE_DELAY_MS = 1000;
 const MAX_LENGTH = 2000;
 
 type Status = "idle" | "saving" | "saved" | "error";
 
 /**
- * A prompt to answer, then compare with KC's answer. In a lesson the answer
- * is saved to the volunteer's account as they type (and when they leave the
- * box), and is there again when they come back.
+ * A prompt to answer, then Save to see KC's answer. In a lesson the answer
+ * is saved to the volunteer's account (quietly in the background too, so
+ * nothing is lost) and is there again, with KC's answer, when they return.
  */
 export function ReflectionBlock({
   prompt,
@@ -29,21 +29,27 @@ export function ReflectionBlock({
   const { saving, saved } = useReflectionAnswer(blockId);
   const [answer, setAnswer] = useState(saved);
   const [status, setStatus] = useState<Status>("idle");
-  const [revealed, setRevealed] = useState(false);
+  // Someone who already answered sees KC's answer straight away.
+  const [revealed, setRevealed] = useState(saved.trim() !== "");
   const narrator = useNarrator();
   const lastSaved = useRef(saved);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const save = (text: string) => {
+  /** Saves if changed. `announce` shows "Saved"; background saves are quiet. */
+  const save = (text: string, announce: boolean) => {
     if (timer.current) clearTimeout(timer.current);
     timer.current = null;
-    if (!saving || text.trim() === lastSaved.current.trim()) return;
-    setStatus("saving");
+    if (!saving) return;
+    if (text.trim() === lastSaved.current.trim()) {
+      if (announce && text.trim()) setStatus("saved");
+      return;
+    }
+    if (announce) setStatus("saving");
     saveReflectionAction({ blockId, answer: text })
       .then((result) => {
         if (!result.ok) throw new Error(result.error);
         lastSaved.current = text;
-        setStatus("saved");
+        if (announce) setStatus("saved");
       })
       .catch(() => setStatus("error"));
   };
@@ -58,20 +64,23 @@ export function ReflectionBlock({
 
   const onChange = (text: string) => {
     setAnswer(text);
+    setStatus((current) => (current === "error" ? current : "idle"));
     if (!saving) return;
     if (timer.current) clearTimeout(timer.current);
-    timer.current = setTimeout(() => save(text), REFLECTION_SAVE_DELAY_MS);
+    timer.current = setTimeout(
+      () => save(text, false),
+      REFLECTION_SAVE_DELAY_MS,
+    );
   };
 
-  const note = !saving
-    ? "Your answer isn't saved in this preview."
-    : status === "saving"
+  const message =
+    status === "saving"
       ? "Saving…"
       : status === "saved"
-        ? "Saved to your training record."
+        ? "Saved"
         : status === "error"
-          ? "We couldn't save your answer. Keep typing to try again."
-          : "Your answer is saved to your training record as you type.";
+          ? "We couldn't save your answer. Please try again."
+          : null;
 
   return (
     <div className="flex flex-col gap-5 rounded-lg bg-surface p-6 md:p-8">
@@ -85,37 +94,36 @@ export function ReflectionBlock({
         onFocus={() => narrator.setState("think")}
         onBlur={() => {
           narrator.setState("idle");
-          save(answer);
+          save(answer, false);
         }}
         placeholder="Type your answer"
         rows={4}
         maxLength={MAX_LENGTH}
-        aria-describedby={`${id}-note`}
         className="w-full resize-y rounded-md border-2 border-surface-2 bg-bg p-4 text-body text-text placeholder:text-muted/70 focus:border-lime"
       />
-      <p
-        id={`${id}-note`}
-        aria-live="polite"
-        className={
-          status === "error"
-            ? "text-small text-danger"
-            : "text-small text-muted"
-        }
-      >
-        {note}
-      </p>
-      <Button
-        variant="secondary"
-        onClick={() => {
-          save(answer);
-          setRevealed(!revealed);
-        }}
-        aria-expanded={revealed}
-        aria-controls={`${id}-reveal`}
-        className="self-start"
-      >
-        {revealed ? "Hide" : "Compare"}
-      </Button>
+      <div className="flex flex-wrap items-center gap-4">
+        <Button
+          variant="secondary"
+          onClick={() => {
+            save(answer, true);
+            setRevealed(true);
+          }}
+          disabled={!answer.trim()}
+          aria-controls={`${id}-reveal`}
+        >
+          Save
+        </Button>
+        <p
+          aria-live="polite"
+          className={
+            status === "error"
+              ? "text-small text-danger"
+              : "text-small text-muted"
+          }
+        >
+          {message}
+        </p>
+      </div>
       <div id={`${id}-reveal`} aria-live="polite">
         {revealed && (
           <div className="flex flex-col gap-2 border-l-4 border-lime pl-4">

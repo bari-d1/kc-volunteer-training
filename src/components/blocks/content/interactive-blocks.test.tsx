@@ -325,32 +325,27 @@ describe("ReflectionBlock", () => {
     revealBody: "Skills can be taught.",
   };
 
-  it("labels the answer box with the prompt and says previews aren't saved", () => {
+  it("labels the answer box with the prompt and no extra note", () => {
     instant(<ReflectionBlock {...props} />);
     const box = screen.getByRole("textbox", { name: props.prompt });
     expect(box).toHaveAttribute("placeholder", "Type your answer");
-    expect(box).toHaveAccessibleDescription(
-      "Your answer isn't saved in this preview.",
-    );
+    expect(box).not.toHaveAccessibleDescription();
+    expect(screen.getByRole("button", { name: "Save" })).toBeDisabled();
   });
 
-  it("reveals KC's answer on Compare without sending the typed answer anywhere", async () => {
+  it("reveals KC's answer on Save, without sending anything from a preview", async () => {
     const fetchSpy = vi.spyOn(globalThis, "fetch");
     instant(<ReflectionBlock {...props} />);
     await userEvent.type(screen.getByRole("textbox"), "Being on time");
 
-    const compare = screen.getByRole("button", { name: "Compare" });
-    expect(compare).toHaveAttribute("aria-expanded", "false");
-    await act(() => userEvent.click(compare));
-
-    expect(screen.getByRole("button", { name: "Hide" })).toHaveAttribute(
-      "aria-expanded",
-      "true",
-    );
+    const save = screen.getByRole("button", { name: "Save" });
     const reveal = document.getElementById(
-      compare.getAttribute("aria-controls")!,
+      save.getAttribute("aria-controls")!,
     )!;
     expect(reveal).toHaveAttribute("aria-live", "polite");
+    expect(reveal).toBeEmptyDOMElement();
+    await act(() => userEvent.click(save));
+
     expect(reveal).toHaveTextContent("A willing heart");
     expect(screen.getByRole("textbox")).toHaveValue("Being on time");
     expect(fetchSpy).not.toHaveBeenCalled();
