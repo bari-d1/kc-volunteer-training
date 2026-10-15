@@ -307,15 +307,6 @@ export const modules: Array<{
         "point",
         "If you've been around Jubilee, this will feel familiar: our beliefs line up with the RCCG.",
       ),
-      {
-        type: "REFLECTION",
-        content: {
-          prompt: "Which of these beliefs means the most to you, and why?",
-          revealTitle: "Something to think about",
-          revealBody:
-            "There's no wrong answer. If anything here raised a question, talk to your Branch Lead.",
-        },
-      },
     ],
   },
   {
