@@ -1,10 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  branches,
-  modules,
-  quizQuestions,
-  validateSeedData,
-} from "./seed-data";
+import { branches, modules, validateSeedData } from "./seed-data";
 
 describe("seed data", () => {
   it("passes the app's Zod schemas", () => {
@@ -44,14 +39,6 @@ describe("seed data", () => {
         CREATIVE: "#FF7A1A",
         SYSTEMS: "#33D6F5",
       },
-    );
-  });
-
-  it("has enough quiz questions for an attempt, one required", () => {
-    expect(quizQuestions.length).toBeGreaterThanOrEqual(10);
-    expect(quizQuestions.filter((q) => q.isRequired)).toHaveLength(1);
-    expect(quizQuestions.map((q) => q.order)).toEqual(
-      quizQuestions.map((_, i) => i),
     );
   });
 

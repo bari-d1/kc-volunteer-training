@@ -7,8 +7,11 @@
  *
  * pnpm db:seed -- --replace-content makes the database match seed-data.ts:
  * module details, blocks and settings are overwritten (admin edits are
- * lost), and teams, leaders and quiz questions that aren't in the seed are
- * deactivated rather than deleted, so profiles and past attempts keep them.
+ * lost), and teams and leaders that aren't in the seed are deactivated
+ * rather than deleted, so profiles keep them.
+ *
+ * Quiz questions, sections and settings always come from the question banks
+ * in content/quizzes (see quiz-import.ts), with or without the flag.
  */
 import "dotenv/config";
 import { PrismaPg } from "@prisma/adapter-pg";
@@ -18,15 +21,23 @@ import {
   course,
   leaders,
   modules,
-  quizQuestions,
   siteSettings,
   validateSeedData,
 } from "./seed-data";
+import {
+  describeImport,
+  importQuestionBank,
+  loadQuestionBank,
+  questionBankFiles,
+  type ImportReport,
+} from "./quiz-import";
 
 const replace = process.argv.includes("--replace-content");
 
 // Fail loudly before touching the database.
 validateSeedData();
+const banks = questionBankFiles().map(loadQuestionBank);
+const imports: ImportReport[] = [];
 
 const connectionString = process.env.DIRECT_URL ?? process.env.DATABASE_URL;
 if (!connectionString)
@@ -181,30 +192,8 @@ async function seed(tx: Prisma.TransactionClient) {
     );
   }
 
-  if (replace) {
-    await tx.quizQuestion.updateMany({
-      where: {
-        courseId: kc.id,
-        prompt: { notIn: quizQuestions.map((q) => q.prompt) },
-      },
-      data: { isActive: false },
-    });
-  }
-  for (const question of quizQuestions) {
-    const row = await ensure(
-      "QuizQuestion",
-      () =>
-        tx.quizQuestion.findFirst({
-          where: { courseId: kc.id, prompt: question.prompt },
-        }),
-      () => tx.quizQuestion.create({ data: { ...question, courseId: kc.id } }),
-    );
-    if (replace) {
-      await tx.quizQuestion.update({
-        where: { id: row.id },
-        data: { ...question, isActive: true },
-      });
-    }
+  for (const bank of banks) {
+    imports.push(await importQuestionBank(tx, bank));
   }
 }
 
@@ -218,6 +207,10 @@ async function main() {
       console.log(
         `  ${entity.padEnd(13)} ${created} created, ${existing} already there`,
       );
+    }
+    for (const report of imports) {
+      console.log(`Quiz bank ${report.courseSlug}:`);
+      for (const line of describeImport(report)) console.log(`  ${line}`);
     }
   } finally {
     await prisma.$disconnect();

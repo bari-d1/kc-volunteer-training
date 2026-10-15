@@ -3,14 +3,12 @@
  * decks. Scripture text (NKJV) and the narrator's lines are drafts for KC to
  * approve. The two links are placeholders until KC sends the real URLs.
  */
-import { randomUUID } from "node:crypto";
 import type {
   BlockType,
   BranchCode,
   LeaderGroup,
 } from "@/generated/prisma/client";
 import { BlockSchema } from "@/lib/schemas/blocks";
-import { QuizQuestionSchema } from "@/lib/schemas/quiz";
 import {
   siteSettingSchemas,
   type SiteSettingKey,
@@ -916,214 +914,8 @@ export const siteSettings: { [K in SiteSettingKey]: unknown } = {
   },
 };
 
-const trueFalse = [
-  { id: "a", text: "True" },
-  { id: "b", text: "False" },
-];
-
-export const quizQuestions = [
-  {
-    topic: "safeguarding",
-    prompt: "Who should you contact with a safeguarding concern?",
-    options: [
-      {
-        id: "a",
-        text: "The safeguarding team: Yemi (DSL) or Runor (Deputy DSL)",
-      },
-      { id: "b", text: "Nobody, unless you're completely sure" },
-      { id: "c", text: "Post about it in the group chat" },
-    ],
-    correctOptionId: "a",
-    explanation:
-      "Always pass concerns to the safeguarding team: Yemi, Runor or safeguarding@kingdomculturejcm.co.uk.",
-    isRequired: true,
-  },
-  {
-    topic: "expectations",
-    prompt: "What time should volunteers arrive on Sundays for service prep?",
-    options: [
-      { id: "a", text: "1.30pm" },
-      { id: "b", text: "2.30pm" },
-      { id: "c", text: "When the service starts" },
-    ],
-    correctOptionId: "a",
-    explanation: "Volunteers arrive at 1.30pm on Sundays for service prep.",
-  },
-  {
-    topic: "our-values",
-    prompt: "Which of these is one of KC's three values?",
-    options: [
-      { id: "a", text: "Comfort" },
-      { id: "b", text: "Excellence" },
-      { id: "c", text: "Popularity" },
-    ],
-    correctOptionId: "b",
-    explanation: "Our values are Kingdom, Excellence and Discipleship.",
-  },
-  {
-    topic: "about-kc",
-    prompt: "What is KC's mission?",
-    options: [
-      { id: "a", text: "Raising kingdom-minded disciples" },
-      { id: "b", text: "Filling every seat on a Sunday" },
-      { id: "c", text: "Hosting the biggest events in Manchester" },
-    ],
-    correctOptionId: "a",
-    explanation: "Our mission is raising kingdom-minded disciples.",
-  },
-  {
-    topic: "about-kc",
-    prompt: "KC is the young adult expression of which church?",
-    options: [
-      { id: "a", text: "Jubilee Church Manchester, RCCG" },
-      { id: "b", text: "A church in London" },
-      { id: "c", text: "It isn't part of a church" },
-    ],
-    correctOptionId: "a",
-    explanation:
-      "KC is the young adult expression of Jubilee Church Manchester, RCCG.",
-  },
-  {
-    topic: "seasons-of-kc",
-    prompt: "In which year was KC birthed?",
-    options: [
-      { id: "a", text: "2015" },
-      { id: "b", text: "2019" },
-      { id: "c", text: "2024" },
-    ],
-    correctOptionId: "a",
-    explanation: "KC was birthed in 2015 as a fellowship.",
-  },
-  {
-    topic: "church-family",
-    prompt: "Who is KC's Team Lead?",
-    options: [
-      { id: "a", text: "Pastor E.A. Adeboye" },
-      { id: "b", text: "Pastor Joshua Komolafe" },
-      { id: "c", text: "Pastor Leke Sanusi" },
-    ],
-    correctOptionId: "b",
-    explanation: "Pastor Joshua Komolafe has been KC's Team Lead since 2019.",
-  },
-  {
-    topic: "what-we-believe",
-    prompt: "Our full statement of beliefs is in line with which church?",
-    options: [
-      { id: "a", text: "The Redeemed Christian Church of God (RCCG)" },
-      { id: "b", text: "The Church of England" },
-      { id: "c", text: "None: KC wrote its own from scratch" },
-    ],
-    correctOptionId: "a",
-    explanation:
-      "Our full statement of beliefs is in line with the Redeemed Christian Church of God (RCCG).",
-  },
-  {
-    topic: "expectations",
-    prompt: "You need experience to serve as a volunteer in KC.",
-    options: trueFalse,
-    correctOptionId: "b",
-    explanation:
-      "Experience isn't required, and neither is perfection or knowing every scripture back to front.",
-  },
-  {
-    topic: "expectations",
-    prompt:
-      "Which of these is one of the four H's, the attitudes of a servant?",
-    options: [
-      { id: "a", text: "Hurry" },
-      { id: "b", text: "Hype" },
-      { id: "c", text: "Humble" },
-    ],
-    correctOptionId: "c",
-    explanation: "The four H's are Humble, Hunger, Heart and Honour.",
-  },
-  {
-    topic: "giving",
-    prompt: "What does the word “tithe” literally mean?",
-    options: [
-      { id: "a", text: "A gift" },
-      { id: "b", text: "A tenth, or 10%" },
-      { id: "c", text: "A promise" },
-    ],
-    correctOptionId: "b",
-    explanation: "“Tithe” literally means tenth, or 10%.",
-  },
-  {
-    topic: "giving",
-    prompt: "Giving at KC is by force.",
-    options: trueFalse,
-    correctOptionId: "b",
-    explanation:
-      "Giving is not by force, but it is an important form of worship.",
-  },
-  {
-    topic: "branches-and-teams",
-    prompt:
-      "Which branch's teams make our worship services work and function excellently well?",
-    options: [
-      { id: "a", text: "Experience" },
-      { id: "b", text: "Ministry" },
-      { id: "c", text: "Systems" },
-    ],
-    correctOptionId: "a",
-    explanation: "Experience is the Worship Services branch.",
-  },
-  {
-    topic: "branches-and-teams",
-    prompt:
-      "Which is KC's newest branch, supporting behind-the-scenes operations like comms and safeguarding?",
-    options: [
-      { id: "a", text: "Creative" },
-      { id: "b", text: "Experience" },
-      { id: "c", text: "Systems" },
-    ],
-    correctOptionId: "c",
-    explanation: "Systems is our newest branch, headed by Dr Anna.",
-  },
-  {
-    topic: "branches-and-teams",
-    prompt: "Which branch do the Worship Team and Photography sit in?",
-    options: [
-      { id: "a", text: "Creative" },
-      { id: "b", text: "Ministry" },
-      { id: "c", text: "Experience" },
-    ],
-    correctOptionId: "a",
-    explanation: "Both are part of Creative // Bara.",
-  },
-  {
-    topic: "how-were-organised",
-    prompt: "What sits at the top of the KC structure?",
-    options: [
-      { id: "a", text: "Champions" },
-      { id: "b", text: "Team Lead" },
-      { id: "c", text: "Pillars" },
-    ],
-    correctOptionId: "b",
-    explanation:
-      "Team Lead, then Branch Leads & Stewards, Pillars, Champions and Volunteers.",
-  },
-  {
-    topic: "recap",
-    prompt:
-      "If something in the course wasn't clear, where should you ask about it?",
-    options: [
-      { id: "a", text: "The KC Volunteers' Training WhatsApp group" },
-      { id: "b", text: "In the comments on KC's social media" },
-      { id: "c", text: "Nowhere: just guess" },
-    ],
-    correctOptionId: "a",
-    explanation:
-      "Ask in the KC Volunteers' Training WhatsApp group. We're happy to help.",
-  },
-].map((question, order) => ({
-  isRequired: false,
-  ...question,
-  order,
-}));
-
 /**
- * Validates every block, setting and quiz question against the app's Zod
+ * Validates every block and setting against the app's Zod
  * schemas. Throws one error listing every problem, before anything is written.
  */
 export function validateSeedData() {
@@ -1157,15 +949,6 @@ export function validateSeedData() {
     [SiteSettingKey, unknown]
   >) {
     check(`SiteSetting ${key}`, siteSettingSchemas[key].safeParse(value));
-  }
-  quizQuestions.forEach((question, index) =>
-    check(
-      `Quiz question ${index}`,
-      QuizQuestionSchema.safeParse({ id: randomUUID(), ...question }),
-    ),
-  );
-  if (quizQuestions.filter((q) => q.isRequired).length !== 1) {
-    problems.push("Expected exactly one required quiz question");
   }
 
   if (problems.length > 0) {
