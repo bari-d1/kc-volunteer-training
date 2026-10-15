@@ -91,6 +91,7 @@ async function Lesson({
           <FinalQuiz
             courseSlug={courseSlug}
             {...await getQuizIntro(profile.id, course.id)}
+            modulesHref={courseHref(courseSlug)}
             next={
               next
                 ? { href: moduleHref(courseSlug, next.slug), title: next.title }

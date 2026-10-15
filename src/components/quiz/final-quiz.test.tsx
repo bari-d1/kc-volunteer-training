@@ -44,6 +44,7 @@ function renderQuiz(props: Partial<Parameters<typeof FinalQuiz>[0]> = {}) {
       passMark={80}
       hasOpenAttempt={false}
       next={{ href: "/course/kc/part-of-the-family", title: "Family" }}
+      modulesHref="/course/kc"
       {...props}
     />,
   );
@@ -278,16 +279,18 @@ describe("review and submit", () => {
     });
     expect(heading).toHaveFocus();
     expect(
-      screen.getByText(/You scored 2 out of 3 \(67%\)/),
-    ).toBeInTheDocument();
+      screen.getByRole("progressbar", { name: "Your score" }),
+    ).toHaveAttribute("aria-valuetext", "2 out of 3");
+    // Missed questions first, with the correct answer and explanation.
     const first = screen.getAllByRole("listitem")[0];
-    expect(within(first).getByText("Correct answer: Answer 1B")).toBeVisible();
+    expect(within(first).getByText(/Question 1/)).toBeVisible();
+    expect(within(first).getByText("Answer 1B")).toBeVisible();
     expect(within(first).getByText("Explanation 1")).toBeVisible();
     expect(sessionStorage.getItem(`kc:quiz:${ATTEMPT}`)).toBeNull();
     expect(narrator.say).toHaveBeenCalledWith(expect.any(String), "encourage");
 
     // Retaking starts a fresh attempt.
-    await user.click(screen.getByRole("button", { name: "Retake quiz" }));
+    await user.click(screen.getByRole("button", { name: "Try again" }));
     await waitFor(() => expect(startQuizAction).toHaveBeenCalledTimes(2));
   });
 

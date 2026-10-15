@@ -11,6 +11,10 @@ export type ProgressRingProps = {
   /** Diameter in px. */
   size?: number;
   strokeWidth?: number;
+  /** Shown in the middle and read out instead of the percentage, e.g. "8/10". */
+  valueText?: string;
+  /** Visible in the middle instead of valueText, e.g. a styled "8/10". */
+  children?: React.ReactNode;
   className?: string;
 };
 
@@ -20,6 +24,8 @@ export function ProgressRing({
   label,
   size = 96,
   strokeWidth = 8,
+  valueText,
+  children,
   className,
 }: ProgressRingProps) {
   const clamped = Math.min(Math.max(value, 0), max);
@@ -35,7 +41,7 @@ export function ProgressRing({
       aria-valuemin={0}
       aria-valuemax={max}
       aria-valuenow={clamped}
-      aria-valuetext={`${percent}%`}
+      aria-valuetext={valueText ?? `${percent}%`}
       className={cn("relative inline-grid place-items-center", className)}
       style={{ width: size, height: size }}
     >
@@ -73,7 +79,7 @@ export function ProgressRing({
         className="absolute font-extrabold tabular-nums"
         style={{ fontSize: size * 0.22 }}
       >
-        {percent}%
+        {children ?? valueText ?? `${percent}%`}
       </span>
     </div>
   );

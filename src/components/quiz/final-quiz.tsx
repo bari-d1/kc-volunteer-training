@@ -6,6 +6,7 @@ import { startQuizAction, submitQuizAction } from "@/app/actions/quiz";
 import { useNarrator } from "@/components/narrator/narrator-context";
 import { Button } from "@/components/ui/button";
 import { ProgressBar } from "@/components/ui/progress-bar";
+import { QuizResults } from "./quiz-results";
 import { cn } from "@/lib/cn";
 import type { PublicQuizQuestion } from "@/lib/schemas/quiz";
 import type { SubmittedAttempt } from "@/server/quiz";
@@ -18,6 +19,8 @@ export type FinalQuizProps = {
   hasOpenAttempt: boolean;
   /** Where Continue goes after passing. */
   next: { href: string; title: string } | null;
+  /** The course's module list, for revising after a fail. */
+  modulesHref: string;
 };
 
 type Answers = Record<string, string>;
@@ -86,6 +89,7 @@ export function FinalQuiz({
   passMark,
   hasOpenAttempt,
   next,
+  modulesHref,
 }: FinalQuizProps) {
   const router = useRouter();
   const narrator = useNarrator();
@@ -362,88 +366,16 @@ export function FinalQuiz({
     );
   }
 
-  const { result } = phase;
-  const percent = Math.round((result.score / result.total) * 100);
   return (
-    <section
-      aria-labelledby="quiz-result-heading"
-      className="flex flex-col gap-6"
-    >
-      <div
-        className={cn(
-          "flex flex-col gap-3 rounded-lg border-2 bg-surface p-6 md:p-8",
-          result.passed ? "border-success" : "border-surface-2",
-        )}
-      >
-        <h2
-          id="quiz-result-heading"
-          ref={headingRef}
-          tabIndex={-1}
-          className="text-h2 focus:outline-none"
-        >
-          {result.passed ? "You passed!" : "Not quite this time"}
-        </h2>
-        <p className="text-body-lg">
-          You scored {result.score} out of {result.total} ({percent}%). The pass
-          mark is {result.passMark}%.
-        </p>
-        {result.passed && result.certificateNumber && (
-          <p className="text-body text-muted">
-            Certificate number {result.certificateNumber}
-          </p>
-        )}
-        {errorBox}
-        <div className="flex flex-col gap-3 pt-2 sm:flex-row">
-          {result.passed ? (
-            next && (
-              <Button size="lg" href={next.href} className="w-full sm:w-fit">
-                Continue: {next.title}
-              </Button>
-            )
-          ) : (
-            <Button
-              size="lg"
-              onClick={retake}
-              loading={pending}
-              className="w-full sm:w-fit"
-            >
-              Retake quiz
-            </Button>
-          )}
-        </div>
-      </div>
-
-      <h3 className="text-h3">Your answers</h3>
-      <ol className="flex flex-col gap-3">
-        {result.results.map((r, index) => {
-          const text = (id: string) =>
-            r.options.find((o) => o.id === id)?.text ?? "";
-          return (
-            <li
-              key={r.questionId}
-              className={cn(
-                "flex flex-col gap-2 rounded-md border-l-4 bg-surface p-4",
-                r.correct ? "border-success" : "border-danger",
-              )}
-            >
-              <span className="text-label text-lime">
-                Question {index + 1} · {r.correct ? "Correct" : "Incorrect"}
-              </span>
-              <span className="text-body-lg font-bold">{r.prompt}</span>
-              <span className="text-body">
-                Your answer: {text(r.selectedOptionId)}
-              </span>
-              {!r.correct && (
-                <span className="text-body">
-                  Correct answer: {text(r.correctOptionId)}
-                </span>
-              )}
-              <span className="text-body text-muted">{r.explanation}</span>
-            </li>
-          );
-        })}
-      </ol>
-    </section>
+    <QuizResults
+      result={phase.result}
+      headingRef={headingRef}
+      modulesHref={modulesHref}
+      next={next}
+      onRetry={retake}
+      retrying={pending}
+      error={errorBox}
+    />
   );
 }
 

@@ -3,6 +3,7 @@ import { z } from "zod";
 import type { Prisma } from "@/generated/prisma/client";
 import { requireVolunteer, type VolunteerId } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { nextCertificateNumber } from "./certificate-number";
 import {
   PublicQuizQuestionSchema,
   QuizOptionSchema,
@@ -451,23 +452,6 @@ async function completeCourse(
     select: { certificateNumber: true },
   });
   return certificate.certificateNumber;
-}
-
-/** KC-<year>-<6 digits>, counting up within the year. */
-export async function nextCertificateNumber(
-  tx: Pick<Prisma.TransactionClient, "certificate">,
-  now = new Date(),
-) {
-  const prefix = `KC-${now.getUTCFullYear()}-`;
-  const last = await tx.certificate.findFirst({
-    where: { certificateNumber: { startsWith: prefix } },
-    orderBy: { certificateNumber: "desc" },
-    select: { certificateNumber: true },
-  });
-  const next = last
-    ? Number(last.certificateNumber.slice(prefix.length)) + 1
-    : 1;
-  return `${prefix}${String(next).padStart(6, "0")}`;
 }
 
 // ─── Intro ──────────────────────────────────────────────────────────────────

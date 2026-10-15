@@ -43,11 +43,18 @@ const quiz = {
   attempts: [] as Attempt[],
   certificates: [] as Certificate[],
   settings: { passMark: 80, questionsPerAttempt: 10 } as unknown,
+  counters: new Map<string, number>(),
 };
 
 const prisma = {
   ...fake.prisma,
   $transaction: async <T>(fn: (tx: unknown) => Promise<T>) => fn(prisma),
+  // The certificate counter upsert: values[0] is the counter's key.
+  $queryRaw: async (_sql: TemplateStringsArray, key: string) => {
+    const last = (quiz.counters.get(key) ?? 0) + 1;
+    quiz.counters.set(key, last);
+    return [{ last }];
+  },
   course: {
     findFirst: async ({
       where,
@@ -172,7 +179,6 @@ const {
   explain,
   getQuizIntro,
   hasPassed,
-  nextCertificateNumber,
   startAttempt,
   submitAttempt,
   RESUME_WINDOW_MS,
@@ -230,6 +236,7 @@ beforeEach(() => {
   quiz.questions = makeQuestions();
   quiz.attempts = [];
   quiz.certificates = [];
+  quiz.counters.clear();
   quiz.settings = { passMark: 80, questionsPerAttempt: 10 };
   currentVolunteer = alice;
 });
@@ -509,6 +516,23 @@ describe("submitAttempt", () => {
     expect(progress!.completedAt).toBe(completedAt);
   });
 
+  it("numbers certificates uniquely and in order across volunteers", async () => {
+    const pass = async () => {
+      const { attemptId } = await startAttempt(SLUG);
+      return (
+        await submitAttempt({ attemptId, answers: answersFor(attemptId, 10) })
+      ).certificateNumber;
+    };
+    const year = new Date().getUTCFullYear();
+    expect(await pass()).toBe(`KC-${year}-000001`);
+    currentVolunteer = bob;
+    expect(await pass()).toBe(`KC-${year}-000002`);
+    // Bob passing again keeps his number and doesn't use up another.
+    expect(await pass()).toBe(`KC-${year}-000002`);
+    expect(quiz.certificates.map((c) => c.profileId)).toEqual([alice, bob]);
+    expect(quiz.counters.get(`certificate-counter:${year}`)).toBe(2);
+  });
+
   it("doesn't complete the module or issue a certificate on a fail", async () => {
     const { attemptId } = await startAttempt(SLUG);
     await submitAttempt({ attemptId, answers: answersFor(attemptId, 0) });
@@ -534,17 +558,6 @@ describe("getQuizIntro", () => {
 });
 
 describe("helpers", () => {
-  it("numbers certificates within the year", async () => {
-    const tx = prisma as unknown as Parameters<typeof nextCertificateNumber>[0];
-    const now = new Date("2026-06-01T00:00:00Z");
-    expect(await nextCertificateNumber(tx, now)).toBe("KC-2026-000001");
-    quiz.certificates.push(
-      { profileId: alice, courseId, certificateNumber: "KC-2026-000041" },
-      { profileId: bob, courseId, certificateNumber: "KC-2025-000099" },
-    );
-    expect(await nextCertificateNumber(tx, now)).toBe("KC-2026-000042");
-  });
-
   it("falls back to the correct answer when there's no explanation", () => {
     expect(explain("", { id: "a", text: "Kingdom Culture" })).toBe(
       "The correct answer is Kingdom Culture.",
