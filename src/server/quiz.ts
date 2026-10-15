@@ -2,8 +2,10 @@ import "server-only";
 import { z } from "zod";
 import type { Prisma } from "@/generated/prisma/client";
 import { requireVolunteer, type VolunteerId } from "@/lib/auth";
+import { FINAL_QUIZ_SLUG } from "@/lib/course-config";
 import { prisma } from "@/lib/prisma";
 import { nextCertificateNumber } from "./certificate-number";
+import { sendCompletionEmail } from "./notifications";
 import {
   PublicQuizQuestionSchema,
   QuizOptionSchema,
@@ -16,8 +18,7 @@ import {
   type QuizSetting,
 } from "@/lib/schemas/site-settings";
 
-/** The module a passed quiz completes; content modules come before it. */
-export const FINAL_QUIZ_SLUG = "final-quiz";
+export { FINAL_QUIZ_SLUG };
 
 /** An unsubmitted attempt younger than this is resumed instead of redrawn. */
 export const RESUME_WINDOW_MS = 2 * 60 * 60 * 1000;
@@ -321,7 +322,8 @@ export async function submitAttempt(input: unknown): Promise<SubmittedAttempt> {
   if (!parsed.success) throw new QuizError("invalid", "Invalid submission");
   const { attemptId, answers } = parsed.data;
 
-  return prisma.$transaction(async (tx) => {
+  let courseId: string | null = null;
+  const outcome = await prisma.$transaction(async (tx) => {
     const attempt = await tx.quizAttempt.findUnique({
       where: { id: attemptId },
     });
@@ -396,6 +398,7 @@ export async function submitAttempt(input: unknown): Promise<SubmittedAttempt> {
       );
     }
 
+    courseId = attempt.courseId;
     const certificateNumber = passed
       ? await completeCourse(tx, volunteer.id, attempt.courseId)
       : null;
@@ -409,6 +412,10 @@ export async function submitAttempt(input: unknown): Promise<SubmittedAttempt> {
       certificateNumber,
     };
   });
+
+  // After the transaction commits, so the certificate exists to email about.
+  if (outcome.passed && courseId) sendCompletionEmail(volunteer.id, courseId);
+  return outcome;
 }
 
 /**

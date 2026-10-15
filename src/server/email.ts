@@ -20,12 +20,19 @@ export type SendEmailInput<T extends EmailTemplateName> = {
   tags?: Record<string, string>;
   /** The volunteer it's for, for the EmailLog. */
   profileId?: string;
+  /**
+   * Send at most once per volunteer: skipped if EmailLog already has a SENT
+   * row for this profileId and template. Needs profileId.
+   */
+  once?: boolean;
 };
 
 export type SendEmailResult = {
   status: EmailStatus;
   resendId?: string;
   error?: string;
+  /** With once: it had already been sent, so nothing was sent or logged. */
+  alreadySent?: boolean;
 };
 
 /** EMAIL_FROM may be a bare address or "Name <address>". */
@@ -57,7 +64,26 @@ export async function sendEmail<T extends EmailTemplateName>({
   props,
   tags,
   profileId,
+  once = false,
 }: SendEmailInput<T>): Promise<SendEmailResult> {
+  if (once) {
+    try {
+      if (!profileId) throw new Error("once needs a profileId");
+      const previous = await prisma.emailLog.findFirst({
+        where: { profileId, template, status: "SENT" },
+        select: { id: true },
+      });
+      if (previous) return { status: "SKIPPED", alreadySent: true };
+    } catch (error) {
+      // Not knowing is safer than a duplicate: don't send.
+      console.error(`Couldn't check whether "${template}" was sent`, error);
+      return {
+        status: "FAILED",
+        error: error instanceof Error ? error.message : String(error),
+      };
+    }
+  }
+
   let result: SendEmailResult;
   try {
     result = await deliver({ to, template, props, tags });

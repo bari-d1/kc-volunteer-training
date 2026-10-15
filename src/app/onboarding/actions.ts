@@ -7,6 +7,7 @@ import {
   OnboardingSchema,
   type OnboardingField,
 } from "@/lib/schemas/onboarding";
+import { sendWelcomeEmail } from "@/server/notifications";
 import { createProfile, findActiveTeamName } from "@/server/profiles";
 
 export type OnboardingValues = {
@@ -104,5 +105,6 @@ export async function completeOnboarding(
     );
   }
 
+  if (result === "created") sendWelcomeEmail(user.id);
   redirect("/course");
 }

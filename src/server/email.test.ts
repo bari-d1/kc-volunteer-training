@@ -15,8 +15,11 @@ const createLog = vi.hoisted(() =>
     async () => ({}),
   ),
 );
+const findLog = vi.hoisted(() =>
+  vi.fn<(args: unknown) => Promise<object | null>>(async () => null),
+);
 vi.mock("@/lib/prisma", () => ({
-  prisma: { emailLog: { create: createLog } },
+  prisma: { emailLog: { create: createLog, findFirst: findLog } },
 }));
 
 const { sendEmail, formatFrom } = await import("./email");
@@ -146,6 +149,89 @@ describe("sendEmail", () => {
       error: "EMAIL_FROM is not set",
     });
     expect(send).not.toHaveBeenCalled();
+  });
+});
+
+describe("sending once", () => {
+  it("sends the first time and checks EmailLog for a SENT row", async () => {
+    expect(await sendEmail({ ...testEmail, once: true })).toMatchObject({
+      status: "SENT",
+    });
+    expect(findLog).toHaveBeenCalledWith({
+      where: {
+        profileId: testEmail.profileId,
+        template: "test",
+        status: "SENT",
+      },
+      select: { id: true },
+    });
+  });
+
+  it("skips without sending or logging once it's been sent", async () => {
+    findLog.mockResolvedValueOnce({ id: "log1" });
+    expect(await sendEmail({ ...testEmail, once: true })).toEqual({
+      status: "SKIPPED",
+      alreadySent: true,
+    });
+    expect(send).not.toHaveBeenCalled();
+    expect(createLog).not.toHaveBeenCalled();
+  });
+
+  it("doesn't risk a duplicate when the check fails", async () => {
+    findLog.mockRejectedValueOnce(new Error("database down"));
+    expect(await sendEmail({ ...testEmail, once: true })).toMatchObject({
+      status: "FAILED",
+    });
+    expect(send).not.toHaveBeenCalled();
+  });
+});
+
+describe("welcome and completion emails", () => {
+  it("welcomes the volunteer with what the training covers", async () => {
+    await sendEmail({
+      to: "ada@example.org",
+      template: "welcome",
+      props: { firstName: "Ada", moduleCount: 10 },
+    });
+    const message = send.mock.calls[0][0];
+    expect(message.subject).toBe("Welcome to KC Volunteers' Onboarding");
+    expect(message.text).toContain("Hi Ada");
+    expect(message.text).toMatch(/10 short modules, then a quick quiz/);
+    expect(message.text).toMatch(/30 to 45 minutes/);
+    expect(message.text).toMatch(/do it in stages/);
+    expect(message.html).toContain('href="https://kc.example/course"');
+    expect(message.html).toContain("Start your training");
+  });
+
+  it("congratulates them with their certificate and next steps", async () => {
+    await sendEmail({
+      to: "ada@example.org",
+      template: "completion",
+      props: { firstName: "Ada", certificateNumber: "KC-2026-000123" },
+    });
+    const message = send.mock.calls[0][0];
+    expect(message.subject).toBe("You're part of the family now, Ada!");
+    expect(message.text).toContain("KC-2026-000123");
+    expect(message.html).toContain(
+      'href="https://kc.example/api/certificates/KC-2026-000123/pdf"',
+    );
+    expect(message.text).toMatch(/onboarding team will be in touch/);
+    expect(message.html).not.toContain("WhatsApp");
+  });
+
+  it("adds the WhatsApp group when there's a link", async () => {
+    await sendEmail({
+      to: "ada@example.org",
+      template: "completion",
+      props: {
+        firstName: "Ada",
+        certificateNumber: "KC-2026-000123",
+        whatsappUrl: "https://chat.whatsapp.com/abc",
+      },
+    });
+    expect(send.mock.calls[0][0].html).toContain(
+      'href="https://chat.whatsapp.com/abc"',
+    );
   });
 });
 

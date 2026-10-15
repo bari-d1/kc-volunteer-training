@@ -1,5 +1,13 @@
 import type { ComponentType } from "react";
+import CompletionEmail, {
+  completionEmailSubject,
+  type CompletionEmailProps,
+} from "./completion-email";
 import TestEmail, { testEmailSubject, type TestEmailProps } from "./test-email";
+import WelcomeEmail, {
+  welcomeEmailSubject,
+  type WelcomeEmailProps,
+} from "./welcome-email";
 
 type Template<P> = {
   component: ComponentType<P>;
@@ -12,6 +20,14 @@ export const emailTemplates = {
     component: TestEmail,
     subject: testEmailSubject,
   } satisfies Template<TestEmailProps>,
+  welcome: {
+    component: WelcomeEmail,
+    subject: welcomeEmailSubject,
+  } satisfies Template<WelcomeEmailProps>,
+  completion: {
+    component: CompletionEmail,
+    subject: completionEmailSubject,
+  } satisfies Template<CompletionEmailProps>,
 };
 
 export type EmailTemplateName = keyof typeof emailTemplates;

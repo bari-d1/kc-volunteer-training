@@ -9,6 +9,9 @@ export const moduleHref = (courseSlug: string, moduleSlug: string) =>
 
 export const courseHref = (courseSlug: string) => `/course/${courseSlug}`;
 
+/** The module a passed quiz completes; lesson modules come before it. */
+export const FINAL_QUIZ_SLUG = "final-quiz";
+
 /** Sidebar/top bar navigation from a course's modules (ids are slugs). */
 export function courseNav(
   courseSlug: string,

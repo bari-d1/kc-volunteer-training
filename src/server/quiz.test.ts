@@ -169,6 +169,9 @@ const prisma = {
 };
 vi.mock("@/lib/prisma", () => ({ prisma }));
 
+const sendCompletionEmail = vi.hoisted(() => vi.fn());
+vi.mock("./notifications", () => ({ sendCompletionEmail }));
+
 let currentVolunteer = uuid() as VolunteerId;
 vi.mock("@/lib/auth", () => ({
   requireVolunteer: async () => ({ id: currentVolunteer }),
@@ -533,13 +536,23 @@ describe("submitAttempt", () => {
     expect(quiz.counters.get(`certificate-counter:${year}`)).toBe(2);
   });
 
+  it("emails the volunteer after a pass, once the transaction has committed", async () => {
+    sendCompletionEmail.mockClear();
+    const { attemptId } = await startAttempt(SLUG);
+    await submitAttempt({ attemptId, answers: answersFor(attemptId, 10) });
+    expect(sendCompletionEmail).toHaveBeenCalledWith(alice, courseId);
+    expect(quiz.certificates).toHaveLength(1);
+  });
+
   it("doesn't complete the module or issue a certificate on a fail", async () => {
+    sendCompletionEmail.mockClear();
     const { attemptId } = await startAttempt(SLUG);
     await submitAttempt({ attemptId, answers: answersFor(attemptId, 0) });
     expect(fake.db.progress.some((p) => p.moduleId === finalQuiz.id)).toBe(
       false,
     );
     expect(quiz.certificates).toHaveLength(0);
+    expect(sendCompletionEmail).not.toHaveBeenCalled();
   });
 });
 

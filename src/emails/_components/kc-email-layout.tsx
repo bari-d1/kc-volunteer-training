@@ -126,19 +126,39 @@ export function EmailText({ children }: { children: ReactNode }) {
   return <Text style={styles.paragraph}>{children}</Text>;
 }
 
-/** The lime call-to-action button. */
+const secondaryButton: CSSProperties = {
+  ...styles.button,
+  padding: "12px 30px",
+  backgroundColor: "transparent",
+  border: `2px solid ${emailColours.lime}`,
+  color: emailColours.lime,
+};
+
+/** The lime call-to-action button, or an outlined one for a second action. */
 export function EmailButton({
   href,
   children,
+  variant = "primary",
 }: {
   href: string;
   children: ReactNode;
+  variant?: "primary" | "secondary";
 }) {
   return (
     <Section style={{ margin: "8px 0 24px" }}>
-      <Button href={href} style={styles.button}>
+      <Button
+        href={href}
+        style={variant === "primary" ? styles.button : secondaryButton}
+      >
         {children}
       </Button>
     </Section>
+  );
+}
+
+/** Small grey text, e.g. a note under a button. */
+export function EmailNote({ children }: { children: ReactNode }) {
+  return (
+    <Text style={{ ...styles.footer, margin: "-12px 0 24px" }}>{children}</Text>
   );
 }

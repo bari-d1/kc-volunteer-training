@@ -16,6 +16,9 @@ const prisma = {
 };
 vi.mock("@/lib/prisma", () => ({ prisma }));
 
+const sendWelcomeEmail = vi.hoisted(() => vi.fn());
+vi.mock("@/server/notifications", () => ({ sendWelcomeEmail }));
+
 class Redirect extends Error {
   constructor(readonly to: string) {
     super(`redirect ${to}`);
@@ -83,6 +86,7 @@ describe("completeOnboarding", () => {
       teamInterest: "Prayer Team",
     });
     expect(data.consentAt.getTime()).toBeGreaterThanOrEqual(before);
+    expect(sendWelcomeEmail).toHaveBeenCalledWith(user.id);
   });
 
   it("stores no branch or team for “Not sure yet”", async () => {
@@ -145,6 +149,8 @@ describe("completeOnboarding", () => {
     );
     prisma.profile.findUnique.mockResolvedValue({ id: user.id });
     expect(await submit(valid)).toEqual({ redirect: "/course" });
+    // The first submit already sent it.
+    expect(sendWelcomeEmail).not.toHaveBeenCalled();
   });
 
   it("explains when the email belongs to another profile", async () => {
