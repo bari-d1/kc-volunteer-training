@@ -5,6 +5,7 @@ import {
   emailTemplate,
   formatChange,
   mergeAllowList,
+  resendSmtpConfig,
 } from "./supabase-auth-config";
 
 describe("mergeAllowList", () => {
@@ -58,6 +59,44 @@ describe("desiredConfig", () => {
       Object.keys(config).some((k) => k.startsWith("mailer_templates_")),
     ).toBe(false);
     expect(config).not.toHaveProperty("mailer_subjects_magic_link");
+  });
+});
+
+describe("Resend SMTP", () => {
+  it("sends through Resend from onboarding@resend.dev by default", () => {
+    const config = desiredConfig({}, "http://localhost:3000", {
+      smtp: { apiKey: "re_secret" },
+    });
+    expect(config).toMatchObject({
+      smtp_host: "smtp.resend.com",
+      smtp_port: "465",
+      smtp_user: "resend",
+      smtp_pass: "re_secret",
+      smtp_admin_email: "onboarding@resend.dev",
+      smtp_sender_name: "KC Volunteers",
+    });
+  });
+
+  it("uses EMAIL_FROM once a domain is verified", () => {
+    expect(
+      resendSmtpConfig({ apiKey: "re_secret", from: "hello@example.org" }),
+    ).toMatchObject({ smtp_admin_email: "hello@example.org" });
+  });
+
+  it("leaves SMTP alone without a key", () => {
+    expect(desiredConfig({}, "http://localhost:3000")).not.toHaveProperty(
+      "smtp_host",
+    );
+  });
+
+  it("never prints the password", () => {
+    const line = formatChange({
+      field: "smtp_pass",
+      from: null,
+      to: "re_secret",
+    });
+    expect(line).toBe("smtp_pass: set (hidden)");
+    expect(line).not.toContain("re_secret");
   });
 });
 

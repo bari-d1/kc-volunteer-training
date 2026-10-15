@@ -7,6 +7,9 @@
  * Env: SUPABASE_ACCESS_TOKEN (personal access token, never printed),
  * SUPABASE_PROJECT_REF (defaults to the ref in NEXT_PUBLIC_SUPABASE_URL),
  * SITE_URL (defaults to http://localhost:3000).
+ * RESEND_API_KEY: when set, auth emails are sent through Resend's SMTP, from
+ * EMAIL_FROM (default onboarding@resend.dev, which only delivers to the
+ * Resend account's own email until a domain is verified).
  */
 import "dotenv/config";
 import {
@@ -87,7 +90,18 @@ async function main() {
     `Project ${ref}, site URL ${siteUrl}${dryRun ? " (dry run)" : ""}`,
   );
   const current = await api(`/projects/${ref}/config/auth`);
-  const desired = desiredConfig(current, siteUrl, { skipTemplates });
+  const apiKey = process.env.RESEND_API_KEY;
+  const desired = desiredConfig(current, siteUrl, {
+    skipTemplates,
+    smtp: apiKey
+      ? { apiKey, from: process.env.EMAIL_FROM, senderName: "KC Volunteers" }
+      : undefined,
+  });
+  if (apiKey) {
+    console.log(
+      `Sending auth emails through Resend from ${process.env.EMAIL_FROM || "onboarding@resend.dev"}.`,
+    );
+  }
   const changes = diffConfig(current, desired);
 
   if (skipTemplates) {

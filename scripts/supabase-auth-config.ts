@@ -60,10 +60,49 @@ export function mergeAllowList(current: unknown, required: string[]) {
   return entries.join(",");
 }
 
+/**
+ * Resend's SMTP relay. Until a domain is verified in Resend, it only sends
+ * from onboarding@resend.dev, and only to the Resend account's own email.
+ */
+export const RESEND_SMTP = {
+  host: "smtp.resend.com",
+  port: "465",
+  user: "resend",
+  defaultFrom: "onboarding@resend.dev",
+  defaultSenderName: "KC Volunteers",
+};
+
+export type SmtpOptions = {
+  /** RESEND_API_KEY, used as the SMTP password. */
+  apiKey: string;
+  /** EMAIL_FROM: a sender on a domain verified in Resend. */
+  from?: string;
+  senderName?: string;
+};
+
+/** Auth config fields for sending Supabase's emails through Resend. */
+export function resendSmtpConfig({
+  apiKey,
+  from,
+  senderName,
+}: SmtpOptions): AuthConfig {
+  return {
+    smtp_host: RESEND_SMTP.host,
+    smtp_port: RESEND_SMTP.port,
+    smtp_user: RESEND_SMTP.user,
+    smtp_pass: apiKey,
+    smtp_admin_email: from || RESEND_SMTP.defaultFrom,
+    smtp_sender_name: senderName || RESEND_SMTP.defaultSenderName,
+  };
+}
+
 export function desiredConfig(
   current: AuthConfig,
   siteUrl: string,
-  { skipTemplates = false } = {},
+  {
+    skipTemplates = false,
+    smtp,
+  }: { skipTemplates?: boolean; smtp?: SmtpOptions } = {},
 ): AuthConfig {
   const site = siteUrl.replace(/\/+$/, "");
   const config: AuthConfig = {
@@ -79,6 +118,7 @@ export function desiredConfig(
       `${LOCAL_URL}/**`,
     ]),
   };
+  if (smtp) Object.assign(config, resendSmtpConfig(smtp));
   if (!skipTemplates) {
     // First-time magic-link users get the confirmation email, so both match.
     Object.assign(config, {
@@ -100,8 +140,12 @@ export function diffConfig(current: AuthConfig, desired: AuthConfig): Change[] {
     .map(([field, to]) => ({ field, from: current[field] ?? null, to }));
 }
 
-/** One readable line per change; long templates are summarised, not dumped. */
+/**
+ * One readable line per change; long templates are summarised, not dumped,
+ * and the SMTP password is never shown.
+ */
 export function formatChange({ field, from, to }: Change) {
+  if (field === "smtp_pass") return `${field}: set (hidden)`;
   if (field === "uri_allow_list") {
     const before = parseAllowList(from);
     const added = parseAllowList(to).filter((entry) => !before.includes(entry));
