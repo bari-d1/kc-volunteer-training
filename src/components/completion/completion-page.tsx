@@ -103,7 +103,14 @@ export function CompletionPage({
           Your next steps
         </h2>
         <ol className="flex flex-col gap-10">
-          <Step number={1} title="Your branch and team">
+          <Step number={1} title="We'll be in touch">
+            <p className="rounded-lg border-l-4 border-lime bg-surface p-6 text-body-lg">
+              A member of the KC onboarding team will contact you directly to
+              welcome you and help you get started.
+            </p>
+          </Step>
+
+          <Step number={2} title="Your branch and team">
             {placement ? (
               <div
                 className={cn(
@@ -147,7 +154,7 @@ export function CompletionPage({
             )}
           </Step>
 
-          <Step number={2} title="What to expect">
+          <Step number={3} title="What to expect">
             <ul className="grid gap-4 sm:grid-cols-3">
               {WHAT_TO_EXPECT.map((item) => (
                 <li

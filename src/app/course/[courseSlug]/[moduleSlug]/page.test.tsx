@@ -257,6 +257,9 @@ describe("lesson page", () => {
         screen.getByRole("link", { name: "Download PDF" }),
       ).toHaveAttribute("href", "/api/certificates/KC-2026-000007/pdf");
       expect(screen.queryByText(/WhatsApp/)).toBeNull();
+      expect(
+        screen.getByText(/KC onboarding team will contact you directly/),
+      ).toBeInTheDocument();
       expect(screen.getByText("Photography")).toBeInTheDocument();
       expect(screen.getByText("Maame Ama Acquah")).toBeInTheDocument();
       expect(screen.getByText("Sundays at 1:30pm")).toBeInTheDocument();
