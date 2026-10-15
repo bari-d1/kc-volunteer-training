@@ -1,23 +1,77 @@
 "use client";
 
-import { useId, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
+import { saveReflectionAction } from "@/app/actions/reflections";
 import { useNarrator } from "@/components/narrator/narrator-context";
 import { Button } from "@/components/ui/button";
 import type { BlockProps } from "../block-props";
+import { Markdown } from "./markdown";
+import { useReflectionAnswer } from "./reflection-answers";
+
+/** Wait this long after typing stops before saving. */
+export const REFLECTION_SAVE_DELAY_MS = 1000;
+const MAX_LENGTH = 2000;
+
+type Status = "idle" | "saving" | "saved" | "error";
 
 /**
- * A prompt to answer privately, then compare with KC's answer. The typed
- * answer only lives in this component's state: never stored or sent.
+ * A prompt to answer, then compare with KC's answer. In a lesson the answer
+ * is saved to the volunteer's account as they type (and when they leave the
+ * box), and is there again when they come back.
  */
 export function ReflectionBlock({
   prompt,
   revealTitle,
   revealBody,
+  blockId,
 }: BlockProps<"REFLECTION">) {
   const id = useId();
-  const [answer, setAnswer] = useState("");
+  const { saving, saved } = useReflectionAnswer(blockId);
+  const [answer, setAnswer] = useState(saved);
+  const [status, setStatus] = useState<Status>("idle");
   const [revealed, setRevealed] = useState(false);
   const narrator = useNarrator();
+  const lastSaved = useRef(saved);
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const save = (text: string) => {
+    if (timer.current) clearTimeout(timer.current);
+    timer.current = null;
+    if (!saving || text.trim() === lastSaved.current.trim()) return;
+    setStatus("saving");
+    saveReflectionAction({ blockId, answer: text })
+      .then((result) => {
+        if (!result.ok) throw new Error(result.error);
+        lastSaved.current = text;
+        setStatus("saved");
+      })
+      .catch(() => setStatus("error"));
+  };
+
+  // Don't leave a pending save behind when the lesson unmounts.
+  useEffect(
+    () => () => {
+      if (timer.current) clearTimeout(timer.current);
+    },
+    [],
+  );
+
+  const onChange = (text: string) => {
+    setAnswer(text);
+    if (!saving) return;
+    if (timer.current) clearTimeout(timer.current);
+    timer.current = setTimeout(() => save(text), REFLECTION_SAVE_DELAY_MS);
+  };
+
+  const note = !saving
+    ? "Your answer isn't saved in this preview."
+    : status === "saving"
+      ? "Saving…"
+      : status === "saved"
+        ? "Saved to your training record."
+        : status === "error"
+          ? "We couldn't save your answer. Keep typing to try again."
+          : "Your answer is saved to your training record as you type.";
 
   return (
     <div className="flex flex-col gap-5 rounded-lg bg-surface p-6 md:p-8">
@@ -27,20 +81,35 @@ export function ReflectionBlock({
       <textarea
         id={`${id}-answer`}
         value={answer}
-        onChange={(e) => setAnswer(e.target.value)}
+        onChange={(e) => onChange(e.target.value)}
         onFocus={() => narrator.setState("think")}
-        onBlur={() => narrator.setState("idle")}
+        onBlur={() => {
+          narrator.setState("idle");
+          save(answer);
+        }}
         placeholder="Type your answer"
         rows={4}
+        maxLength={MAX_LENGTH}
         aria-describedby={`${id}-note`}
         className="w-full resize-y rounded-md border-2 border-surface-2 bg-bg p-4 text-body text-text placeholder:text-muted/70 focus:border-lime"
       />
-      <p id={`${id}-note`} className="text-small text-muted">
-        Your answer stays in this browser. It isn&apos;t saved or sent to KC.
+      <p
+        id={`${id}-note`}
+        aria-live="polite"
+        className={
+          status === "error"
+            ? "text-small text-danger"
+            : "text-small text-muted"
+        }
+      >
+        {note}
       </p>
       <Button
         variant="secondary"
-        onClick={() => setRevealed(!revealed)}
+        onClick={() => {
+          save(answer);
+          setRevealed(!revealed);
+        }}
         aria-expanded={revealed}
         aria-controls={`${id}-reveal`}
         className="self-start"
@@ -53,7 +122,7 @@ export function ReflectionBlock({
             <span className="text-body-lg font-extrabold uppercase">
               {revealTitle}
             </span>
-            <span className="text-body text-muted">{revealBody}</span>
+            <Markdown className="text-body text-muted">{revealBody}</Markdown>
           </div>
         )}
       </div>

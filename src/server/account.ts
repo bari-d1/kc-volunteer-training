@@ -38,7 +38,8 @@ export async function updateAccountDetails(
 
 /**
  * Everything we hold about the volunteer, for a subject access request:
- * profile, module progress, quiz attempts and certificates.
+ * profile, module progress, reflection answers, quiz attempts and
+ * certificates.
  */
 export async function exportAccountData(profileId: VolunteerId) {
   const profile = await prisma.profile.findUniqueOrThrow({
@@ -52,6 +53,16 @@ export async function exportAccountData(profileId: VolunteerId) {
           },
         },
       },
+      reflectionAnswers: {
+        orderBy: { createdAt: "asc" },
+        select: {
+          prompt: true,
+          answer: true,
+          createdAt: true,
+          updatedAt: true,
+          module: { select: { title: true } },
+        },
+      },
       quizAttempts: {
         orderBy: { submittedAt: "asc" },
         include: { course: { select: { title: true } } },
@@ -63,13 +74,23 @@ export async function exportAccountData(profileId: VolunteerId) {
     },
   });
 
-  const { moduleProgress, quizAttempts, certificates, ...details } = profile;
+  const {
+    moduleProgress,
+    reflectionAnswers,
+    quizAttempts,
+    certificates,
+    ...details
+  } = profile;
   return {
     exportedAt: new Date().toISOString(),
     profile: details,
     moduleProgress: moduleProgress.map(({ module, ...row }) => ({
       ...row,
       course: module.course.title,
+      module: module.title,
+    })),
+    reflectionAnswers: reflectionAnswers.map(({ module, ...row }) => ({
+      ...row,
       module: module.title,
     })),
     quizAttempts: quizAttempts.map(({ course, ...row }) => ({
@@ -84,8 +105,8 @@ export async function exportAccountData(profileId: VolunteerId) {
 }
 
 /**
- * Deletes the volunteer's Profile (cascading to progress, quiz attempts and
- * certificates), then their Supabase auth user. Training data goes first so
+ * Deletes the volunteer's Profile (cascading to progress, reflection answers,
+ * quiz attempts and certificates), then their Supabase auth user. Training data goes first so
  * it's removed even if the auth deletion fails.
  */
 export async function deleteAccount(profileId: VolunteerId) {

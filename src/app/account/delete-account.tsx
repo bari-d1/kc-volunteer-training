@@ -19,7 +19,7 @@ export function DeleteAccount() {
     <Modal
       trigger={<Button variant="danger">Delete my account</Button>}
       title="Delete your account?"
-      description="This permanently deletes your profile, training progress, quiz results and certificates, and removes your sign-in. It can't be undone."
+      description="This permanently deletes your profile, training progress, reflection answers, quiz results and certificates, and removes your sign-in. It can't be undone."
       footer={
         <>
           <ModalClose asChild>

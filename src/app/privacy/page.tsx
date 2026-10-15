@@ -47,6 +47,7 @@ export default function PrivacyPage() {
           <li>Your name and email address</li>
           <li>The branch and team you&apos;re interested in</li>
           <li>Your training progress through each module</li>
+          <li>Your answers to reflection questions in the course</li>
           <li>Your quiz results and any certificates you earn</li>
         </ul>
       </Section>

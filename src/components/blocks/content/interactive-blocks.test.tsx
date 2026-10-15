@@ -325,11 +325,13 @@ describe("ReflectionBlock", () => {
     revealBody: "Skills can be taught.",
   };
 
-  it("labels the answer box with the prompt and explains it isn't saved", () => {
+  it("labels the answer box with the prompt and says previews aren't saved", () => {
     instant(<ReflectionBlock {...props} />);
     const box = screen.getByRole("textbox", { name: props.prompt });
     expect(box).toHaveAttribute("placeholder", "Type your answer");
-    expect(box).toHaveAccessibleDescription(/isn't saved or sent to KC/);
+    expect(box).toHaveAccessibleDescription(
+      "Your answer isn't saved in this preview.",
+    );
   });
 
   it("reveals KC's answer on Compare without sending the typed answer anywhere", async () => {

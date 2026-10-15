@@ -54,7 +54,7 @@ describe("deleteAccount", () => {
 });
 
 describe("exportAccountData", () => {
-  it("returns profile, progress, attempts and certificates with readable names", async () => {
+  it("returns profile, progress, reflections, attempts and certificates with readable names", async () => {
     prisma.profile.findUniqueOrThrow.mockResolvedValue({
       id,
       email: "ada@example.com",
@@ -64,6 +64,13 @@ describe("exportAccountData", () => {
           moduleId: "m1",
           completedAt: null,
           module: { title: "Welcome", course: { title: "Onboarding" } },
+        },
+      ],
+      reflectionAnswers: [
+        {
+          prompt: "What's required to serve?",
+          answer: "A willing heart",
+          module: { title: "Expectations" },
         },
       ],
       quizAttempts: [{ score: 9, total: 10, course: { title: "Onboarding" } }],
@@ -83,6 +90,13 @@ describe("exportAccountData", () => {
       profile: { id, email: "ada@example.com", firstName: "Ada" },
       moduleProgress: [
         { moduleId: "m1", module: "Welcome", course: "Onboarding" },
+      ],
+      reflectionAnswers: [
+        {
+          prompt: "What's required to serve?",
+          answer: "A willing heart",
+          module: "Expectations",
+        },
       ],
       quizAttempts: [{ score: 9, total: 10, course: "Onboarding" }],
       certificates: [

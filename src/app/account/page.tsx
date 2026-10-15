@@ -87,7 +87,8 @@ async function Account() {
         <div className="flex flex-col gap-4">
           <p className="text-body text-muted">
             Download a copy of everything we hold about you: your profile,
-            training progress, quiz results and certificates.
+            training progress, reflection answers, quiz results and
+            certificates.
           </p>
           <a
             href="/account/export"

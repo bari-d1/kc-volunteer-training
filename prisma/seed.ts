@@ -7,7 +7,8 @@
  *
  * pnpm db:seed -- --replace-content makes the database match seed-data.ts:
  * module details, blocks and settings are overwritten (admin edits are
- * lost), and teams and leaders that aren't in the seed are deactivated
+ * lost; blocks are updated in place so their ids, and the reflection
+ * answers linked to them, survive), and teams and leaders that aren't in the seed are deactivated
  * rather than deleted, so profiles keep them.
  *
  * Quiz questions, sections and settings always come from the question banks
@@ -64,6 +65,48 @@ async function ensure<T>(
   return existing ?? (await create());
 }
 
+/**
+ * Makes a module's blocks match the seed, updating in place where it can:
+ * the nth block of each type keeps the id of the nth existing block of that
+ * type, so saved reflection answers stay attached to their question.
+ */
+async function replaceBlocks(
+  tx: Prisma.TransactionClient,
+  moduleId: string,
+  blocks: (typeof modules)[number]["blocks"],
+) {
+  const existing = await tx.block.findMany({
+    where: { moduleId },
+    orderBy: { order: "asc" },
+    select: { id: true, type: true },
+  });
+  const byType = new Map<string, string[]>();
+  for (const { id, type } of existing) {
+    byType.set(type, [...(byType.get(type) ?? []), id]);
+  }
+  const kept = new Set<string>();
+  for (const [order, block] of blocks.entries()) {
+    const data = {
+      order,
+      type: block.type,
+      content: block.content as Prisma.InputJsonValue,
+      isPublished: true,
+    };
+    const id = byType.get(block.type)?.shift();
+    if (id) {
+      kept.add(id);
+      await tx.block.update({ where: { id }, data });
+      count("Block", false);
+    } else {
+      await tx.block.create({ data: { ...data, moduleId } });
+      count("Block", true);
+    }
+  }
+  await tx.block.deleteMany({
+    where: { moduleId, id: { notIn: [...kept] } },
+  });
+}
+
 async function seed(tx: Prisma.TransactionClient) {
   const kc = await ensure(
     "Course",
@@ -85,9 +128,8 @@ async function seed(tx: Prisma.TransactionClient) {
     );
     if (replace) {
       row = await tx.module.update({ where: { id: row.id }, data: module });
-      await tx.block.deleteMany({ where: { moduleId: row.id } });
-    }
-    if ((await tx.block.count({ where: { moduleId: row.id } })) === 0) {
+      await replaceBlocks(tx, row.id, blocks);
+    } else if ((await tx.block.count({ where: { moduleId: row.id } })) === 0) {
       await tx.block.createMany({
         data: blocks.map((block, index) => ({
           moduleId: row.id,

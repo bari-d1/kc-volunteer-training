@@ -7,6 +7,8 @@ import { CourseLayout } from "@/components/blocks/course-layout";
 import { LessonHeading } from "@/components/blocks/lesson/lesson-heading";
 import { NarratorConfig } from "@/components/narrator/narrator-context";
 import { FinalQuiz } from "@/components/quiz/final-quiz";
+import { ReflectionAnswersProvider } from "@/components/blocks/content/reflection-answers";
+import { getReflectionAnswers } from "@/server/reflections";
 import { LessonProgress } from "@/components/blocks/lesson/lesson-progress";
 import { LessonSkeleton } from "@/components/blocks/lesson-skeleton";
 import { PillTag } from "@/components/ui/pill-tag";
@@ -157,7 +159,15 @@ async function Lesson({
                 : null
             }
           >
-            <BlockRenderer blocks={blocks} moduleId={module.id} />
+            <ReflectionAnswersProvider
+              answers={
+                lesson.blocks.some((b) => b.type === "REFLECTION")
+                  ? await getReflectionAnswers(profile.id, module.id)
+                  : {}
+              }
+            >
+              <BlockRenderer blocks={blocks} moduleId={module.id} />
+            </ReflectionAnswersProvider>
           </LessonProgress>
         )}
       </article>

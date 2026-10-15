@@ -57,9 +57,10 @@ model Profile {
   createdAt      DateTime    @default(now())
   updatedAt      DateTime    @updatedAt
 
-  moduleProgress ModuleProgress[]
-  quizAttempts   QuizAttempt[]
-  certificates   Certificate[]
+  moduleProgress    ModuleProgress[]
+  quizAttempts      QuizAttempt[]
+  certificates      Certificate[]
+  reflectionAnswers ReflectionAnswer[]
 }
 
 // ─── Course content ──────────────────────────────────────────────────────────
@@ -97,9 +98,10 @@ model Module {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
-  course   Course           @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  blocks   Block[]
-  progress ModuleProgress[]
+  course            Course             @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  blocks            Block[]
+  progress          ModuleProgress[]
+  reflectionAnswers ReflectionAnswer[]
 
   @@unique([courseId, slug])
   @@index([courseId, order])
@@ -116,7 +118,8 @@ model Block {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
-  module Module @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  module            Module             @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  reflectionAnswers ReflectionAnswer[]
 
   // Not unique, so blocks can be reordered without constraint juggling.
   @@index([moduleId, order])
@@ -138,6 +141,28 @@ model ModuleProgress {
   module  Module  @relation(fields: [moduleId], references: [id], onDelete: Cascade)
 
   @@unique([profileId, moduleId])
+  @@index([moduleId])
+}
+
+/// A volunteer's answer to a REFLECTION block's prompt.
+model ReflectionAnswer {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  profileId String   @db.Uuid
+  /// Null if the block is later deleted; prompt keeps the question.
+  blockId   String?  @db.Uuid
+  moduleId  String   @db.Uuid
+  /// The question as it was when answered.
+  prompt    String
+  answer    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  profile Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  block   Block?  @relation(fields: [blockId], references: [id], onDelete: SetNull)
+  module  Module  @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+
+  @@unique([profileId, blockId])
+  @@index([blockId])
   @@index([moduleId])
 }
 

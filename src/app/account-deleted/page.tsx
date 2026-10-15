@@ -29,8 +29,8 @@ export default function AccountDeletedPage({
             </p>
           ) : (
             <p className="max-w-md text-body-lg text-muted">
-              Your profile, training progress, quiz results and certificates
-              have been removed. Thanks for being part of KC.
+              Your profile, training progress, reflection answers, quiz results
+              and certificates have been removed. Thanks for being part of KC.
             </p>
           ),
         )}
