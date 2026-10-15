@@ -66,14 +66,18 @@ Supabase's auth settings (site URL, redirect URLs, email templates) are applied 
 - keeps email sign-in on and requires email confirmation (no auto-confirm),
 - sets the Site URL to `SITE_URL` (default `http://localhost:3000`),
 - adds `SITE_URL/**` and `http://localhost:3000/**` to the redirect allow list, keeping existing entries,
-- sets the KC magic-link email (subject and template), and uses it for "Confirm signup" too, since first-time volunteers get that one.
+- sets the KC sign-in email (subject and template) and uses it for "Confirm signup" too, since first-time volunteers get that one. The email has a **Sign in** button (the `token_hash` link to `/auth/confirm`) and a **6-digit code** to type on another device,
+- makes codes 6 digits and links and codes valid for 15 minutes,
+- raises the project-wide limit to 100 sign-in emails an hour (Supabase's default is 2). The app's own limit of 3 links per email every 10 minutes still applies,
+- when `RESEND_API_KEY` is set, sends auth emails through Resend's SMTP (`smtp.resend.com`, port 465, user `resend`, the API key as the password), from `EMAIL_FROM` with the sender name "KC Volunteers".
 
-It fetches the current config, prints what will change, then applies it.
+It fetches the current config, prints what will change (the SMTP password always shows as "set (hidden)"), then applies it.
 
 **Locally**
 
 1. Create a personal access token at <https://supabase.com/dashboard/account/tokens> and add it to `.env` as `SUPABASE_ACCESS_TOKEN`. It can manage every project on your account, so keep it out of git and out of your hosting provider's env vars. `SUPABASE_PROJECT_REF` is optional; it defaults to the ref in `NEXT_PUBLIC_SUPABASE_URL`.
-2. `pnpm auth:configure --dry-run` to see the changes, then `pnpm auth:configure` to apply.
+2. For Resend, add `RESEND_API_KEY` (a sending-access key is enough) and `EMAIL_FROM`, a bare address on a domain verified in Resend, for example `EMAIL_FROM="volunteers@yourdomain.org"`.
+3. `pnpm auth:configure --dry-run` to see the changes, then `pnpm auth:configure` to apply.
 
 **At launch**, run it again against the production project with the real domain:
 
@@ -82,10 +86,24 @@ SITE_URL=https://volunteers.yourdomain.org pnpm auth:configure --dry-run
 SITE_URL=https://volunteers.yourdomain.org pnpm auth:configure
 ```
 
+**Flags**
+
+| Flag                     | Does                                                                                                                                                     |
+| ------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `--dry-run`              | Shows the changes without applying them.                                                                                                                 |
+| `--update-smtp-password` | Sends `RESEND_API_KEY` again. Supabase never returns the saved password, so it's otherwise only sent when none is saved. Use it after replacing the key. |
+| `--skip-templates`       | Applies everything except the email templates.                                                                                                           |
+
+**Resend notes**
+
+- Without `EMAIL_FROM`, emails come from `onboarding@resend.dev`, Resend's testing sender. That only delivers to the email address of the Resend account, even when a domain is verified, so everyone else gets "We couldn't send your link". Set `EMAIL_FROM` to an address on your verified domain.
+- To check a key without emailing anyone, send to Resend's test inbox `delivered@resend.dev`.
+- There's no switch back to Supabase's own mailer yet. If Resend has problems, turn off custom SMTP in the dashboard (Authentication → Emails → SMTP). Bear in mind Supabase's mailer is limited to a few emails an hour and won't use the KC template.
+
 Notes:
 
-- On Supabase's free plan, email templates can't be changed until custom SMTP is set up (Authentication → Emails → SMTP). Until then, `pnpm auth:configure --skip-templates` applies everything else.
-- The email links to `{{ .SiteURL }}/auth/confirm`, which works in any browser but doesn't carry a `next` path; volunteers land on `/course` (or `/onboarding` the first time).
+- On Supabase's free plan, email templates can't be changed until custom SMTP is set up. Without `RESEND_API_KEY`, use `pnpm auth:configure --skip-templates` to apply everything else.
+- The email links to `{{ .SiteURL }}/auth/confirm`, which works in any browser but doesn't carry a `next` path; volunteers land on `/course` (or `/onboarding` the first time). Signing in with the code keeps the page they were heading to.
 - Supabase has no separate switch for password sign-in; the app simply never offers passwords.
 
 ## Security
