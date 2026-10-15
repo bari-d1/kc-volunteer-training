@@ -1,5 +1,5 @@
 /**
- * pnpm auth:configure [--dry-run] [--skip-templates]
+ * pnpm auth:configure [--dry-run] [--skip-templates] [--update-smtp-password]
  *
  * Applies this project's Supabase Auth settings through the Management API:
  * fetches the current config, prints what will change, then PATCHes it.
@@ -94,7 +94,12 @@ async function main() {
   const desired = desiredConfig(current, siteUrl, {
     skipTemplates,
     smtp: apiKey
-      ? { apiKey, from: process.env.EMAIL_FROM, senderName: "KC Volunteers" }
+      ? {
+          apiKey,
+          from: process.env.EMAIL_FROM,
+          senderName: "KC Volunteers",
+          updatePassword: args.has("--update-smtp-password"),
+        }
       : undefined,
   });
   if (apiKey) {

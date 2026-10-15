@@ -78,6 +78,11 @@ export type SmtpOptions = {
   /** EMAIL_FROM: a sender on a domain verified in Resend. */
   from?: string;
   senderName?: string;
+  /**
+   * Supabase never returns the saved password (only a mask), so it's only
+   * sent when none is saved yet, or when this is set (a new key).
+   */
+  updatePassword?: boolean;
 };
 
 /** Auth config fields for sending Supabase's emails through Resend. */
@@ -118,7 +123,11 @@ export function desiredConfig(
       `${LOCAL_URL}/**`,
     ]),
   };
-  if (smtp) Object.assign(config, resendSmtpConfig(smtp));
+  if (smtp) {
+    const { smtp_pass, ...rest } = resendSmtpConfig(smtp);
+    Object.assign(config, rest);
+    if (!current.smtp_pass || smtp.updatePassword) config.smtp_pass = smtp_pass;
+  }
   if (!skipTemplates) {
     // First-time magic-link users get the confirmation email, so both match.
     Object.assign(config, {

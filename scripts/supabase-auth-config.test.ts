@@ -77,6 +77,20 @@ describe("Resend SMTP", () => {
     });
   });
 
+  it("only sends the password when none is saved, or when asked", () => {
+    const saved = { smtp_pass: "******" };
+    expect(
+      desiredConfig(saved, "http://localhost:3000", {
+        smtp: { apiKey: "re_secret" },
+      }),
+    ).not.toHaveProperty("smtp_pass");
+    expect(
+      desiredConfig(saved, "http://localhost:3000", {
+        smtp: { apiKey: "re_new", updatePassword: true },
+      }),
+    ).toMatchObject({ smtp_pass: "re_new" });
+  });
+
   it("uses EMAIL_FROM once a domain is verified", () => {
     expect(
       resendSmtpConfig({ apiKey: "re_secret", from: "hello@example.org" }),
