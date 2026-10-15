@@ -43,7 +43,18 @@ export function AccordionBlock({ items }: BlockProps<"ACCORDION">) {
                     expanded && "rotate-45",
                   )}
                 >
-                  +
+                  {/* An SVG, not a "+" character: the glyph sits below centre. */}
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 14 14"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                  >
+                    <path d="M7 1.5v11M1.5 7h11" />
+                  </svg>
                 </span>
               </button>
             </h3>
