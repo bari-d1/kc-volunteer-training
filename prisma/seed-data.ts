@@ -1,7 +1,7 @@
 /**
  * Course content from the KC New Members Onboarding and Volunteers' Training
  * decks. Scripture text (NKJV) and the narrator's lines are drafts for KC to
- * approve. The two links are placeholders until KC sends the real URLs.
+ * approve. The WhatsApp group link is left out for now.
  */
 import type {
   BlockType,
@@ -16,9 +16,9 @@ import {
 
 type SeedBlock = { type: BlockType; content: unknown };
 
-/** Placeholders until KC sends the real links (also in siteSettings.links). */
-const INCIDENT_FORM_URL = "https://example.org/placeholder-incident-form";
-const WHATSAPP_URL = "https://chat.whatsapp.com/placeholder";
+/** Also in siteSettings.links. */
+const INCIDENT_FORM_URL =
+  "https://docs.google.com/forms/d/e/1FAIpQLSdYVJZzoEwR3-x-gKFlMlvFXuVfA3loqhY0If4ropWuZqcjvw/viewform?usp=send_form";
 
 const narrator = (
   state: "wave" | "point" | "think" | "celebrate" | "encourage",
@@ -313,7 +313,7 @@ export const modules: Array<{
           prompt: "Which of these beliefs means the most to you, and why?",
           revealTitle: "Something to think about",
           revealBody:
-            "There's no wrong answer. If anything here raised a question, ask in the KC Volunteers' Training WhatsApp group.",
+            "There's no wrong answer. If anything here raised a question, talk to your Branch Lead.",
         },
       },
     ],
@@ -731,24 +731,6 @@ export const modules: Array<{
         },
       },
       {
-        type: "HEADING",
-        content: { text: "Questions?", level: 2 },
-      },
-      {
-        type: "TEXT",
-        content: {
-          markdown:
-            "If anything in this course wasn't clear, or you've got a question that wasn't covered, ask in the KC Volunteers' Training WhatsApp group. We're happy to help.",
-        },
-      },
-      {
-        type: "LINK_QR",
-        content: {
-          label: "Join the KC Volunteers' Training WhatsApp group",
-          url: WHATSAPP_URL,
-        },
-      },
-      {
         type: "TEXT",
         content: {
           markdown: "_Thank you for saying yes to serving in Kingdom Culture._",
@@ -910,7 +892,6 @@ export const siteSettings: { [K in SiteSettingKey]: unknown } = {
   },
   links: {
     incidentFormUrl: INCIDENT_FORM_URL,
-    whatsappUrl: WHATSAPP_URL,
   },
 };
 

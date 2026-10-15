@@ -37,7 +37,6 @@ const getCertificate = vi.fn();
 vi.mock("@/server/completion", () => ({
   COMPLETION_SLUG: "part-of-the-family",
   getCertificate: (...a: unknown[]) => getCertificate(...a),
-  getWhatsappUrl: async () => "https://chat.whatsapp.com/abc",
   getPlacement: async () => ({
     branchName: "Creative",
     branchDescription: "Creativ // Bara.",
@@ -257,9 +256,7 @@ describe("lesson page", () => {
       expect(
         screen.getByRole("link", { name: "Download PDF" }),
       ).toHaveAttribute("href", "/api/certificates/KC-2026-000007/pdf");
-      expect(
-        screen.getByRole("link", { name: /Join the WhatsApp group/ }),
-      ).toHaveAttribute("href", "https://chat.whatsapp.com/abc");
+      expect(screen.queryByText(/WhatsApp/)).toBeNull();
       expect(screen.getByText("Photography")).toBeInTheDocument();
       expect(screen.getByText("Maame Ama Acquah")).toBeInTheDocument();
       expect(screen.getByText("Sundays at 1:30pm")).toBeInTheDocument();

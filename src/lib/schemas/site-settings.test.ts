@@ -40,7 +40,10 @@ describe("site setting schemas", () => {
         ...value,
         whatsappUrl: "javascript:alert(1)",
       }).success,
-    ).toBe(false);
+    ).toBe(false); // The WhatsApp link is optional until KC shares it.
+    expect(
+      LinksSettingSchema.parse({ incidentFormUrl: value.incidentFormUrl }),
+    ).toEqual({ incidentFormUrl: value.incidentFormUrl });
   });
 
   it("validates quiz settings ranges", () => {

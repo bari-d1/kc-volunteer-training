@@ -1,6 +1,5 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { LinkQrBlock } from "@/components/blocks/content/link-qr-block";
 import { Button } from "@/components/ui/button";
 import { PillTag } from "@/components/ui/pill-tag";
 import { cn } from "@/lib/cn";
@@ -27,7 +26,7 @@ export const WHAT_TO_EXPECT = [
   },
   {
     title: "Prayer watches",
-    body: "Times are shared in the volunteers' WhatsApp group.",
+    body: "Times are shared in the volunteers' chat.",
   },
 ];
 
@@ -62,7 +61,6 @@ export function CompletionPage({
   completed,
   firstName,
   certificate,
-  whatsappUrl,
   placement,
   dashboardHref,
 }: {
@@ -71,7 +69,6 @@ export function CompletionPage({
   completed: boolean;
   firstName: string;
   certificate: EarnedCertificate;
-  whatsappUrl: string | null;
   placement: Placement | null;
   dashboardHref: string;
 }) {
@@ -106,24 +103,7 @@ export function CompletionPage({
           Your next steps
         </h2>
         <ol className="flex flex-col gap-10">
-          <Step number={1} title="Join the volunteers' WhatsApp group">
-            {whatsappUrl ? (
-              <LinkQrBlock
-                blockId="completion-whatsapp"
-                moduleId={moduleId}
-                label="Join the WhatsApp group"
-                url={whatsappUrl}
-                description="Rotas, prayer watch times and updates are all shared here."
-              />
-            ) : (
-              <p className="text-body text-muted">
-                Ask your Branch Lead for the link to the volunteers&apos;
-                WhatsApp group.
-              </p>
-            )}
-          </Step>
-
-          <Step number={2} title="Your branch and team">
+          <Step number={1} title="Your branch and team">
             {placement ? (
               <div
                 className={cn(
@@ -167,7 +147,7 @@ export function CompletionPage({
             )}
           </Step>
 
-          <Step number={3} title="What to expect">
+          <Step number={2} title="What to expect">
             <ul className="grid gap-4 sm:grid-cols-3">
               {WHAT_TO_EXPECT.map((item) => (
                 <li

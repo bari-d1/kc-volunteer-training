@@ -3,7 +3,6 @@ import type { BranchCode } from "@/generated/prisma/client";
 import type { VolunteerId } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import type { ColourToken } from "@/lib/schemas/common";
-import { LinksSettingSchema } from "@/lib/schemas/site-settings";
 
 /** The last module, shown once the quiz is passed. */
 export const COMPLETION_SLUG = "part-of-the-family";
@@ -19,13 +18,6 @@ export function getCertificate(
     where: { profileId_courseId: { profileId, courseId } },
     select: { certificateNumber: true, issuedAt: true },
   });
-}
-
-/** The volunteers' WhatsApp group from SiteSetting "links", if set. */
-export async function getWhatsappUrl() {
-  const row = await prisma.siteSetting.findUnique({ where: { key: "links" } });
-  const parsed = LinksSettingSchema.safeParse(row?.value);
-  return parsed.success ? parsed.data.whatsappUrl : null;
 }
 
 const BRANCH_COLOURS: Record<BranchCode, ColourToken> = {

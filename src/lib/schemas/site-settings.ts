@@ -10,7 +10,8 @@ export type SafeguardingSetting = z.infer<typeof SafeguardingSettingSchema>;
 
 export const LinksSettingSchema = z.object({
   incidentFormUrl: HttpUrlSchema,
-  whatsappUrl: HttpUrlSchema,
+  /** Left out until KC shares the volunteers' group link. */
+  whatsappUrl: HttpUrlSchema.optional(),
 });
 export type LinksSetting = z.infer<typeof LinksSettingSchema>;
 

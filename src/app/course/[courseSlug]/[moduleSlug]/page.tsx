@@ -19,7 +19,6 @@ import {
   COMPLETION_SLUG,
   getCertificate,
   getPlacement,
-  getWhatsappUrl,
 } from "@/server/completion";
 import { CompletionPage } from "@/components/completion/completion-page";
 
@@ -54,10 +53,7 @@ async function Lesson({
     const certificate = await getCertificate(profile.id, course.id);
     if (lesson.status === "locked" || !certificate)
       redirect(moduleHref(courseSlug, FINAL_QUIZ_SLUG));
-    const [whatsappUrl, placement] = await Promise.all([
-      getWhatsappUrl(),
-      getPlacement(profile),
-    ]);
+    const placement = await getPlacement(profile);
     return (
       <CourseLayout
         course={courseNav(courseSlug, course.title, lesson.outline)}
@@ -69,7 +65,6 @@ async function Lesson({
           completed={Boolean(lesson.progress?.completedAt)}
           firstName={profile.firstName}
           certificate={certificate}
-          whatsappUrl={whatsappUrl}
           placement={placement}
           dashboardHref={courseHref(courseSlug)}
         />
