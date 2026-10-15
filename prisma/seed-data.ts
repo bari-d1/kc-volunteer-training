@@ -337,7 +337,7 @@ export const modules: Array<{
       },
       narrator(
         "point",
-        "You'll serve in a team, and every team sits in one of four branches. More on those soon!",
+        "Leadership flows from the Team Lead, through Branch Leads & Stewards, Pillars and Champions, down to volunteers like you.",
       ),
     ],
   },
