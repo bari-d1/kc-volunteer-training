@@ -9,6 +9,7 @@ import {
 } from "@/lib/schemas/onboarding";
 import { createClient } from "@/lib/supabase/server";
 import { deleteAccount, updateAccountDetails } from "@/server/account";
+import { setEmailReminders } from "@/server/email-preferences";
 import { findActiveTeamName } from "@/server/profiles";
 
 export type AccountFormValues = {
@@ -90,4 +91,17 @@ export async function deleteMyAccount() {
   await supabase.auth.signOut({ scope: "local" }).catch(() => {});
 
   redirect(authUserDeleted ? "/account-deleted" : "/account-deleted?partial=1");
+}
+
+/** Saves the signed-in volunteer's "Email reminders" switch. */
+export async function setEmailRemindersAction(on: boolean) {
+  const profile = await requireVolunteer("/account");
+  if (typeof on !== "boolean") return { ok: false as const };
+  try {
+    await setEmailReminders(profile.id, on);
+    return { ok: true as const };
+  } catch (error) {
+    console.error("Saving emailReminders failed", error);
+    return { ok: false as const };
+  }
 }

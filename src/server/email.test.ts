@@ -235,6 +235,42 @@ describe("welcome and completion emails", () => {
   });
 });
 
+describe("reminder email", () => {
+  it("shows progress, links to the next module and can be unsubscribed from", async () => {
+    await sendEmail({
+      to: "ada@example.org",
+      template: "reminder",
+      props: {
+        firstName: "Ada",
+        completedModules: 4,
+        totalModules: 12,
+        nextModuleTitle: "How We're Organised",
+        continueUrl: "https://kc.example/course/kc/how-were-organised",
+        unsubscribeUrl: "https://kc.example/email/unsubscribe?token=t",
+      },
+      headers: {
+        "List-Unsubscribe":
+          "<https://kc.example/api/email/unsubscribe?token=t>",
+        "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+      },
+    });
+    const message = send.mock.calls[0][0];
+    expect(message.subject).toBe("Pick up where you left off, Ada");
+    expect(message.text).toContain("You've finished 4 of 12 modules");
+    expect(message.text).toContain("How We're Organised");
+    expect(message.html).toContain(
+      'href="https://kc.example/course/kc/how-were-organised"',
+    );
+    expect(message.html).toContain(
+      'href="https://kc.example/email/unsubscribe?token=t"',
+    );
+    expect(message.headers).toEqual({
+      "List-Unsubscribe": "<https://kc.example/api/email/unsubscribe?token=t>",
+      "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+    });
+  });
+});
+
 describe("formatFrom", () => {
   it("names a bare address and keeps a full one", () => {
     expect(formatFrom("v@kc.example")).toBe("KC Volunteers <v@kc.example>");

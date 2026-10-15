@@ -48,6 +48,10 @@ export default function PrivacyPage() {
           <li>The branch and team you&apos;re interested in</li>
           <li>Your training progress through each module</li>
           <li>Your answers to reflection questions in the course</li>
+          <li>
+            The emails we send you (a welcome, reminders if you pause your
+            training, which you can turn off, and your certificate)
+          </li>
           <li>Your quiz results and any certificates you earn</li>
         </ul>
       </Section>

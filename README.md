@@ -106,6 +106,14 @@ Notes:
 - The email links to `{{ .SiteURL }}/auth/confirm`, which works in any browser but doesn't carry a `next` path; volunteers land on `/course` (or `/onboarding` the first time). Signing in with the code keeps the page they were heading to.
 - Supabase has no separate switch for password sign-in; the app simply never offers passwords.
 
+## Reminder emails
+
+Volunteers who started but haven't finished get up to two reminders: one after 7 days without progress and one after 21, never two within a week. Any progress starts the count again, and finishing the quiz or turning reminders off stops them. The rules are in `src/server/jobs/reminder-rules.ts`.
+
+- `pnpm job:reminders --dry-run` lists who would get a reminder and why. Without `--dry-run` it sends them (at most 50 a run). Set `EMAIL_REDIRECT_TO` locally to receive every email yourself.
+- `GET /api/cron/reminders` runs the same job and returns `{ sent, skipped }`. It needs `Authorization: Bearer $CRON_SECRET`. `vercel.json` schedules it daily at 17:00 UTC; set `CRON_SECRET` in Vercel and it sends that header itself.
+- Each reminder has an unsubscribe link (a signed token, `EMAIL_UNSUBSCRIBE_SECRET`) to `/email/unsubscribe`, plus `List-Unsubscribe` headers for one-click unsubscribe in mail apps. Volunteers can also switch reminders off on `/account`.
+
 ## Security
 
 All data access goes through the server: route handlers and server code query Postgres via Prisma ([src/lib/prisma.ts](src/lib/prisma.ts)). The browser never talks to the database directly.

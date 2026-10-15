@@ -6,6 +6,7 @@ import {
   Head,
   Hr,
   Html,
+  Link,
   Preview,
   Section,
   Text,
@@ -66,6 +67,7 @@ const styles = {
     textDecoration: "none",
   },
   rule: { borderColor: "#2C2C2C", margin: "32px 0 24px" },
+  link: { color: emailColours.muted, textDecoration: "underline" },
   footer: {
     margin: "0 0 8px",
     fontSize: "13px",
@@ -83,10 +85,13 @@ const styles = {
 export function KcEmailLayout({
   preview,
   children,
+  unsubscribeUrl,
 }: {
   /** Inbox preview text shown after the subject. */
   preview: string;
   children: ReactNode;
+  /** Adds an unsubscribe line to the footer (reminder emails). */
+  unsubscribeUrl?: string;
 }) {
   return (
     <Html lang="en" dir="ltr">
@@ -112,6 +117,15 @@ export function KcEmailLayout({
             email. If you have any questions, speak to your contact person at
             KC.
           </Text>
+          {unsubscribeUrl && (
+            <Text style={styles.footer}>
+              Don&apos;t want these reminders?{" "}
+              <Link href={unsubscribeUrl} style={styles.link}>
+                Unsubscribe
+              </Link>
+              .
+            </Text>
+          )}
         </Container>
       </Body>
     </Html>

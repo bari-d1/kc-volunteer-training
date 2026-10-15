@@ -18,6 +18,8 @@ export type SendEmailInput<T extends EmailTemplateName> = {
   props: EmailTemplateProps<T>;
   /** Resend tags, e.g. { kind: "certificate" }. Letters, numbers, _ and - only. */
   tags?: Record<string, string>;
+  /** Extra headers, e.g. List-Unsubscribe. */
+  headers?: Record<string, string>;
   /** The volunteer it's for, for the EmailLog. */
   profileId?: string;
   /**
@@ -63,6 +65,7 @@ export async function sendEmail<T extends EmailTemplateName>({
   template,
   props,
   tags,
+  headers,
   profileId,
   once = false,
 }: SendEmailInput<T>): Promise<SendEmailResult> {
@@ -86,7 +89,7 @@ export async function sendEmail<T extends EmailTemplateName>({
 
   let result: SendEmailResult;
   try {
-    result = await deliver({ to, template, props, tags });
+    result = await deliver({ to, template, props, tags, headers });
   } catch (error) {
     console.error(`Email "${template}" failed`, error);
     result = {
@@ -117,7 +120,8 @@ async function deliver<T extends EmailTemplateName>({
   template,
   props,
   tags,
-}: Omit<SendEmailInput<T>, "profileId">): Promise<SendEmailResult> {
+  headers,
+}: Omit<SendEmailInput<T>, "profileId" | "once">): Promise<SendEmailResult> {
   // Each template's props match its own entry (checked by SendEmailInput).
   const { component, subject: subjectFor } = emailTemplates[template] as {
     component: ComponentType<object>;
@@ -160,6 +164,7 @@ async function deliver<T extends EmailTemplateName>({
     html,
     text,
     tags: toResendTags({ template, ...tags }),
+    headers,
   });
   if (error || !data) {
     const message = error?.message ?? "Resend returned no id";

@@ -22,7 +22,8 @@
     "quiz:validate": "tsx scripts/quiz-validate.ts",
     "quiz:schema": "tsx scripts/quiz-schema.ts",
     "quiz:import": "tsx scripts/quiz-import.ts",
-    "email:dev": "email dev --dir src/emails --port 3001"
+    "email:dev": "email dev --dir src/emails --port 3001",
+    "job:reminders": "tsx --import ./scripts/register-server-only.mjs scripts/job-reminders.ts"
   },
   "dependencies": {
     "@node-rs/argon2": "^2.2.2",

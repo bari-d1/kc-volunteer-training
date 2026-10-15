@@ -3,6 +3,10 @@ import CompletionEmail, {
   completionEmailSubject,
   type CompletionEmailProps,
 } from "./completion-email";
+import ReminderEmail, {
+  reminderEmailSubject,
+  type ReminderEmailProps,
+} from "./reminder-email";
 import TestEmail, { testEmailSubject, type TestEmailProps } from "./test-email";
 import WelcomeEmail, {
   welcomeEmailSubject,
@@ -28,6 +32,10 @@ export const emailTemplates = {
     component: CompletionEmail,
     subject: completionEmailSubject,
   } satisfies Template<CompletionEmailProps>,
+  reminder: {
+    component: ReminderEmail,
+    subject: reminderEmailSubject,
+  } satisfies Template<ReminderEmailProps>,
 };
 
 export type EmailTemplateName = keyof typeof emailTemplates;

@@ -54,6 +54,8 @@ model Profile {
   teamInterest   String?
   consentAt      DateTime
   hideNarrator   Boolean     @default(false)
+  /// Reminder emails after a week without progress (unsubscribe turns it off).
+  emailReminders Boolean     @default(true)
   createdAt      DateTime    @default(now())
   updatedAt      DateTime    @updatedAt
 
