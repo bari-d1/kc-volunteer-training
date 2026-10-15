@@ -24,7 +24,6 @@ const { sendEmail, formatFrom } = await import("./email");
 const ENV = {
   RESEND_API_KEY: "re_test",
   EMAIL_FROM: "volunteers@kc.example",
-  CONTACT_PHONE: "07700 900123",
   APP_URL: "https://kc.example",
 };
 
@@ -71,8 +70,8 @@ describe("sendEmail", () => {
     );
     expect(message).not.toHaveProperty("replyTo");
     expect(message.html).toContain("please don&#x27;t reply to this");
-    expect(message.html).toContain('href="tel:07700900123"');
-    expect(message.text).toContain("07700 900123");
+    expect(message.html).toContain("speak to your contact person");
+    expect(message.text).toContain("speak to your contact person at KC");
     expect(message.text).toMatch(/Hi Ada/);
     expect(message.text).not.toContain("<");
     expect(createLog).toHaveBeenCalledWith({
@@ -147,16 +146,6 @@ describe("sendEmail", () => {
       error: "EMAIL_FROM is not set",
     });
     expect(send).not.toHaveBeenCalled();
-  });
-});
-
-describe("email footer", () => {
-  it("leaves out the phone line when no number is set", async () => {
-    vi.stubEnv("CONTACT_PHONE", "");
-    await sendEmail(testEmail);
-    const { html } = send.mock.calls[0][0];
-    expect(html).toContain("please don&#x27;t reply to this");
-    expect(html).not.toContain("Call or text");
   });
 });
 

@@ -6,7 +6,6 @@ import {
   Head,
   Hr,
   Html,
-  Link,
   Preview,
   Section,
   Text,
@@ -73,25 +72,21 @@ const styles = {
     lineHeight: "1.5",
     color: emailColours.muted,
   },
-  link: { color: emailColours.lime, textDecoration: "underline" },
 } satisfies Record<string, CSSProperties>;
 
 /**
  * The frame every KC email shares: dark background, KC wordmark as text,
- * content up to 560px wide, and a footer with who it's from, that replies
- * aren't read, and a number to call instead. Inline styles only, for Gmail, Outlook and Apple Mail. It declares
+ * content up to 560px wide, and a footer with who it's from and that
+ * replies aren't read (questions go to their KC contact person). Inline styles only, for Gmail, Outlook and Apple Mail. It declares
  * a dark colour scheme so clients that respect it don't invert the colours.
  */
 export function KcEmailLayout({
   preview,
   children,
-  contactPhone = process.env.CONTACT_PHONE,
 }: {
   /** Inbox preview text shown after the subject. */
   preview: string;
   children: ReactNode;
-  /** For questions, since the sending inbox isn't monitored. Defaults to CONTACT_PHONE. */
-  contactPhone?: string;
 }) {
   return (
     <Html lang="en" dir="ltr">
@@ -114,20 +109,8 @@ export function KcEmailLayout({
           </Text>
           <Text style={styles.footer}>
             This inbox isn&apos;t monitored, so please don&apos;t reply to this
-            email.
-            {contactPhone && (
-              <>
-                {" "}
-                Questions? Call or text{" "}
-                <Link
-                  href={`tel:${contactPhone.replace(/[^\d+]/g, "")}`}
-                  style={{ ...styles.link, whiteSpace: "nowrap" }}
-                >
-                  {contactPhone}
-                </Link>
-                .
-              </>
-            )}
+            email. If you have any questions, speak to your contact person at
+            KC.
           </Text>
         </Container>
       </Body>
