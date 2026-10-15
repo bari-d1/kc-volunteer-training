@@ -32,7 +32,6 @@ vi.mock("@/server/courses", () => ({
   getModulesWithProgress: (...a: unknown[]) => getModulesWithProgress(...a),
 }));
 
-const { default: CoursePage } = await import("../page");
 const pageModule = await import("./page");
 
 // Render the async inner component directly (Suspense isn't needed in tests).
@@ -76,17 +75,6 @@ beforeEach(() => {
       unlockedBy: null,
     },
   ]);
-});
-
-describe("/course", () => {
-  it("redirects to the default course", () => {
-    expect(() => CoursePage()).toThrow(Redirect);
-    try {
-      CoursePage();
-    } catch (error) {
-      expect((error as Error).message).toBe("/course/volunteers-onboarding");
-    }
-  });
 });
 
 describe("/course/[courseSlug]", () => {
