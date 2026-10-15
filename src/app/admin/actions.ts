@@ -8,6 +8,7 @@ import {
   hashIp,
   isAdminConfigured,
   recordAdminLoginAttempt,
+  requireAdmin,
   startAdminSession,
   verifyAdminPassword,
 } from "@/lib/admin-auth";
@@ -59,6 +60,7 @@ export async function adminLogin(
 }
 
 export async function adminLogout() {
+  await requireAdmin();
   await endAdminSession();
   redirect("/admin/login");
 }

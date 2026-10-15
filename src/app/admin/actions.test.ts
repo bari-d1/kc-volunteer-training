@@ -12,6 +12,7 @@ const auth = {
   recordAdminLoginAttempt: vi.fn(async () => {}),
   startAdminSession: vi.fn(async () => {}),
   endAdminSession: vi.fn(async () => {}),
+  requireAdmin: vi.fn(async () => {}),
 };
 vi.mock("@/lib/admin-auth", () => auth);
 
@@ -95,6 +96,7 @@ describe("adminLogin", () => {
 describe("adminLogout", () => {
   it("clears the session and returns to login", async () => {
     await expect(adminLogout()).rejects.toMatchObject({ to: "/admin/login" });
+    expect(auth.requireAdmin).toHaveBeenCalled();
     expect(auth.endAdminSession).toHaveBeenCalled();
   });
 });
