@@ -20,7 +20,10 @@ const instant = (ui: ReactElement) =>
     ),
   });
 
-afterEach(() => vi.restoreAllMocks());
+afterEach(() => {
+  vi.restoreAllMocks();
+  vi.unstubAllGlobals();
+});
 
 describe("FlipCardsBlock", () => {
   const cards = [
@@ -245,7 +248,25 @@ describe("PyramidBlock", () => {
     expect(detail).not.toHaveTextContent("Run each team.");
   });
 
-  it("is a plain diagram, with nothing to tap, when no level has a description", () => {
+  it("is a plain diagram, with nothing to tap, when no level has a description", async () => {
+    // Report everything as on screen so the cascade plays.
+    class OnScreen {
+      constructor(
+        private callback: (
+          entries: Partial<IntersectionObserverEntry>[],
+        ) => void,
+      ) {}
+      observe(target: Element) {
+        queueMicrotask(() =>
+          this.callback([
+            { isIntersecting: true, intersectionRatio: 1, target },
+          ]),
+        );
+      }
+      unobserve() {}
+      disconnect() {}
+    }
+    vi.stubGlobal("IntersectionObserver", OnScreen);
     instant(
       <PyramidBlock
         {...ids}
@@ -259,8 +280,13 @@ describe("PyramidBlock", () => {
       "Team Lead",
       "Volunteers",
     ]);
-    expect(items.map((i) => i.style.width)).toEqual(["40%", "100%"]);
-    expect(items[0]).toHaveClass("bg-lime");
+    const boxes = items.map((i) => i.lastElementChild as HTMLElement);
+    expect(boxes.map((b) => b.style.width)).toEqual(["40%", "100%"]);
+    expect(boxes[0]).toHaveClass("bg-lime");
+    // Every level ends fully visible once the cascade has played.
+    await waitFor(() => {
+      for (const item of items) expect(item.style.opacity).toBe("1");
+    });
   });
 });
 

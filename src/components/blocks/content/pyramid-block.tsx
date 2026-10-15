@@ -1,12 +1,53 @@
 "use client";
 
+import { motion, type Variants } from "motion/react";
 import { useId, useState } from "react";
 import { cn } from "@/lib/cn";
 import type { BlockProps } from "../block-props";
 
+/** Seconds between each level lighting up. */
+const STEP = 0.45;
+
+const cascade: Variants = {
+  hidden: {},
+  shown: { transition: { staggerChildren: STEP, delayChildren: 0.2 } },
+};
+const dimmed: Variants = {
+  hidden: { opacity: 0.25 },
+  shown: { opacity: 1, transition: { duration: 0.3 } },
+};
+// A lime ring that pulses once as each level lights up (two shadows, so
+// the ring sits clear of the lime top level).
+const RING_OFF = "0 0 0 0px #191919, 0 0 0 0px rgba(217, 255, 61, 0)";
+const RING_ON = "0 0 0 2px #191919, 0 0 0 5px rgba(217, 255, 61, 0.9)";
+const pulse: Variants = {
+  hidden: { scale: 0.96, boxShadow: RING_OFF },
+  shown: {
+    scale: [0.96, 1.04, 1],
+    boxShadow: [RING_OFF, RING_ON, RING_OFF],
+    transition: { duration: 0.7, times: [0, 0.35, 1], ease: "easeOut" },
+  },
+};
+
+function DownArrow() {
+  return (
+    <svg
+      aria-hidden="true"
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      className="text-lime"
+    >
+      <path d="M6 1h4v7h4l-6 7-6-7h4z" fill="currentColor" />
+    </svg>
+  );
+}
+
 /**
  * Narrow at the top, wide at the bottom. Levels with a description can be
- * tapped to read it; without any, it's a plain diagram.
+ * tapped to read it; without any, it's a diagram that lights up level by
+ * level, top to bottom, when it scrolls into view (instantly with reduced
+ * motion).
  */
 export function PyramidBlock({ levels }: BlockProps<"PYRAMID">) {
   const detailId = useId();
@@ -23,17 +64,30 @@ export function PyramidBlock({ levels }: BlockProps<"PYRAMID">) {
 
   if (!interactive) {
     return (
-      <ol className="flex flex-col items-center gap-2">
+      <motion.ol
+        variants={cascade}
+        initial="hidden"
+        whileInView="shown"
+        viewport={{ once: true, amount: 0.6 }}
+        className="flex flex-col items-center gap-1"
+      >
         {levels.map((item, index) => (
-          <li
+          <motion.li
             key={index}
-            style={{ width: `${width(index)}%` }}
-            className={levelClasses(index)}
+            variants={dimmed}
+            className="flex w-full flex-col items-center gap-1"
           >
-            {item.title}
-          </li>
+            {index > 0 && <DownArrow />}
+            <motion.div
+              variants={pulse}
+              style={{ width: `${width(index)}%` }}
+              className={levelClasses(index)}
+            >
+              {item.title}
+            </motion.div>
+          </motion.li>
         ))}
-      </ol>
+      </motion.ol>
     );
   }
 
