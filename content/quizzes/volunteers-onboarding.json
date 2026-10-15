@@ -1,0 +1,2745 @@
+{
+  "$schema": "./question-bank.schema.json",
+  "courseSlug": "volunteers-onboarding",
+  "version": 1,
+  "settings": {
+    "passMark": 80,
+    "questionsPerAttempt": 10
+  },
+  "sections": [
+    {
+      "topic": "about-kc",
+      "title": "About KC"
+    },
+    {
+      "topic": "our-values",
+      "title": "KC's Core Values"
+    },
+    {
+      "topic": "seasons-of-kc",
+      "title": "Seasons / History of KC"
+    },
+    {
+      "topic": "church-family",
+      "title": "Jubilee Church MCR & Leadership"
+    },
+    {
+      "topic": "how-were-organised",
+      "title": "KC Structure (Volunteer Hierarchy)"
+    },
+    {
+      "topic": "what-we-believe",
+      "title": "What We Believe (Statement of Faith)"
+    },
+    {
+      "topic": "what-we-offer",
+      "title": "What We Offer"
+    },
+    {
+      "topic": "recap",
+      "title": "Closing / General Recap"
+    }
+  ],
+  "questions": [
+    {
+      "id": "Q01",
+      "topic": "about-kc",
+      "prompt": "What does \"KC\" stand for?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Kids' Class"
+        },
+        {
+          "id": "b",
+          "text": "Kingdom Community"
+        },
+        {
+          "id": "c",
+          "text": "Kingdom Church"
+        },
+        {
+          "id": "d",
+          "text": "Kingdom Culture"
+        }
+      ],
+      "correctOptionId": "d",
+      "explanation": "",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": "Q02",
+      "topic": "about-kc",
+      "group": "rccg-family",
+      "prompt": "KC is the young adult expression of which church?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Manchester Cathedral"
+        },
+        {
+          "id": "b",
+          "text": "Jubilee Church Manchester (RCCG)"
+        },
+        {
+          "id": "c",
+          "text": "Hillsong Manchester"
+        },
+        {
+          "id": "d",
+          "text": "Kingdom Life Chapel"
+        }
+      ],
+      "correctOptionId": "b",
+      "explanation": "",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": "Q03",
+      "topic": "about-kc",
+      "group": "kc-mission",
+      "prompt": "Which of the following is KC's stated mission?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Hosting weekly concerts"
+        },
+        {
+          "id": "b",
+          "text": "Training future pastors only"
+        },
+        {
+          "id": "c",
+          "text": "Raising kingdom-minded disciples"
+        },
+        {
+          "id": "d",
+          "text": "Growing the largest youth group in the UK"
+        }
+      ],
+      "correctOptionId": "c",
+      "explanation": "",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": "Q04",
+      "topic": "about-kc",
+      "group": "kc-founded",
+      "prompt": "In what year was KC founded?",
+      "options": [
+        {
+          "id": "a",
+          "text": "2012"
+        },
+        {
+          "id": "b",
+          "text": "2015"
+        },
+        {
+          "id": "c",
+          "text": "2018"
+        },
+        {
+          "id": "d",
+          "text": "2019"
+        }
+      ],
+      "correctOptionId": "b",
+      "explanation": "",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": "Q05",
+      "topic": "about-kc",
+      "group": "kc-beginnings",
+      "prompt": "How did KC begin?",
+      "options": [
+        {
+          "id": "a",
+          "text": "As a youth choir"
+        },
+        {
+          "id": "b",
+          "text": "As a Bible college"
+        },
+        {
+          "id": "c",
+          "text": "As a registered charity"
+        },
+        {
+          "id": "d",
+          "text": "As a small fellowship"
+        }
+      ],
+      "correctOptionId": "d",
+      "explanation": "",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": "Q06",
+      "topic": "about-kc",
+      "group": "kc-beginnings",
+      "prompt": "Which statement best reflects KC's early history?",
+      "options": [
+        {
+          "id": "a",
+          "text": "It began as a separate denomination"
+        },
+        {
+          "id": "b",
+          "text": "It was founded by RCCG headquarters in Nigeria"
+        },
+        {
+          "id": "c",
+          "text": "It began as a small fellowship and grew into a group of hundreds"
+        },
+        {
+          "id": "d",
+          "text": "It launched with over 500 members"
+        }
+      ],
+      "correctOptionId": "c",
+      "explanation": "",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": "Q07",
+      "topic": "about-kc",
+      "group": "spiritual-costco",
+      "prompt": "KC describes its culture as a \"Spiritual ______.\"",
+      "options": [
+        {
+          "id": "a",
+          "text": "Buffet"
+        },
+        {
+          "id": "b",
+          "text": "Costco"
+        },
+        {
+          "id": "c",
+          "text": "Marketplace"
+        },
+        {
+          "id": "d",
+          "text": "Garden"
+        }
+      ],
+      "correctOptionId": "b",
+      "explanation": "",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": "Q08",
+      "topic": "about-kc",
+      "group": "spiritual-costco",
+      "prompt": "What does the \"Spiritual Costco\" description mean about KC's culture?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Variety is the norm, and the norm is variety"
+        },
+        {
+          "id": "b",
+          "text": "Only large events are held"
+        },
+        {
+          "id": "c",
+          "text": "Everyone must follow one fixed style"
+        },
+        {
+          "id": "d",
+          "text": "Membership requires a subscription"
+        }
+      ],
+      "correctOptionId": "a",
+      "explanation": "",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": "Q09",
+      "topic": "about-kc",
+      "group": "spiritual-costco",
+      "prompt": "Which of the following best describes KC's culture?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Highly uniform and traditional"
+        },
+        {
+          "id": "b",
+          "text": "A \"Spiritual Costco\" where variety is the norm"
+        },
+        {
+          "id": "c",
+          "text": "Focused only on one style of worship"
+        },
+        {
+          "id": "d",
+          "text": "Closed to new ideas"
+        }
+      ],
+      "correctOptionId": "b",
+      "explanation": "",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": "Q10",
+      "topic": "about-kc",
+      "group": "kc-mission",
+      "prompt": "KC exists to raise ______-minded disciples.",
+      "options": [
+        {
+          "id": "a",
+          "text": "community"
+        },
+        {
+          "id": "b",
+          "text": "career"
+        },
+        {
+          "id": "c",
+          "text": "kingdom"
+        },
+        {
+          "id": "d",
+          "text": "campus"
+        }
+      ],
+      "correctOptionId": "c",
+      "explanation": "",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": "Q11",
+      "topic": "our-values",
+      "group": "values-list",
+      "prompt": "What are KC's three core values?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Kingdom, Excellence, Discipleship"
+        },
+        {
+          "id": "b",
+          "text": "Kingdom, Community, Growth"
+        },
+        {
+          "id": "c",
+          "text": "Faith, Hope, Love"
+        },
+        {
+          "id": "d",
+          "text": "Worship, Prayer, Service"
+        }
+      ],
+      "correctOptionId": "a",
+      "explanation": "",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": "Q12",
+      "topic": "our-values",
+      "group": "value-verses",
+      "prompt": "Which Bible verse is associated with the value \"Kingdom\"?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Matthew 6:33"
+        },
+        {
+          "id": "b",
+          "text": "John 3:16"
+        },
+        {
+          "id": "c",
+          "text": "Matthew 28:19-20"
+        },
+        {
+          "id": "d",
+          "text": "Daniel 5:12"
+        }
+      ],
+      "correctOptionId": "a",
+      "explanation": "",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": "Q13",
+      "topic": "our-values",
+      "group": "value-verses",
+      "prompt": "Which Bible verse is associated with the value \"Excellence\"?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Matthew 6:33"
+        },
+        {
+          "id": "b",
+          "text": "Matthew 28:19-20"
+        },
+        {
+          "id": "c",
+          "text": "Daniel 5:12"
+        },
+        {
+          "id": "d",
+          "text": "Psalm 23:1"
+        }
+      ],
+      "correctOptionId": "c",
+      "explanation": "",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": "Q14",
+      "topic": "our-values",
+      "group": "value-verses",
+      "prompt": "Which Bible verse is associated with the value \"Discipleship\"?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Matthew 6:33"
+        },
+        {
+          "id": "b",
+          "text": "Daniel 5:12"
+        },
+        {
+          "id": "c",
+          "text": "Romans 12:1"
+        },
+        {
+          "id": "d",
+          "text": "Matthew 28:19-20"
+        }
+      ],
+      "correctOptionId": "d",
+      "explanation": "",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": "Q15",
+      "topic": "our-values",
+      "group": "value-verses",
+      "prompt": "Which value is paired with Matthew 28:19-20?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Kingdom"
+        },
+        {
+          "id": "b",
+          "text": "Excellence"
+        },
+        {
+          "id": "c",
+          "text": "Discipleship"
+        },
+        {
+          "id": "d",
+          "text": "Community"
+        }
+      ],
+      "correctOptionId": "c",
+      "explanation": "",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": "Q16",
+      "topic": "our-values",
+      "group": "value-verses",
+      "prompt": "Which value is paired with Daniel 5:12?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Discipleship"
+        },
+        {
+          "id": "b",
+          "text": "Kingdom"
+        },
+        {
+          "id": "c",
+          "text": "Excellence"
+        },
+        {
+          "id": "d",
+          "text": "Worship"
+        }
+      ],
+      "correctOptionId": "c",
+      "explanation": "",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": "Q17",
+      "topic": "our-values",
+      "group": "values-list",
+      "prompt": "Which of the following is one of KC's three stated values?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Tradition"
+        },
+        {
+          "id": "b",
+          "text": "Popularity"
+        },
+        {
+          "id": "c",
+          "text": "Efficiency"
+        },
+        {
+          "id": "d",
+          "text": "Excellence"
+        }
+      ],
+      "correctOptionId": "d",
+      "explanation": "",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": "Q18",
+      "topic": "our-values",
+      "group": "value-verses",
+      "prompt": "Matthew 6:33 is linked to which KC value?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Discipleship"
+        },
+        {
+          "id": "b",
+          "text": "Excellence"
+        },
+        {
+          "id": "c",
+          "text": "Kingdom"
+        },
+        {
+          "id": "d",
+          "text": "Faithfulness"
+        }
+      ],
+      "correctOptionId": "c",
+      "explanation": "",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": "Q19",
+      "topic": "our-values",
+      "group": "values-list",
+      "prompt": "What are KC's three core values, in the order presented in the training?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Kingdom, Discipleship, Excellence"
+        },
+        {
+          "id": "b",
+          "text": "Excellence, Discipleship, Kingdom"
+        },
+        {
+          "id": "c",
+          "text": "Kingdom, Excellence, Discipleship"
+        },
+        {
+          "id": "d",
+          "text": "Discipleship, Kingdom, Excellence"
+        }
+      ],
+      "correctOptionId": "c",
+      "explanation": "",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": "Q20",
+      "topic": "our-values",
+      "group": "values-list",
+      "prompt": "Which of these is one of KC's three headline values (as opposed to something KC offers)?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Kingdom"
+        },
+        {
+          "id": "b",
+          "text": "Opportunities to serve"
+        },
+        {
+          "id": "c",
+          "text": "Worship experiences"
+        },
+        {
+          "id": "d",
+          "text": "Community & fellowship"
+        }
+      ],
+      "correctOptionId": "a",
+      "explanation": "",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": "Q21",
+      "topic": "seasons-of-kc",
+      "group": "kc-founded",
+      "prompt": "In what year was KC \"birthed\"?",
+      "options": [
+        {
+          "id": "a",
+          "text": "2012"
+        },
+        {
+          "id": "b",
+          "text": "2015"
+        },
+        {
+          "id": "c",
+          "text": "2017"
+        },
+        {
+          "id": "d",
+          "text": "2020"
+        }
+      ],
+      "correctOptionId": "b",
+      "explanation": "",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": "Q22",
+      "topic": "seasons-of-kc",
+      "group": "team-lead",
+      "prompt": "Who became Team Lead of KC in 2019?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Pastor Leke Sanusi"
+        },
+        {
+          "id": "b",
+          "text": "Pastor Joshua Komolafe"
+        },
+        {
+          "id": "c",
+          "text": "Pastor E.A. Adeboye"
+        },
+        {
+          "id": "d",
+          "text": "Adele Ige"
+        }
+      ],
+      "correctOptionId": "b",
+      "explanation": "",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": "Q23",
+      "topic": "seasons-of-kc",
+      "group": "new-wine-season",
+      "prompt": "What season followed the appointment of a new Team Lead, associated with Judah First, Testimonies, Words of Knowledge, and Creative Overflow?",
+      "options": [
+        {
+          "id": "a",
+          "text": "The Harvest Season"
+        },
+        {
+          "id": "b",
+          "text": "The Kingdom Season"
+        },
+        {
+          "id": "c",
+          "text": "The New Wine Season"
+        },
+        {
+          "id": "d",
+          "text": "The Foundation Season"
+        }
+      ],
+      "correctOptionId": "c",
+      "explanation": "",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": "Q24",
+      "topic": "seasons-of-kc",
+      "group": "new-wine-season",
+      "prompt": "Which of the following is one of the four New Wine Season elements?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Judah First"
+        },
+        {
+          "id": "b",
+          "text": "MASTERLIFE"
+        },
+        {
+          "id": "c",
+          "text": "Hives"
+        },
+        {
+          "id": "d",
+          "text": "Branch Leaders"
+        }
+      ],
+      "correctOptionId": "a",
+      "explanation": "",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": "Q25",
+      "topic": "seasons-of-kc",
+      "group": "mobility-to-stability",
+      "prompt": "What theme is associated with KC's 2024 season?",
+      "options": [
+        {
+          "id": "a",
+          "text": "From Mobility to Stability"
+        },
+        {
+          "id": "b",
+          "text": "From Fellowship to Family"
+        },
+        {
+          "id": "c",
+          "text": "From Small to Strong"
+        },
+        {
+          "id": "d",
+          "text": "From Vision to Reality"
+        }
+      ],
+      "correctOptionId": "a",
+      "explanation": "",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": "Q26",
+      "topic": "seasons-of-kc",
+      "group": "team-lead",
+      "prompt": "When did Pastor Joshua Komolafe become Team Lead?",
+      "options": [
+        {
+          "id": "a",
+          "text": "2015"
+        },
+        {
+          "id": "b",
+          "text": "2019"
+        },
+        {
+          "id": "c",
+          "text": "2021"
+        },
+        {
+          "id": "d",
+          "text": "2024"
+        }
+      ],
+      "correctOptionId": "b",
+      "explanation": "",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": "Q27",
+      "topic": "seasons-of-kc",
+      "group": "new-wine-season",
+      "prompt": "Which of these is NOT one of the four New Wine Season elements?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Words of Knowledge"
+        },
+        {
+          "id": "b",
+          "text": "Judah First"
+        },
+        {
+          "id": "c",
+          "text": "Branch Leaders"
+        },
+        {
+          "id": "d",
+          "text": "Testimonies"
+        }
+      ],
+      "correctOptionId": "c",
+      "explanation": "",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": "Q28",
+      "topic": "seasons-of-kc",
+      "group": "mobility-to-stability",
+      "prompt": "Which is the correct chronological order of KC's seasons?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Pastor Joshua Komolafe as Team Lead → KC birthed → From Mobility to Stability"
+        },
+        {
+          "id": "b",
+          "text": "KC birthed → Pastor Joshua Komolafe as Team Lead → From Mobility to Stability"
+        },
+        {
+          "id": "c",
+          "text": "From Mobility to Stability → KC birthed → Pastor Joshua Komolafe as Team Lead"
+        },
+        {
+          "id": "d",
+          "text": "KC birthed → From Mobility to Stability → Pastor Joshua Komolafe as Team Lead"
+        }
+      ],
+      "correctOptionId": "b",
+      "explanation": "",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": "Q29",
+      "topic": "seasons-of-kc",
+      "group": "mobility-to-stability",
+      "prompt": "In 2024, KC's season theme was \"From ______ to ______.\"",
+      "options": [
+        {
+          "id": "a",
+          "text": "Struggle to Strength"
+        },
+        {
+          "id": "b",
+          "text": "Mobility to Stability"
+        },
+        {
+          "id": "c",
+          "text": "Fellowship to Family"
+        },
+        {
+          "id": "d",
+          "text": "Vision to Mission"
+        }
+      ],
+      "correctOptionId": "b",
+      "explanation": "",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": "Q30",
+      "topic": "seasons-of-kc",
+      "group": "new-wine-season",
+      "prompt": "Which element was part of the New Wine Season?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Creative Overflow"
+        },
+        {
+          "id": "b",
+          "text": "Champions Training"
+        },
+        {
+          "id": "c",
+          "text": "Youth Camp"
+        },
+        {
+          "id": "d",
+          "text": "Branch Planting"
+        }
+      ],
+      "correctOptionId": "a",
+      "explanation": "",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": "Q31",
+      "topic": "church-family",
+      "group": "rccg-family",
+      "prompt": "KC belongs to which denominational family?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Church of England"
+        },
+        {
+          "id": "b",
+          "text": "Assemblies of God"
+        },
+        {
+          "id": "c",
+          "text": "RCCG (Redeemed Christian Church of God)"
+        },
+        {
+          "id": "d",
+          "text": "Baptist Union"
+        }
+      ],
+      "correctOptionId": "c",
+      "explanation": "",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": "Q32",
+      "topic": "church-family",
+      "group": "jubilee-years",
+      "prompt": "How long has Jubilee Church been in Manchester?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Over 5 years"
+        },
+        {
+          "id": "b",
+          "text": "Over 10 years"
+        },
+        {
+          "id": "c",
+          "text": "Over 20 years"
+        },
+        {
+          "id": "d",
+          "text": "Over 30 years"
+        }
+      ],
+      "correctOptionId": "c",
+      "explanation": "",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": "Q33",
+      "topic": "church-family",
+      "group": "general-overseer",
+      "prompt": "Who is the General Overseer of RCCG?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Pastor Leke Sanusi"
+        },
+        {
+          "id": "b",
+          "text": "Pastor E.A. Adeboye"
+        },
+        {
+          "id": "c",
+          "text": "Pastor Bisi Komolafe"
+        },
+        {
+          "id": "d",
+          "text": "Pastor Joshua Komolafe"
+        }
+      ],
+      "correctOptionId": "b",
+      "explanation": "",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": "Q34",
+      "topic": "church-family",
+      "group": "rccg-chairman",
+      "prompt": "Who is the RCCG Chairman?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Pastor Abimbola Komolafe"
+        },
+        {
+          "id": "b",
+          "text": "Asst. Pastor Adele Ige"
+        },
+        {
+          "id": "c",
+          "text": "Pastor E.A. Adeboye"
+        },
+        {
+          "id": "d",
+          "text": "Pastor Leke Sanusi"
+        }
+      ],
+      "correctOptionId": "d",
+      "explanation": "",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": "Q35",
+      "topic": "church-family",
+      "group": "senior-pastors",
+      "prompt": "Who are the Senior Pastors of Jubilee Church Manchester (JCM)?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Pastors Abimbola & Bisi Komolafe"
+        },
+        {
+          "id": "b",
+          "text": "Pastor Joshua Komolafe & Adele Ige"
+        },
+        {
+          "id": "c",
+          "text": "Pastor E.A. Adeboye & wife"
+        },
+        {
+          "id": "d",
+          "text": "Pastor Leke Sanusi & wife"
+        }
+      ],
+      "correctOptionId": "a",
+      "explanation": "",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": "Q36",
+      "topic": "church-family",
+      "group": "young-adults-overseer",
+      "prompt": "Who is the Young Adults Overseer mentioned in the training?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Pastor Joshua Komolafe"
+        },
+        {
+          "id": "b",
+          "text": "Asst. Pastor Adele Ige"
+        },
+        {
+          "id": "c",
+          "text": "Pastor Bisi Komolafe"
+        },
+        {
+          "id": "d",
+          "text": "Pastor Leke Sanusi"
+        }
+      ],
+      "correctOptionId": "b",
+      "explanation": "",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": "Q37",
+      "topic": "church-family",
+      "group": "general-overseer",
+      "prompt": "Which title belongs to Pastor E.A. Adeboye?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Senior Pastor, JCM"
+        },
+        {
+          "id": "b",
+          "text": "RCCG Chairman"
+        },
+        {
+          "id": "c",
+          "text": "General Overseer, RCCG"
+        },
+        {
+          "id": "d",
+          "text": "Young Adults Overseer"
+        }
+      ],
+      "correctOptionId": "c",
+      "explanation": "",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": "Q38",
+      "topic": "church-family",
+      "group": "rccg-chairman",
+      "prompt": "Which title belongs to Pastor Leke Sanusi?",
+      "options": [
+        {
+          "id": "a",
+          "text": "RCCG Chairman"
+        },
+        {
+          "id": "b",
+          "text": "Senior Pastor, JCM"
+        },
+        {
+          "id": "c",
+          "text": "General Overseer, RCCG"
+        },
+        {
+          "id": "d",
+          "text": "Team Lead, KC"
+        }
+      ],
+      "correctOptionId": "a",
+      "explanation": "",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": "Q39",
+      "topic": "church-family",
+      "group": "senior-pastors",
+      "prompt": "Pastors Abimbola & Bisi Komolafe hold which role?",
+      "options": [
+        {
+          "id": "a",
+          "text": "RCCG Chairman"
+        },
+        {
+          "id": "b",
+          "text": "General Overseer, RCCG"
+        },
+        {
+          "id": "c",
+          "text": "Senior Pastors, JCM"
+        },
+        {
+          "id": "d",
+          "text": "Young Adults Overseer"
+        }
+      ],
+      "correctOptionId": "c",
+      "explanation": "",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": "Q40",
+      "topic": "church-family",
+      "group": "young-adults-overseer",
+      "prompt": "Which role does Asst. Pastor Adele Ige hold?",
+      "options": [
+        {
+          "id": "a",
+          "text": "RCCG Chairman"
+        },
+        {
+          "id": "b",
+          "text": "Senior Pastor, JCM"
+        },
+        {
+          "id": "c",
+          "text": "General Overseer, RCCG"
+        },
+        {
+          "id": "d",
+          "text": "Young Adults Overseer"
+        }
+      ],
+      "correctOptionId": "d",
+      "explanation": "",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": "Q41",
+      "topic": "church-family",
+      "group": "senior-pastors",
+      "prompt": "What acronym is used for Jubilee Church Manchester in the leadership slide?",
+      "options": [
+        {
+          "id": "a",
+          "text": "JCM"
+        },
+        {
+          "id": "b",
+          "text": "JCUK"
+        },
+        {
+          "id": "c",
+          "text": "JCC"
+        },
+        {
+          "id": "d",
+          "text": "JCMR"
+        }
+      ],
+      "correctOptionId": "a",
+      "explanation": "",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": "Q42",
+      "topic": "church-family",
+      "group": "rccg-family",
+      "prompt": "Which statement about Jubilee Church Manchester is correct?",
+      "options": [
+        {
+          "id": "a",
+          "text": "It is an independent, non-denominational church"
+        },
+        {
+          "id": "b",
+          "text": "It is part of the RCCG family"
+        },
+        {
+          "id": "c",
+          "text": "It has no affiliation with any denomination"
+        },
+        {
+          "id": "d",
+          "text": "It is part of the Church of England"
+        }
+      ],
+      "correctOptionId": "b",
+      "explanation": "",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": "Q43",
+      "topic": "church-family",
+      "group": "general-overseer",
+      "prompt": "Which leader holds the title \"General Overseer, RCCG\"?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Pastor E.A. Adeboye"
+        },
+        {
+          "id": "b",
+          "text": "Pastor Leke Sanusi"
+        },
+        {
+          "id": "c",
+          "text": "Pastor Joshua Komolafe"
+        },
+        {
+          "id": "d",
+          "text": "Asst. Pastor Adele Ige"
+        }
+      ],
+      "correctOptionId": "a",
+      "explanation": "",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": "Q44",
+      "topic": "church-family",
+      "group": "rccg-chairman",
+      "prompt": "Which leader holds the title \"RCCG Chairman\"?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Asst. Pastor Adele Ige"
+        },
+        {
+          "id": "b",
+          "text": "Pastor Leke Sanusi"
+        },
+        {
+          "id": "c",
+          "text": "Pastor E.A. Adeboye"
+        },
+        {
+          "id": "d",
+          "text": "Pastors Abimbola & Bisi Komolafe"
+        }
+      ],
+      "correctOptionId": "b",
+      "explanation": "",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": "Q45",
+      "topic": "church-family",
+      "group": "young-adults-overseer",
+      "prompt": "Which leader holds the title \"Young Adults Overseer\"?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Pastor Leke Sanusi"
+        },
+        {
+          "id": "b",
+          "text": "Pastors Abimbola & Bisi Komolafe"
+        },
+        {
+          "id": "c",
+          "text": "Asst. Pastor Adele Ige"
+        },
+        {
+          "id": "d",
+          "text": "Pastor E.A. Adeboye"
+        }
+      ],
+      "correctOptionId": "c",
+      "explanation": "",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": "Q46",
+      "topic": "church-family",
+      "group": "jubilee-years",
+      "prompt": "Jubilee Church has been in Manchester for over ______ years.",
+      "options": [
+        {
+          "id": "a",
+          "text": "10"
+        },
+        {
+          "id": "b",
+          "text": "15"
+        },
+        {
+          "id": "c",
+          "text": "20"
+        },
+        {
+          "id": "d",
+          "text": "30"
+        }
+      ],
+      "correctOptionId": "c",
+      "explanation": "",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": "Q47",
+      "topic": "church-family",
+      "group": "senior-pastors",
+      "prompt": "Which pair of leaders forms a husband-and-wife senior pastoral team, according to the slides?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Pastor E.A. Adeboye & Pastor Leke Sanusi"
+        },
+        {
+          "id": "b",
+          "text": "Pastor Joshua Komolafe & Adele Ige"
+        },
+        {
+          "id": "c",
+          "text": "Pastors Abimbola & Bisi Komolafe"
+        },
+        {
+          "id": "d",
+          "text": "Pastor Leke Sanusi & Pastor Bisi Komolafe"
+        }
+      ],
+      "correctOptionId": "c",
+      "explanation": "",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": "Q48",
+      "topic": "church-family",
+      "prompt": "Why is it important for KC volunteers to know these leaders' names and roles?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Because it's required for baptism"
+        },
+        {
+          "id": "b",
+          "text": "Because volunteers must contact them directly for approval"
+        },
+        {
+          "id": "c",
+          "text": "It isn't important — the names are just for reference"
+        },
+        {
+          "id": "d",
+          "text": "Because KC belongs to a wider church family, and it helps volunteers understand who they serve under"
+        }
+      ],
+      "correctOptionId": "d",
+      "explanation": "",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": "Q49",
+      "topic": "church-family",
+      "group": "team-lead",
+      "prompt": "Which statement is correct?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Pastor Leke Sanusi is the KC Team Lead"
+        },
+        {
+          "id": "b",
+          "text": "Pastor Joshua Komolafe is the KC Team Lead, not the RCCG Chairman"
+        },
+        {
+          "id": "c",
+          "text": "Pastor Joshua Komolafe is the RCCG Chairman"
+        },
+        {
+          "id": "d",
+          "text": "Asst. Pastor Adele Ige is the General Overseer of RCCG"
+        }
+      ],
+      "correctOptionId": "b",
+      "explanation": "",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": "Q50",
+      "topic": "church-family",
+      "group": "senior-pastors",
+      "prompt": "Which two leadership roles are held by a married couple, according to the slides?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Team Lead and Young Adults Overseer"
+        },
+        {
+          "id": "b",
+          "text": "Branch Leaders and Stewards"
+        },
+        {
+          "id": "c",
+          "text": "General Overseer and Chairman of RCCG"
+        },
+        {
+          "id": "d",
+          "text": "Senior Pastors of JCM"
+        }
+      ],
+      "correctOptionId": "d",
+      "explanation": "",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": "Q51",
+      "topic": "how-were-organised",
+      "group": "kc-structure",
+      "prompt": "Which of the following correctly lists the five levels of the KC structure, top to bottom?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Volunteers → Champions → Pillars → Branch Leaders & Stewards → Team Lead"
+        },
+        {
+          "id": "b",
+          "text": "Branch Leaders & Stewards → Team Lead → Pillars → Volunteers → Champions"
+        },
+        {
+          "id": "c",
+          "text": "Team Lead → Branch Leaders & Stewards → Pillars → Champions → Volunteers"
+        },
+        {
+          "id": "d",
+          "text": "Team Lead → Pillars → Champions → Branch Leaders & Stewards → Volunteers"
+        }
+      ],
+      "correctOptionId": "c",
+      "explanation": "",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": "Q52",
+      "topic": "how-were-organised",
+      "group": "kc-structure",
+      "prompt": "What is the top level of the KC structure?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Team Lead"
+        },
+        {
+          "id": "b",
+          "text": "Volunteers"
+        },
+        {
+          "id": "c",
+          "text": "Champions"
+        },
+        {
+          "id": "d",
+          "text": "Pillars"
+        }
+      ],
+      "correctOptionId": "a",
+      "explanation": "",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": "Q53",
+      "topic": "how-were-organised",
+      "group": "kc-structure",
+      "prompt": "What is the bottom level of the KC structure?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Branch Leaders & Stewards"
+        },
+        {
+          "id": "b",
+          "text": "Pillars"
+        },
+        {
+          "id": "c",
+          "text": "Volunteers"
+        },
+        {
+          "id": "d",
+          "text": "Champions"
+        }
+      ],
+      "correctOptionId": "c",
+      "explanation": "",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": "Q54",
+      "topic": "how-were-organised",
+      "group": "kc-structure",
+      "prompt": "Which level sits directly below \"Team Lead\"?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Volunteers"
+        },
+        {
+          "id": "b",
+          "text": "Branch Leaders & Stewards"
+        },
+        {
+          "id": "c",
+          "text": "Pillars"
+        },
+        {
+          "id": "d",
+          "text": "Champions"
+        }
+      ],
+      "correctOptionId": "b",
+      "explanation": "",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": "Q55",
+      "topic": "how-were-organised",
+      "group": "kc-structure",
+      "prompt": "Which level sits directly above \"Champions\"?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Volunteers"
+        },
+        {
+          "id": "b",
+          "text": "Branch Leaders & Stewards"
+        },
+        {
+          "id": "c",
+          "text": "Pillars"
+        },
+        {
+          "id": "d",
+          "text": "Team Lead"
+        }
+      ],
+      "correctOptionId": "c",
+      "explanation": "",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": "Q56",
+      "topic": "how-were-organised",
+      "group": "kc-structure",
+      "prompt": "Which level sits directly below \"Pillars\"?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Branch Leaders & Stewards"
+        },
+        {
+          "id": "b",
+          "text": "Team Lead"
+        },
+        {
+          "id": "c",
+          "text": "Volunteers"
+        },
+        {
+          "id": "d",
+          "text": "Champions"
+        }
+      ],
+      "correctOptionId": "d",
+      "explanation": "",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": "Q57",
+      "topic": "how-were-organised",
+      "group": "kc-structure",
+      "prompt": "Which of these correctly shows the KC structure from top to bottom?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Pillars → Team Lead → Champions → Volunteers → Branch Leaders & Stewards"
+        },
+        {
+          "id": "b",
+          "text": "Team Lead → Branch Leaders & Stewards → Pillars → Champions → Volunteers"
+        },
+        {
+          "id": "c",
+          "text": "Team Lead → Branch Leaders & Stewards → Champions → Pillars → Volunteers"
+        },
+        {
+          "id": "d",
+          "text": "Team Lead → Champions → Pillars → Branch Leaders & Stewards → Volunteers"
+        }
+      ],
+      "correctOptionId": "b",
+      "explanation": "",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": "Q58",
+      "topic": "how-were-organised",
+      "group": "kc-structure",
+      "prompt": "In the KC structure, who do Volunteers report through?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Stewards only"
+        },
+        {
+          "id": "b",
+          "text": "Team Lead directly"
+        },
+        {
+          "id": "c",
+          "text": "Branch Leaders directly"
+        },
+        {
+          "id": "d",
+          "text": "Champions, who report through Pillars"
+        }
+      ],
+      "correctOptionId": "d",
+      "explanation": "",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": "Q59",
+      "topic": "how-were-organised",
+      "prompt": "As a new volunteer, at which level of the KC structure do you sit?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Volunteers"
+        },
+        {
+          "id": "b",
+          "text": "Team Lead"
+        },
+        {
+          "id": "c",
+          "text": "Pillars"
+        },
+        {
+          "id": "d",
+          "text": "Champions"
+        }
+      ],
+      "correctOptionId": "a",
+      "explanation": "",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": "Q60",
+      "topic": "how-were-organised",
+      "group": "kc-structure",
+      "prompt": "What two roles are grouped together at the second level of the KC structure?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Team Lead and Pillars"
+        },
+        {
+          "id": "b",
+          "text": "Volunteers and Champions"
+        },
+        {
+          "id": "c",
+          "text": "Branch Leaders and Stewards"
+        },
+        {
+          "id": "d",
+          "text": "Champions and Pillars"
+        }
+      ],
+      "correctOptionId": "c",
+      "explanation": "",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": "Q61",
+      "topic": "what-we-believe",
+      "prompt": "According to KC's statement of faith, who is the Creator of heaven and Earth?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Jesus Christ"
+        },
+        {
+          "id": "b",
+          "text": "God the Father"
+        },
+        {
+          "id": "c",
+          "text": "The Holy Spirit"
+        },
+        {
+          "id": "d",
+          "text": "The angels"
+        }
+      ],
+      "correctOptionId": "b",
+      "explanation": "",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": "Q62",
+      "topic": "what-we-believe",
+      "prompt": "What does KC believe about Jesus's birth and life?",
+      "options": [
+        {
+          "id": "a",
+          "text": "His birth is not addressed in the statement of faith"
+        },
+        {
+          "id": "b",
+          "text": "He was born of a virgin and lived a sinless life"
+        },
+        {
+          "id": "c",
+          "text": "He was born a normal human with no special origin"
+        },
+        {
+          "id": "d",
+          "text": "He lived a life of moderate sin like all humans"
+        }
+      ],
+      "correctOptionId": "b",
+      "explanation": "",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": "Q63",
+      "topic": "what-we-believe",
+      "prompt": "What happens, according to the statement of faith, to those who reject Jesus?",
+      "options": [
+        {
+          "id": "a",
+          "text": "They will still enter heaven eventually"
+        },
+        {
+          "id": "b",
+          "text": "They will be given a second chance after death"
+        },
+        {
+          "id": "c",
+          "text": "The statement of faith does not address this"
+        },
+        {
+          "id": "d",
+          "text": "They will be lost forever in hell"
+        }
+      ],
+      "correctOptionId": "d",
+      "explanation": "",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": "Q64",
+      "topic": "what-we-believe",
+      "group": "resurrection",
+      "prompt": "What happened to Jesus Christ on the third day, according to the statement of faith?",
+      "options": [
+        {
+          "id": "a",
+          "text": "He ascended immediately without rising first"
+        },
+        {
+          "id": "b",
+          "text": "Nothing specific is mentioned about the third day"
+        },
+        {
+          "id": "c",
+          "text": "He appeared only to His disciples in a vision"
+        },
+        {
+          "id": "d",
+          "text": "He rose from the dead"
+        }
+      ],
+      "correctOptionId": "d",
+      "explanation": "",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": "Q65",
+      "topic": "what-we-believe",
+      "prompt": "What role does the Holy Spirit play, according to the statement of faith?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Dwells in believers and guides them according to the will of the Father"
+        },
+        {
+          "id": "b",
+          "text": "Guides only church leaders"
+        },
+        {
+          "id": "c",
+          "text": "Is a symbolic concept rather than a person"
+        },
+        {
+          "id": "d",
+          "text": "Only appears during baptism"
+        }
+      ],
+      "correctOptionId": "a",
+      "explanation": "",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": "Q66",
+      "topic": "what-we-believe",
+      "group": "salvation",
+      "prompt": "How is salvation described in KC's statement of faith?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Freely given to all who accept Jesus Christ as Lord and Saviour"
+        },
+        {
+          "id": "b",
+          "text": "A gradual process with no clear starting point"
+        },
+        {
+          "id": "c",
+          "text": "Earned through good works and church attendance"
+        },
+        {
+          "id": "d",
+          "text": "Granted only to those born into RCCG families"
+        }
+      ],
+      "correctOptionId": "a",
+      "explanation": "",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": "Q67",
+      "topic": "what-we-believe",
+      "group": "baptism",
+      "prompt": "According to the statement of faith, what should every believer do following faith in Jesus?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Complete a formal theology course"
+        },
+        {
+          "id": "b",
+          "text": "Be baptised by immersion in the name of the Father, Son, and Holy Spirit"
+        },
+        {
+          "id": "c",
+          "text": "Wait at least a year before baptism"
+        },
+        {
+          "id": "d",
+          "text": "Baptism is described as optional"
+        }
+      ],
+      "correctOptionId": "b",
+      "explanation": "",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": "Q68",
+      "topic": "what-we-believe",
+      "group": "bible",
+      "prompt": "How does KC describe the Bible in its statement of faith?",
+      "options": [
+        {
+          "id": "a",
+          "text": "One of several equally authoritative texts"
+        },
+        {
+          "id": "b",
+          "text": "A helpful historical document"
+        },
+        {
+          "id": "c",
+          "text": "The infallible Word of God"
+        },
+        {
+          "id": "d",
+          "text": "A collection of moral stories"
+        }
+      ],
+      "correctOptionId": "c",
+      "explanation": "",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": "Q69",
+      "topic": "what-we-believe",
+      "prompt": "What does KC believe about Jesus Christ's second coming?",
+      "options": [
+        {
+          "id": "a",
+          "text": "That He will physically and visibly return to earth to establish His kingdom"
+        },
+        {
+          "id": "b",
+          "text": "That His return is purely spiritual/symbolic"
+        },
+        {
+          "id": "c",
+          "text": "The statement of faith does not mention it"
+        },
+        {
+          "id": "d",
+          "text": "That it already occurred"
+        }
+      ],
+      "correctOptionId": "a",
+      "explanation": "",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": "Q70",
+      "topic": "what-we-believe",
+      "prompt": "What does the statement of faith say about divine healing?",
+      "options": [
+        {
+          "id": "a",
+          "text": "That divine healing is not addressed"
+        },
+        {
+          "id": "b",
+          "text": "That healing is purely a modern medical matter"
+        },
+        {
+          "id": "c",
+          "text": "That Jesus is the Healer and restores health to believers who act on God's word"
+        },
+        {
+          "id": "d",
+          "text": "That healing only happened in Bible times"
+        }
+      ],
+      "correctOptionId": "c",
+      "explanation": "",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": "Q71",
+      "topic": "what-we-believe",
+      "prompt": "What does KC believe about God's control over world events?",
+      "options": [
+        {
+          "id": "a",
+          "text": "That God has all the events of this world in full control and every knee will bow to Him"
+        },
+        {
+          "id": "b",
+          "text": "That world events are random and outside God's control"
+        },
+        {
+          "id": "c",
+          "text": "This is not addressed in the statement of faith"
+        },
+        {
+          "id": "d",
+          "text": "That God's control ended after creation"
+        }
+      ],
+      "correctOptionId": "a",
+      "explanation": "",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": "Q72",
+      "topic": "what-we-believe",
+      "group": "gospel-process",
+      "prompt": "Which statement best reflects KC's belief about gospel ministry?",
+      "options": [
+        {
+          "id": "a",
+          "text": "The process of presenting the Gospel is as important as the product"
+        },
+        {
+          "id": "b",
+          "text": "This is not part of the statement of faith"
+        },
+        {
+          "id": "c",
+          "text": "Process and product are unrelated to faith"
+        },
+        {
+          "id": "d",
+          "text": "Only the end result (the product) matters"
+        }
+      ],
+      "correctOptionId": "a",
+      "explanation": "",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": "Q73",
+      "topic": "what-we-believe",
+      "group": "gospel-process",
+      "prompt": "KC believes in and strives for ______ in worship and service to God because God deserves our very best.",
+      "options": [
+        {
+          "id": "a",
+          "text": "tradition"
+        },
+        {
+          "id": "b",
+          "text": "popularity"
+        },
+        {
+          "id": "c",
+          "text": "convenience"
+        },
+        {
+          "id": "d",
+          "text": "excellence"
+        }
+      ],
+      "correctOptionId": "d",
+      "explanation": "",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": "Q74",
+      "topic": "what-we-believe",
+      "group": "bible",
+      "prompt": "Which of the following is part of KC's statement of faith?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Salvation must be earned through good works"
+        },
+        {
+          "id": "b",
+          "text": "Baptism is optional for believers"
+        },
+        {
+          "id": "c",
+          "text": "Jesus will not return to earth"
+        },
+        {
+          "id": "d",
+          "text": "The Bible is the infallible Word of God"
+        }
+      ],
+      "correctOptionId": "d",
+      "explanation": "",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": "Q75",
+      "topic": "what-we-believe",
+      "group": "baptism",
+      "prompt": "According to the statement of faith, how should baptism be carried out?",
+      "options": [
+        {
+          "id": "a",
+          "text": "By immersion in the name of the Father, Son, and Holy Spirit"
+        },
+        {
+          "id": "b",
+          "text": "By sprinkling only"
+        },
+        {
+          "id": "c",
+          "text": "Only infants should be baptised"
+        },
+        {
+          "id": "d",
+          "text": "It is not specified"
+        }
+      ],
+      "correctOptionId": "a",
+      "explanation": "",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": "Q76",
+      "topic": "what-we-believe",
+      "prompt": "What sacrifice did Jesus make according to the statement of faith?",
+      "options": [
+        {
+          "id": "a",
+          "text": "This is not mentioned"
+        },
+        {
+          "id": "b",
+          "text": "He gave up His ministry to live a normal life"
+        },
+        {
+          "id": "c",
+          "text": "He sacrificed His followers' comfort"
+        },
+        {
+          "id": "d",
+          "text": "He gave Himself as a sacrifice in our place for our sins"
+        }
+      ],
+      "correctOptionId": "d",
+      "explanation": "",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": "Q77",
+      "topic": "what-we-believe",
+      "group": "gospel-process",
+      "prompt": "Why does the process of presenting the Gospel matter as much as the product, according to the statement of faith?",
+      "options": [
+        {
+          "id": "a",
+          "text": "It isn't mentioned in the statement of faith"
+        },
+        {
+          "id": "b",
+          "text": "Because Jubilee Church requires it administratively"
+        },
+        {
+          "id": "c",
+          "text": "Because process is easier to measure than outcomes"
+        },
+        {
+          "id": "d",
+          "text": "Because God deserves our very best in worship and service"
+        }
+      ],
+      "correctOptionId": "d",
+      "explanation": "",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": "Q78",
+      "topic": "what-we-believe",
+      "group": "resurrection",
+      "prompt": "According to the statement of faith, what did Jesus do after rising on the third day?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Sat at the right hand of God the Father"
+        },
+        {
+          "id": "b",
+          "text": "Returned immediately to earth permanently"
+        },
+        {
+          "id": "c",
+          "text": "Remained hidden until the second coming"
+        },
+        {
+          "id": "d",
+          "text": "This is not specified"
+        }
+      ],
+      "correctOptionId": "a",
+      "explanation": "",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": "Q79",
+      "topic": "what-we-believe",
+      "group": "salvation",
+      "prompt": "According to the statement of faith, salvation is freely given to whom?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Only those who complete a discipleship course"
+        },
+        {
+          "id": "b",
+          "text": "All who accept Jesus Christ as their Lord and Saviour"
+        },
+        {
+          "id": "c",
+          "text": "Only those born into Christian families"
+        },
+        {
+          "id": "d",
+          "text": "Only ordained church leaders"
+        }
+      ],
+      "correctOptionId": "b",
+      "explanation": "",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": "Q80",
+      "topic": "what-we-believe",
+      "group": "baptism",
+      "prompt": "According to the statement of faith, in whose name is baptism performed?",
+      "options": [
+        {
+          "id": "a",
+          "text": "The Father, Son, and Holy Spirit"
+        },
+        {
+          "id": "b",
+          "text": "The local church only"
+        },
+        {
+          "id": "c",
+          "text": "It is not specified"
+        },
+        {
+          "id": "d",
+          "text": "The pastor performing the baptism"
+        }
+      ],
+      "correctOptionId": "a",
+      "explanation": "",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": "Q81",
+      "topic": "what-we-believe",
+      "prompt": "How does the statement of faith describe hell?",
+      "options": [
+        {
+          "id": "a",
+          "text": "As temporary for everyone"
+        },
+        {
+          "id": "b",
+          "text": "It is not mentioned"
+        },
+        {
+          "id": "c",
+          "text": "As a purely symbolic idea"
+        },
+        {
+          "id": "d",
+          "text": "As a literal place"
+        }
+      ],
+      "correctOptionId": "d",
+      "explanation": "",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": "Q82",
+      "topic": "what-we-believe",
+      "group": "gospel-process",
+      "prompt": "What two things does KC's statement of faith say are equally important in gospel ministry?",
+      "options": [
+        {
+          "id": "a",
+          "text": "The speaker's popularity and the event length"
+        },
+        {
+          "id": "b",
+          "text": "The process by which the Gospel is presented and the product (the result)"
+        },
+        {
+          "id": "c",
+          "text": "The music style and the venue"
+        },
+        {
+          "id": "d",
+          "text": "The size of the congregation and the budget"
+        }
+      ],
+      "correctOptionId": "b",
+      "explanation": "",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": "Q83",
+      "topic": "what-we-offer",
+      "group": "offerings-list",
+      "prompt": "Which of the following is one of the four things KC offers, according to the training?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Free accommodation"
+        },
+        {
+          "id": "b",
+          "text": "Worship experiences"
+        },
+        {
+          "id": "c",
+          "text": "University tutoring"
+        },
+        {
+          "id": "d",
+          "text": "Financial planning services"
+        }
+      ],
+      "correctOptionId": "b",
+      "explanation": "",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": "Q84",
+      "topic": "what-we-offer",
+      "group": "discipleship-programs",
+      "prompt": "What two named programs fall under \"Discipleship & growth\"?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Hives and Pillars"
+        },
+        {
+          "id": "b",
+          "text": "Branch Leaders and Stewards"
+        },
+        {
+          "id": "c",
+          "text": "MASTERLIFE and TOBS Sessions"
+        },
+        {
+          "id": "d",
+          "text": "Judah First and Creative Overflow"
+        }
+      ],
+      "correctOptionId": "c",
+      "explanation": "",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": "Q85",
+      "topic": "what-we-offer",
+      "group": "hives",
+      "prompt": "What is the name given to KC's small groups/community structure?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Circles"
+        },
+        {
+          "id": "b",
+          "text": "Pillars"
+        },
+        {
+          "id": "c",
+          "text": "Hives"
+        },
+        {
+          "id": "d",
+          "text": "Cells"
+        }
+      ],
+      "correctOptionId": "c",
+      "explanation": "",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": "Q86",
+      "topic": "what-we-offer",
+      "group": "hives",
+      "prompt": "\"Hives\" refers to which of KC's offerings?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Community & fellowship"
+        },
+        {
+          "id": "b",
+          "text": "Opportunities to serve"
+        },
+        {
+          "id": "c",
+          "text": "Worship experiences"
+        },
+        {
+          "id": "d",
+          "text": "Discipleship & growth"
+        }
+      ],
+      "correctOptionId": "a",
+      "explanation": "",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": "Q87",
+      "topic": "what-we-offer",
+      "group": "hives",
+      "prompt": "Community & fellowship at KC happens through groups called ______.",
+      "options": [
+        {
+          "id": "a",
+          "text": "Circles"
+        },
+        {
+          "id": "b",
+          "text": "Hives"
+        },
+        {
+          "id": "c",
+          "text": "Cells"
+        },
+        {
+          "id": "d",
+          "text": "Pods"
+        }
+      ],
+      "correctOptionId": "b",
+      "explanation": "",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": "Q88",
+      "topic": "what-we-offer",
+      "group": "discipleship-programs",
+      "prompt": "Which offering do MASTERLIFE and TOBS Sessions fall under?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Opportunities to serve"
+        },
+        {
+          "id": "b",
+          "text": "Discipleship & growth"
+        },
+        {
+          "id": "c",
+          "text": "Community & fellowship"
+        },
+        {
+          "id": "d",
+          "text": "Worship experiences"
+        }
+      ],
+      "correctOptionId": "b",
+      "explanation": "",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": "Q89",
+      "topic": "what-we-offer",
+      "group": "offerings-list",
+      "prompt": "Which of the following are the four categories of what KC offers its members?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Kingdom, Excellence, Discipleship, Service"
+        },
+        {
+          "id": "b",
+          "text": "Worship, Prayer, Fasting, Giving"
+        },
+        {
+          "id": "c",
+          "text": "Fellowship, Baptism, Communion, Outreach"
+        },
+        {
+          "id": "d",
+          "text": "Worship experiences, Discipleship & growth, Community & fellowship, Opportunities to serve"
+        }
+      ],
+      "correctOptionId": "d",
+      "explanation": "",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": "Q90",
+      "topic": "what-we-offer",
+      "prompt": "What does the \"Opportunities to serve\" offering allow members to do?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Attend university lectures"
+        },
+        {
+          "id": "b",
+          "text": "Receive financial support"
+        },
+        {
+          "id": "c",
+          "text": "Travel internationally"
+        },
+        {
+          "id": "d",
+          "text": "Get involved and volunteer within KC"
+        }
+      ],
+      "correctOptionId": "d",
+      "explanation": "",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": "Q91",
+      "topic": "what-we-offer",
+      "group": "hives",
+      "prompt": "Which statement is correct regarding \"Hives\"?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Hives is a Bible study curriculum"
+        },
+        {
+          "id": "b",
+          "text": "Hives refers to KC's community & fellowship groups"
+        },
+        {
+          "id": "c",
+          "text": "Hives is the name of KC's discipleship program"
+        },
+        {
+          "id": "d",
+          "text": "Hives is a leadership title in the KC structure"
+        }
+      ],
+      "correctOptionId": "b",
+      "explanation": "",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": "Q92",
+      "topic": "what-we-offer",
+      "group": "discipleship-programs",
+      "prompt": "Which two programs are specifically named as part of Discipleship & growth?",
+      "options": [
+        {
+          "id": "a",
+          "text": "New Wine and Judah First"
+        },
+        {
+          "id": "b",
+          "text": "Branch Leaders and Volunteers"
+        },
+        {
+          "id": "c",
+          "text": "Champions and Pillars"
+        },
+        {
+          "id": "d",
+          "text": "MASTERLIFE and TOBS Sessions"
+        }
+      ],
+      "correctOptionId": "d",
+      "explanation": "",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": "Q93",
+      "topic": "recap",
+      "prompt": "What is the closing welcome message given to new members/volunteers at the end of the training?",
+      "options": [
+        {
+          "id": "a",
+          "text": "\"You're part of the family now — welcome to KC!\""
+        },
+        {
+          "id": "b",
+          "text": "\"See you next Sunday!\""
+        },
+        {
+          "id": "c",
+          "text": "\"Your training is now complete and certified.\""
+        },
+        {
+          "id": "d",
+          "text": "\"Please proceed to registration.\""
+        }
+      ],
+      "correctOptionId": "a",
+      "explanation": "",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": "Q94",
+      "topic": "recap",
+      "prompt": "This training is designed for which audience?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Visitors attending a one-off service"
+        },
+        {
+          "id": "b",
+          "text": "RCCG regional overseers"
+        },
+        {
+          "id": "c",
+          "text": "Senior pastors only"
+        },
+        {
+          "id": "d",
+          "text": "New volunteers joining KC"
+        }
+      ],
+      "correctOptionId": "d",
+      "explanation": "",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": "Q95",
+      "topic": "recap",
+      "prompt": "Which topics are covered in this Volunteers Training?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Only the statement of faith"
+        },
+        {
+          "id": "b",
+          "text": "Only the KC structure"
+        },
+        {
+          "id": "c",
+          "text": "Only KC's history"
+        },
+        {
+          "id": "d",
+          "text": "KC's mission, values, structure, and beliefs"
+        }
+      ],
+      "correctOptionId": "d",
+      "explanation": "",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": "Q96",
+      "topic": "recap",
+      "group": "value-verses",
+      "prompt": "Which set of Bible references correctly matches KC's three core values (Kingdom, Excellence, Discipleship) in that order?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Matthew 6:33, Matthew 28:19-20, Daniel 5:12"
+        },
+        {
+          "id": "b",
+          "text": "Matthew 6:33, Daniel 5:12, Matthew 28:19-20"
+        },
+        {
+          "id": "c",
+          "text": "Matthew 28:19-20, Matthew 6:33, Daniel 5:12"
+        },
+        {
+          "id": "d",
+          "text": "Daniel 5:12, Matthew 6:33, Matthew 28:19-20"
+        }
+      ],
+      "correctOptionId": "b",
+      "explanation": "",
+      "required": false,
+      "active": true
+    },
+    {
+      "id": "Q97",
+      "topic": "recap",
+      "group": "spiritual-costco",
+      "prompt": "What does KC's \"Spiritual Costco\" culture mean for a new volunteer?",
+      "options": [
+        {
+          "id": "a",
+          "text": "KC only offers one style of worship service"
+        },
+        {
+          "id": "b",
+          "text": "KC embraces variety, so volunteers should expect and welcome diversity rather than one fixed mold"
+        },
+        {
+          "id": "c",
+          "text": "Volunteers can only serve in one fixed role"
+        },
+        {
+          "id": "d",
+          "text": "Volunteers must pay a membership fee"
+        }
+      ],
+      "correctOptionId": "b",
+      "explanation": "",
+      "required": false,
+      "active": true
+    }
+  ]
+}

@@ -923,6 +923,7 @@ const trueFalse = [
 
 export const quizQuestions = [
   {
+    topic: "safeguarding",
     prompt: "Who should you contact with a safeguarding concern?",
     options: [
       {
@@ -938,6 +939,7 @@ export const quizQuestions = [
     isRequired: true,
   },
   {
+    topic: "expectations",
     prompt: "What time should volunteers arrive on Sundays for service prep?",
     options: [
       { id: "a", text: "1.30pm" },
@@ -948,6 +950,7 @@ export const quizQuestions = [
     explanation: "Volunteers arrive at 1.30pm on Sundays for service prep.",
   },
   {
+    topic: "our-values",
     prompt: "Which of these is one of KC's three values?",
     options: [
       { id: "a", text: "Comfort" },
@@ -958,6 +961,7 @@ export const quizQuestions = [
     explanation: "Our values are Kingdom, Excellence and Discipleship.",
   },
   {
+    topic: "about-kc",
     prompt: "What is KC's mission?",
     options: [
       { id: "a", text: "Raising kingdom-minded disciples" },
@@ -968,6 +972,7 @@ export const quizQuestions = [
     explanation: "Our mission is raising kingdom-minded disciples.",
   },
   {
+    topic: "about-kc",
     prompt: "KC is the young adult expression of which church?",
     options: [
       { id: "a", text: "Jubilee Church Manchester, RCCG" },
@@ -979,6 +984,7 @@ export const quizQuestions = [
       "KC is the young adult expression of Jubilee Church Manchester, RCCG.",
   },
   {
+    topic: "seasons-of-kc",
     prompt: "In which year was KC birthed?",
     options: [
       { id: "a", text: "2015" },
@@ -989,6 +995,7 @@ export const quizQuestions = [
     explanation: "KC was birthed in 2015 as a fellowship.",
   },
   {
+    topic: "church-family",
     prompt: "Who is KC's Team Lead?",
     options: [
       { id: "a", text: "Pastor E.A. Adeboye" },
@@ -999,6 +1006,7 @@ export const quizQuestions = [
     explanation: "Pastor Joshua Komolafe has been KC's Team Lead since 2019.",
   },
   {
+    topic: "what-we-believe",
     prompt: "Our full statement of beliefs is in line with which church?",
     options: [
       { id: "a", text: "The Redeemed Christian Church of God (RCCG)" },
@@ -1010,6 +1018,7 @@ export const quizQuestions = [
       "Our full statement of beliefs is in line with the Redeemed Christian Church of God (RCCG).",
   },
   {
+    topic: "expectations",
     prompt: "You need experience to serve as a volunteer in KC.",
     options: trueFalse,
     correctOptionId: "b",
@@ -1017,6 +1026,7 @@ export const quizQuestions = [
       "Experience isn't required, and neither is perfection or knowing every scripture back to front.",
   },
   {
+    topic: "expectations",
     prompt:
       "Which of these is one of the four H's, the attitudes of a servant?",
     options: [
@@ -1028,6 +1038,7 @@ export const quizQuestions = [
     explanation: "The four H's are Humble, Hunger, Heart and Honour.",
   },
   {
+    topic: "giving",
     prompt: "What does the word “tithe” literally mean?",
     options: [
       { id: "a", text: "A gift" },
@@ -1038,6 +1049,7 @@ export const quizQuestions = [
     explanation: "“Tithe” literally means tenth, or 10%.",
   },
   {
+    topic: "giving",
     prompt: "Giving at KC is by force.",
     options: trueFalse,
     correctOptionId: "b",
@@ -1045,6 +1057,7 @@ export const quizQuestions = [
       "Giving is not by force, but it is an important form of worship.",
   },
   {
+    topic: "branches-and-teams",
     prompt:
       "Which branch's teams make our worship services work and function excellently well?",
     options: [
@@ -1056,6 +1069,7 @@ export const quizQuestions = [
     explanation: "Experience is the Worship Services branch.",
   },
   {
+    topic: "branches-and-teams",
     prompt:
       "Which is KC's newest branch, supporting behind-the-scenes operations like comms and safeguarding?",
     options: [
@@ -1067,6 +1081,7 @@ export const quizQuestions = [
     explanation: "Systems is our newest branch, headed by Dr Anna.",
   },
   {
+    topic: "branches-and-teams",
     prompt: "Which branch do the Worship Team and Photography sit in?",
     options: [
       { id: "a", text: "Creative" },
@@ -1077,6 +1092,7 @@ export const quizQuestions = [
     explanation: "Both are part of Creative // Bara.",
   },
   {
+    topic: "how-were-organised",
     prompt: "What sits at the top of the KC structure?",
     options: [
       { id: "a", text: "Champions" },
@@ -1088,6 +1104,7 @@ export const quizQuestions = [
       "Team Lead, then Branch Leads & Stewards, Pillars, Champions and Volunteers.",
   },
   {
+    topic: "recap",
     prompt:
       "If something in the course wasn't clear, where should you ask about it?",
     options: [

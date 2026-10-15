@@ -76,6 +76,7 @@ model Course {
 
   modules       Module[]
   quizQuestions QuizQuestion[]
+  quizSections  QuizSection[]
   quizAttempts  QuizAttempt[]
   certificates  Certificate[]
 
@@ -143,6 +144,12 @@ model ModuleProgress {
 model QuizQuestion {
   id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   courseId        String   @db.Uuid
+  /// Id from the question bank JSON, e.g. "Q01".
+  externalId      String?
+  /// QuizSection.topic, e.g. "about-kc".
+  topic           String
+  /// Questions in the same group test the same fact; an attempt draws one.
+  group           String?
   prompt          String
   /// Array of { id: string, text: string }.
   options         Json
@@ -157,7 +164,23 @@ model QuizQuestion {
 
   course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
 
+  @@unique([courseId, externalId])
   @@index([courseId, isActive, order])
+}
+
+/// A topic in the question bank, e.g. { topic: "about-kc", title: "About KC" }.
+model QuizSection {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  courseId  String   @db.Uuid
+  topic     String
+  title     String
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@unique([courseId, topic])
 }
 
 model QuizAttempt {

@@ -18,7 +18,9 @@
     "db:check-rls": "node scripts/check-rls.mts",
     "admin:hash-password": "node scripts/hash-admin-password.mts",
     "db:seed": "prisma db seed",
-    "auth:configure": "tsx scripts/configure-supabase-auth.ts"
+    "auth:configure": "tsx scripts/configure-supabase-auth.ts",
+    "quiz:validate": "tsx scripts/quiz-validate.ts",
+    "quiz:schema": "tsx scripts/quiz-schema.ts"
   },
   "dependencies": {
     "@node-rs/argon2": "^2.2.2",

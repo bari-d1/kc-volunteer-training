@@ -1,0 +1,97 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "$schema": { "type": "string" },
+    "courseSlug": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+    },
+    "version": { "type": "integer", "minimum": 1, "maximum": 9007199254740991 },
+    "settings": {
+      "type": "object",
+      "properties": {
+        "passMark": { "type": "integer", "minimum": 0, "maximum": 100 },
+        "questionsPerAttempt": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        }
+      },
+      "required": ["passMark", "questionsPerAttempt"],
+      "additionalProperties": false
+    },
+    "sections": {
+      "minItems": 1,
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "topic": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+          },
+          "title": { "type": "string", "minLength": 1 }
+        },
+        "required": ["topic", "title"],
+        "additionalProperties": false
+      }
+    },
+    "questions": {
+      "minItems": 1,
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "minLength": 1, "pattern": "^Q\\d{2,}$" },
+          "topic": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+          },
+          "group": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+          },
+          "prompt": { "type": "string", "minLength": 1 },
+          "options": {
+            "minItems": 2,
+            "maxItems": 6,
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": { "type": "string", "minLength": 1 },
+                "text": { "type": "string", "minLength": 1 }
+              },
+              "required": ["id", "text"],
+              "additionalProperties": false
+            }
+          },
+          "correctOptionId": { "type": "string", "minLength": 1 },
+          "explanation": { "type": "string" },
+          "required": { "type": "boolean" },
+          "active": { "type": "boolean" }
+        },
+        "required": [
+          "id",
+          "topic",
+          "prompt",
+          "options",
+          "correctOptionId",
+          "explanation",
+          "required",
+          "active"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": ["courseSlug", "version", "settings", "sections", "questions"],
+  "additionalProperties": false,
+  "title": "KC quiz question bank",
+  "description": "Generated from src/lib/schemas/question-bank.ts by `pnpm quiz:schema`. Cross-field rules (unique ids, topics, groups, draw units) are checked by `pnpm quiz:validate`."
+}

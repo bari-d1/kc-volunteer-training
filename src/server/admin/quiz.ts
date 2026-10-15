@@ -8,6 +8,9 @@ import { logChange } from "./change-log";
 
 const QuizQuestionInputSchema = z
   .object({
+    /** A QuizSection topic, e.g. "about-kc". */
+    topic: NonEmptyString,
+    group: NonEmptyString.nullable().default(null),
     prompt: NonEmptyString,
     options: z.array(QuizOptionSchema).min(2),
     correctOptionId: NonEmptyString,
