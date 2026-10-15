@@ -1,9 +1,14 @@
 /**
- * pnpm db:seed — sample data, safe to run repeatedly.
+ * pnpm db:seed — course content, safe to run repeatedly.
  *
  * Every record is matched by its slug, key or name and only created when
  * missing, so rerunning never duplicates rows or overwrites admin edits.
  * Blocks are only added to modules that have none yet.
+ *
+ * pnpm db:seed -- --replace-content makes the database match seed-data.ts:
+ * module details, blocks and settings are overwritten (admin edits are
+ * lost), and teams, leaders and quiz questions that aren't in the seed are
+ * deactivated rather than deleted, so profiles and past attempts keep them.
  */
 import "dotenv/config";
 import { PrismaPg } from "@prisma/adapter-pg";
@@ -17,6 +22,8 @@ import {
   siteSettings,
   validateSeedData,
 } from "./seed-data";
+
+const replace = process.argv.includes("--replace-content");
 
 // Fail loudly before touching the database.
 validateSeedData();
@@ -54,7 +61,7 @@ async function seed(tx: Prisma.TransactionClient) {
   );
 
   for (const [order, { blocks, ...module }] of modules.entries()) {
-    const row = await ensure(
+    let row = await ensure(
       "Module",
       () =>
         tx.module.findUnique({
@@ -65,6 +72,10 @@ async function seed(tx: Prisma.TransactionClient) {
           data: { ...module, courseId: kc.id, order, isPublished: true },
         }),
     );
+    if (replace) {
+      row = await tx.module.update({ where: { id: row.id }, data: module });
+      await tx.block.deleteMany({ where: { moduleId: row.id } });
+    }
     if ((await tx.block.count({ where: { moduleId: row.id } })) === 0) {
       await tx.block.createMany({
         data: blocks.map((block, index) => ({
@@ -86,8 +97,18 @@ async function seed(tx: Prisma.TransactionClient) {
       () => tx.branch.findUnique({ where: { code: branch.code } }),
       () => tx.branch.create({ data: { ...branch, order } }),
     );
+    if (replace) {
+      await tx.branch.update({
+        where: { id: row.id },
+        data: { ...branch, order },
+      });
+      await tx.team.updateMany({
+        where: { branchId: row.id, name: { notIn: teams } },
+        data: { isActive: false },
+      });
+    }
     for (const [teamOrder, name] of teams.entries()) {
-      await ensure(
+      const team = await ensure(
         "Team",
         () => tx.team.findFirst({ where: { branchId: row.id, name } }),
         () =>
@@ -95,6 +116,12 @@ async function seed(tx: Prisma.TransactionClient) {
             data: { branchId: row.id, name, order: teamOrder },
           }),
       );
+      if (replace) {
+        await tx.team.update({
+          where: { id: team.id },
+          data: { order: teamOrder, isActive: true },
+        });
+      }
     }
   }
 
@@ -103,8 +130,16 @@ async function seed(tx: Prisma.TransactionClient) {
       (b) => [b.code, b.id],
     ),
   );
+  if (replace) {
+    await tx.leader.updateMany({
+      where: {
+        NOT: { OR: leaders.map(({ name, group }) => ({ name, group })) },
+      },
+      data: { isActive: false },
+    });
+  }
   for (const [order, { branch, ...leader }] of leaders.entries()) {
-    await ensure(
+    const row = await ensure(
       "Leader",
       () =>
         tx.leader.findFirst({
@@ -119,9 +154,23 @@ async function seed(tx: Prisma.TransactionClient) {
           },
         }),
     );
+    if (replace) {
+      await tx.leader.update({
+        where: { id: row.id },
+        data: {
+          ...leader,
+          order,
+          isActive: true,
+          branchId: branch ? branchIds.get(branch) : null,
+        },
+      });
+    }
   }
 
   for (const [key, value] of Object.entries(siteSettings)) {
+    if (replace) {
+      await tx.siteSetting.deleteMany({ where: { key } });
+    }
     await ensure(
       "SiteSetting",
       () => tx.siteSetting.findUnique({ where: { key } }),
@@ -132,8 +181,17 @@ async function seed(tx: Prisma.TransactionClient) {
     );
   }
 
+  if (replace) {
+    await tx.quizQuestion.updateMany({
+      where: {
+        courseId: kc.id,
+        prompt: { notIn: quizQuestions.map((q) => q.prompt) },
+      },
+      data: { isActive: false },
+    });
+  }
   for (const question of quizQuestions) {
-    await ensure(
+    const row = await ensure(
       "QuizQuestion",
       () =>
         tx.quizQuestion.findFirst({
@@ -141,13 +199,21 @@ async function seed(tx: Prisma.TransactionClient) {
         }),
       () => tx.quizQuestion.create({ data: { ...question, courseId: kc.id } }),
     );
+    if (replace) {
+      await tx.quizQuestion.update({
+        where: { id: row.id },
+        data: { ...question, isActive: true },
+      });
+    }
   }
 }
 
 async function main() {
   try {
     await prisma.$transaction(seed, { timeout: 60_000 });
-    console.log("Seed complete:");
+    console.log(
+      replace ? "Seed complete (content replaced):" : "Seed complete:",
+    );
     for (const [entity, { created, existing }] of tally) {
       console.log(
         `  ${entity.padEnd(13)} ${created} created, ${existing} already there`,
