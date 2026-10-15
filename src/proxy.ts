@@ -33,6 +33,6 @@ async function guardAdmin(request: NextRequest) {
 export const config = {
   matcher: [
     // Everything except static files, images and metadata routes.
-    "/((?!_next/static|_next/image|favicon.ico|icon.svg|apple-icon.png|opengraph-image|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)",
+    "/((?!_next/static|_next/image|favicon.ico|icon.png|apple-icon.png|opengraph-image|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)",
   ],
 };
