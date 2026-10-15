@@ -5,6 +5,7 @@ import {
   emailTemplate,
   formatChange,
   mergeAllowList,
+  OTP_LENGTH,
   resendSmtpConfig,
 } from "./supabase-auth-config";
 
@@ -42,6 +43,8 @@ describe("desiredConfig", () => {
       mailer_autoconfirm: false,
       mailer_allow_unverified_email_sign_ins: false,
       site_url: "https://kc.example.org",
+      mailer_otp_length: 6,
+      mailer_otp_exp: 900,
       uri_allow_list: "https://kc.example.org/**,http://localhost:3000/**",
       mailer_subjects_magic_link: "Your KC Volunteers sign-in link",
       mailer_subjects_confirmation: "Your KC Volunteers sign-in link",
@@ -59,6 +62,13 @@ describe("desiredConfig", () => {
       Object.keys(config).some((k) => k.startsWith("mailer_templates_")),
     ).toBe(false);
     expect(config).not.toHaveProperty("mailer_subjects_magic_link");
+  });
+});
+
+describe("sign-in code", () => {
+  it("is the length the sign-in page asks for", async () => {
+    const { SIGN_IN_CODE_LENGTH } = await import("@/lib/sign-in-code");
+    expect(OTP_LENGTH).toBe(SIGN_IN_CODE_LENGTH);
   });
 });
 
@@ -124,6 +134,8 @@ describe("emailTemplate", () => {
       "Tap the button below to sign in. This link expires soon and can only be used once.",
       ">Sign in</a>",
       "If you didn't ask for this, you can ignore this email.",
+      "Signing in on another device? Enter this code there:",
+      "{{ .Token }}",
       "background:#191919",
       "background:#D9FF3D;color:#191919",
     ]) {

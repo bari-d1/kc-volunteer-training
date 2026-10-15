@@ -3,9 +3,11 @@
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { safeNextPath } from "@/lib/safe-next-path";
+import { normaliseSignInCode } from "@/lib/sign-in-code";
 import { checkSignInRateLimit } from "@/lib/sign-in-rate-limit";
 import { getSiteUrl } from "@/lib/site-url";
 import { createClient } from "@/lib/supabase/server";
+import { hasProfile } from "@/server/profiles";
 
 export type SignInState =
   | { status: "idle" }
@@ -77,6 +79,57 @@ export async function signInWithMagicLink(
   }
 
   return { status: "sent", email };
+}
+
+export type CodeState =
+  { status: "idle" } | { status: "error"; message: string };
+
+const CodeSchema = z.object({
+  email: z.email().trim().toLowerCase(),
+  next: z.string().optional(),
+});
+
+/**
+ * Signs in on this device with the code from the email, for when the link
+ * was opened on another device. Then continues like the link would.
+ */
+export async function signInWithCode(
+  _previous: CodeState,
+  formData: FormData,
+): Promise<CodeState> {
+  const parsed = CodeSchema.safeParse({
+    email: formData.get("email"),
+    next: formData.get("next") ?? undefined,
+  });
+  const code = normaliseSignInCode(formData.get("code"));
+  if (!parsed.success || !code) {
+    return {
+      status: "error",
+      message: "Enter the 6-digit code from your email.",
+    };
+  }
+
+  const supabase = await createClient();
+  const { data, error } = await supabase.auth.verifyOtp({
+    email: parsed.data.email,
+    token: code,
+    type: "email",
+  });
+  const userId = data.user?.id;
+  if (error || !userId) {
+    if (error) console.error("verifyOtp failed", error.code, error.message);
+    return {
+      status: "error",
+      message:
+        error?.status === 429
+          ? "Too many tries. Please wait a few minutes and try again."
+          : "That code isn't right or has expired. Check it, or send yourself a new link.",
+    };
+  }
+
+  redirect(
+    (await hasProfile(userId)) ? safeNextPath(parsed.data.next) : "/onboarding",
+  );
 }
 
 export async function signOut() {

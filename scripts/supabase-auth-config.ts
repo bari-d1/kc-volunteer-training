@@ -10,7 +10,18 @@ export const LOCAL_URL = "http://localhost:3000";
 
 const subject = "Your KC Volunteers sign-in link";
 
-/** Inline-styled, image-free email used for magic link and signup confirmation. */
+/**
+ * Digits in the sign-in code, typed on another device if the link is opened
+ * elsewhere. Matches SIGN_IN_CODE_LENGTH in src/lib/sign-in-code.ts.
+ */
+export const OTP_LENGTH = 6;
+/** Seconds the link and code stay valid. */
+export const OTP_EXPIRY_SECONDS = 15 * 60;
+
+/**
+ * Inline-styled, image-free email used for magic link and signup
+ * confirmation: a button for this device and a code for another one.
+ */
 export const emailTemplate = `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#191919;padding:40px 16px;">
   <tr>
     <td align="center">
@@ -25,6 +36,12 @@ export const emailTemplate = `<table role="presentation" width="100%" cellpaddin
           <td style="padding-bottom:28px;">
             <a href="{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=email" style="display:inline-block;background:#D9FF3D;color:#191919;font-size:16px;font-weight:700;text-decoration:none;padding:14px 32px;border-radius:9999px;">Sign in</a>
           </td>
+        </tr>
+        <tr>
+          <td style="padding-bottom:8px;font-size:14px;line-height:1.5;color:#ffffff;">Signing in on another device? Enter this code there:</td>
+        </tr>
+        <tr>
+          <td style="padding-bottom:28px;font-family:'Courier New',Courier,monospace;font-size:32px;font-weight:700;letter-spacing:8px;color:#D9FF3D;">{{ .Token }}</td>
         </tr>
         <tr>
           <td style="font-size:14px;line-height:1.5;color:#ffffff;">If you didn't ask for this, you can ignore this email.</td>
@@ -118,6 +135,8 @@ export function desiredConfig(
     mailer_autoconfirm: false,
     mailer_allow_unverified_email_sign_ins: false,
     site_url: site,
+    mailer_otp_length: OTP_LENGTH,
+    mailer_otp_exp: OTP_EXPIRY_SECONDS,
     uri_allow_list: mergeAllowList(current.uri_allow_list, [
       `${site}/**`,
       `${LOCAL_URL}/**`,

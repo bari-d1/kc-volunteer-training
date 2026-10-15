@@ -3,7 +3,13 @@
 import { useActionState } from "react";
 import { Button } from "@/components/ui/button";
 import { TextField } from "@/components/ui/form-field";
-import { signInWithMagicLink, type SignInState } from "@/lib/auth-actions";
+import {
+  signInWithCode,
+  signInWithMagicLink,
+  type CodeState,
+  type SignInState,
+} from "@/lib/auth-actions";
+import { SIGN_IN_CODE_LENGTH } from "@/lib/sign-in-code";
 
 export function SignInForm({
   next,
@@ -21,13 +27,17 @@ export function SignInForm({
 
   if (state.status === "sent") {
     return (
-      <div role="status" className="flex flex-col gap-4">
-        <h2 className="text-h2">Check your email</h2>
-        <p className="text-body-lg text-muted">
-          We&apos;ve sent a sign-in link to{" "}
-          <strong className="text-text">{state.email}</strong>. It works once
-          and expires soon, so open it on this device.
-        </p>
+      <div className="flex flex-col gap-6">
+        <div role="status" className="flex flex-col gap-4">
+          <h2 className="text-h2">Check your email</h2>
+          <p className="text-body-lg text-muted">
+            We&apos;ve sent a sign-in link to{" "}
+            <strong className="text-text">{state.email}</strong>. Tap it on this
+            device, or if you&apos;ve opened the email somewhere else, enter the
+            code from it here.
+          </p>
+        </div>
+        <CodeForm email={state.email} next={next} />
         <p className="text-small text-muted">
           Nothing there? Check your spam folder, or{" "}
           <a
@@ -64,6 +74,41 @@ export function SignInForm({
       <p className="text-small text-muted">
         No password needed. We&apos;ll email you a one-time link to sign in.
       </p>
+    </form>
+  );
+}
+
+/** Sign in here with the email's code, when the link was opened elsewhere. */
+function CodeForm({ email, next }: { email: string; next: string }) {
+  const [state, formAction, pending] = useActionState<CodeState, FormData>(
+    signInWithCode,
+    { status: "idle" },
+  );
+  return (
+    <form action={formAction} className="flex flex-col gap-4" noValidate>
+      <input type="hidden" name="email" value={email} />
+      <input type="hidden" name="next" value={next} />
+      <TextField
+        label={`${SIGN_IN_CODE_LENGTH}-digit code`}
+        name="code"
+        inputMode="numeric"
+        autoComplete="one-time-code"
+        pattern="[0-9 ]*"
+        maxLength={SIGN_IN_CODE_LENGTH + 2}
+        required
+        placeholder="123456"
+        className="max-w-60"
+        error={state.status === "error" ? state.message : undefined}
+      />
+      <Button
+        type="submit"
+        variant="secondary"
+        size="lg"
+        loading={pending}
+        className="self-start"
+      >
+        {pending ? "Checking…" : "Sign in with code"}
+      </Button>
     </form>
   );
 }
