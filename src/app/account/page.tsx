@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { Suspense } from "react";
 import { SignOutButton } from "@/components/blocks/sign-out-button";
 import { Card } from "@/components/ui/card";
@@ -25,7 +26,15 @@ const dateFormat = new Intl.DateTimeFormat("en-GB", { dateStyle: "long" });
 export default function AccountPage() {
   return (
     <main className="mx-auto flex w-full max-w-[760px] flex-1 flex-col gap-10 px-gutter py-16">
-      <h1 className="text-h1">Your account</h1>
+      <div className="flex flex-col gap-4">
+        <Link
+          href="/course"
+          className="w-fit text-small font-bold text-muted hover:text-text"
+        >
+          <span aria-hidden="true">← </span>Back to your training
+        </Link>
+        <h1 className="text-h1">Your account</h1>
+      </div>
       <Suspense fallback={<Skeleton className="h-96" />}>
         <Account />
       </Suspense>

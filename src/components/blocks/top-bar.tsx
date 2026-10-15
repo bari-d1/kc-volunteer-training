@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Logo } from "@/components/ui/logo";
 import { ShowGuideButton } from "@/components/narrator/show-guide-button";
 import { ProgressBar } from "@/components/ui/progress-bar";
+import { AccountMenu } from "./account-menu";
 
 export type TopBarProps = {
   courseTitle: string;
@@ -65,6 +66,7 @@ export function TopBar({
               {progress}%
             </span>
           </div>
+          <AccountMenu />
         </div>
       </div>
       {/* Edge-to-edge bar on phones where the inline bar is hidden. */}
