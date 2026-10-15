@@ -75,7 +75,9 @@ describe("QuizResults", () => {
     );
     expect(links[1]).toHaveAttribute("download");
     expect(links[1]).not.toHaveClass("bg-lime");
-    expect(screen.getByText(/See your certificate, your branch/)).toBeVisible();
+    expect(
+      screen.getByText("See your certificate and what happens next."),
+    ).toBeVisible();
     expect(screen.queryByRole("button", { name: /Try again/ })).toBeNull();
   });
 

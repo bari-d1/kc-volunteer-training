@@ -95,8 +95,7 @@ export function QuizResults({
                   Finish your training <span aria-hidden="true">→</span>
                 </Button>
                 <p className="text-small text-muted">
-                  See your certificate, your branch and team, and what to expect
-                  on your first Sunday.
+                  See your certificate and what happens next.
                 </p>
               </div>
             ) : null}
