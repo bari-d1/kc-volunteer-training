@@ -24,7 +24,6 @@ describe("AdminShell", () => {
       "Quiz",
       "People & Teams",
       "Settings",
-      "Activity",
     ]);
     expect(
       within(sidebar).getByRole("link", { name: "Volunteers" }),

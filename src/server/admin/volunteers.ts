@@ -346,11 +346,3 @@ export async function deleteVolunteer(profileId: string) {
   });
   return result;
 }
-
-export async function listRecentChanges(limit = 50) {
-  await requireAdmin();
-  return prisma.contentChange.findMany({
-    orderBy: { createdAt: "desc" },
-    take: Math.min(Math.max(limit, 1), 200),
-  });
-}
