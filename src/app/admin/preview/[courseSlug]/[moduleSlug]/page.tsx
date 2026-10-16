@@ -20,24 +20,34 @@ export const metadata: Metadata = {
  */
 export default function ModulePreviewPage({
   params,
+  searchParams,
 }: PageProps<"/admin/preview/[courseSlug]/[moduleSlug]">) {
   return (
     <main className="flex flex-1 flex-col gap-6 px-gutter py-6">
       <Suspense fallback={<AdminPageSkeleton />}>
-        {params.then(({ courseSlug, moduleSlug }) => (
-          <Preview courseSlug={courseSlug} moduleSlug={moduleSlug} />
-        ))}
+        {Promise.all([params, searchParams]).then(
+          ([{ courseSlug, moduleSlug }, { frame }]) => (
+            <Preview
+              courseSlug={courseSlug}
+              moduleSlug={moduleSlug}
+              framed={frame === "1"}
+            />
+          ),
+        )}
       </Suspense>
     </main>
   );
 }
 
+/** framed: just the lesson, for the phone-width iframe. */
 async function Preview({
   courseSlug,
   moduleSlug,
+  framed,
 }: {
   courseSlug: string;
   moduleSlug: string;
+  framed: boolean;
 }) {
   await requireAdmin();
   const preview = await getModulePreview(courseSlug, moduleSlug);
@@ -55,6 +65,20 @@ async function Preview({
       ]
     : blocks;
 
+  const lesson = (
+    <article className="flex flex-col gap-10">
+      <header className="flex flex-col gap-4">
+        <PillTag>{module.course.title}</PillTag>
+        <h1 className="text-display">{module.title}</h1>
+        {module.summary && (
+          <p className="text-body-lg text-muted">{module.summary}</p>
+        )}
+      </header>
+      <BlockRenderer blocks={withIntro} moduleId={module.id} />
+    </article>
+  );
+  if (framed) return lesson;
+
   return (
     <>
       <p
@@ -65,17 +89,10 @@ async function Preview({
         module will look once published. Knowledge checks can&apos;t be answered
         here.
       </p>
-      <PreviewFrame>
-        <article className="flex flex-col gap-10">
-          <header className="flex flex-col gap-4">
-            <PillTag>{module.course.title}</PillTag>
-            <h1 className="text-display">{module.title}</h1>
-            {module.summary && (
-              <p className="text-body-lg text-muted">{module.summary}</p>
-            )}
-          </header>
-          <BlockRenderer blocks={withIntro} moduleId={module.id} />
-        </article>
+      <PreviewFrame
+        frameSrc={`/admin/preview/${encodeURIComponent(courseSlug)}/${encodeURIComponent(moduleSlug)}?frame=1`}
+      >
+        {lesson}
       </PreviewFrame>
     </>
   );
