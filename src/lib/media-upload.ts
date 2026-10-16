@@ -25,7 +25,8 @@ export const MEDIA_RULES: Record<
     label: "video",
     mimeTypes: ["video/mp4"],
     extensions: ["mp4"],
-    maxBytes: 200 * MB,
+    // Supabase's free plan caps every file at 50 MB (Storage settings).
+    maxBytes: 50 * MB,
   },
   CAPTIONS: {
     label: "captions file",

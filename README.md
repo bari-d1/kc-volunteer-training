@@ -110,7 +110,7 @@ Notes:
 
 Images, videos and captions are uploaded from the admin block editor to a public Supabase Storage bucket, `course-media`.
 
-**Setup:** add `SUPABASE_SECRET_KEY` (Supabase dashboard → Project Settings → API keys → secret key) to `.env`, then run `pnpm storage:setup` once. It creates the bucket, or updates it if it exists: public, 200 MB per file at most, and only JPEG, PNG, WebP, MP4 and VTT files.
+**Setup:** add `SUPABASE_SECRET_KEY` (Supabase dashboard → Project Settings → API keys → secret key) to `.env`, then run `pnpm storage:setup` once. It creates the bucket, or updates it if it exists: public, 50 MB per file at most (the Supabase free plan's limit), and only JPEG, PNG, WebP, MP4 and VTT files.
 
 **How an upload works:**
 
@@ -119,7 +119,7 @@ Images, videos and captions are uploaded from the admin block editor to a public
 3. The browser uploads straight to Storage, so large videos never pass through the Next.js server.
 4. Another admin action confirms the file arrived and records it in the `Media` table.
 
-Files are stored at `{yyyy}/{mm}/{uuid}-{safe-filename}`, so URLs can't be guessed. Limits: images (.jpg, .png, .webp) 5 MB after resizing, videos (.mp4) 200 MB, captions (.vtt) 1 MB. Images need alt text.
+Files are stored at `{yyyy}/{mm}/{uuid}-{safe-filename}`, so URLs can't be guessed. Limits: images (.jpg, .png, .webp) 5 MB after resizing, videos (.mp4) 50 MB, captions (.vtt) 1 MB. Images need alt text.
 
 The media library (in every image, video and captions picker) lists earlier uploads. A file can only be deleted from it once no block (published or draft) or leader uses it.
 

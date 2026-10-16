@@ -19,7 +19,7 @@ describe("uploadProblem", () => {
       uploadProblem("VIDEO", {
         name: "talk.mp4",
         type: "video/mp4",
-        size: 199 * MB,
+        size: 49 * MB,
       }),
     ).toBeNull();
     expect(
@@ -60,9 +60,9 @@ describe("uploadProblem", () => {
       uploadProblem("VIDEO", {
         name: "a.mp4",
         type: "video/mp4",
-        size: 201 * MB,
+        size: 51 * MB,
       }),
-    ).toMatch(/200 MB/);
+    ).toMatch(/50 MB/);
     expect(
       uploadProblem("CAPTIONS", {
         name: "a.vtt",
