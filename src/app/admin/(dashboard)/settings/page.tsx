@@ -5,7 +5,6 @@ import { PageHeader } from "@/components/admin/page-header";
 import { requireAdmin } from "@/lib/admin-auth";
 import { getQuizBankStatus, getSiteSettings } from "@/server/admin/settings";
 import {
-  AdminPasswordSection,
   EmailSettingsForm,
   LinksSettingsForm,
   QuizSettingsForm,
@@ -63,7 +62,6 @@ async function Settings() {
             }
             envDigestCount={envDigestCount}
           />
-          <AdminPasswordSection />
         </div>
       </div>
     </>

@@ -6,7 +6,6 @@ import {
   AdminTextareaField,
   AdminTextField,
 } from "@/components/admin/form-fields";
-import { ConfirmDialog } from "@/components/admin/confirm-dialog";
 import {
   RepeatableList,
   TextInput,
@@ -19,7 +18,6 @@ import {
   saveQuizAction,
   saveSafeguardingAction,
   saveWhatsappAction,
-  signOutAllAdminSessionsAction,
 } from "./actions";
 
 type Errors = Record<string, string>;
@@ -306,46 +304,6 @@ export function EmailSettingsForm({
           Save email settings
         </Button>
       </form>
-    </Section>
-  );
-}
-
-export function AdminPasswordSection() {
-  return (
-    <Section title="Admin password">
-      <ol className="flex list-decimal flex-col gap-2 pl-5 text-small">
-        <li>
-          On your computer, in the project folder, run{" "}
-          <code className="rounded bg-surface-2 px-1">
-            pnpm admin:hash-password
-          </code>{" "}
-          and type the new password. It prints a hash.
-        </li>
-        <li>
-          Put the hash in{" "}
-          <code className="rounded bg-surface-2 px-1">ADMIN_PASSWORD_HASH</code>{" "}
-          in <code className="rounded bg-surface-2 px-1">.env</code> and in the
-          hosting provider&apos;s environment variables.
-        </li>
-        <li>Restart or redeploy the site so it picks up the new hash.</li>
-        <li>
-          Then sign everyone out below, so nobody stays signed in with the old
-          password.
-        </li>
-      </ol>
-      <ConfirmDialog
-        trigger={
-          <Button variant="danger" size="sm" className="self-start">
-            Sign out all admin sessions
-          </Button>
-        }
-        title="Sign out every admin?"
-        description="Every admin, including you, is signed out straight away and has to sign in again with the password."
-        confirmLabel="Sign everyone out"
-        onConfirm={async () => {
-          await signOutAllAdminSessionsAction();
-        }}
-      />
     </Section>
   );
 }

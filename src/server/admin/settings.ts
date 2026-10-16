@@ -4,7 +4,6 @@ import { requireAdmin } from "@/lib/admin-auth";
 import { DEFAULT_COURSE_SLUG } from "@/lib/course-config";
 import { prisma } from "@/lib/prisma";
 import {
-  AdminSessionSettingSchema,
   EmailsSettingSchema,
   LinksSettingSchema,
   QuizSettingSchema,
@@ -137,19 +136,4 @@ export async function saveQuizSettings(input: unknown) {
 export async function saveEmailSettings(input: unknown) {
   await requireAdmin();
   await setSiteSetting("emails", EmailsSettingSchema.parse(input));
-}
-
-/**
- * Bumps the admin session version, so every admin cookie (including the
- * one making this request) stops working.
- */
-export async function signOutAllAdminSessions() {
-  await requireAdmin();
-  const row = await prisma.siteSetting.findUnique({
-    where: { key: "adminSession" },
-  });
-  const current = AdminSessionSettingSchema.safeParse(row?.value);
-  const version = (current.success ? current.data.version : 0) + 1;
-  await setSiteSetting("adminSession", { version });
-  return version;
 }

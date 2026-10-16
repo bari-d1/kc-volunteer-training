@@ -140,10 +140,4 @@ describe("emails and admin sessions", () => {
       }),
     ).rejects.toThrow();
   });
-
-  it("bumps the admin session version", async () => {
-    expect(await settings.signOutAllAdminSessions()).toBe(1);
-    expect(await settings.signOutAllAdminSessions()).toBe(2);
-    expect(rows.get("adminSession")).toEqual({ version: 2 });
-  });
 });

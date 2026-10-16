@@ -9,7 +9,6 @@ const actions = vi.hoisted(() => ({
   saveWhatsappAction: vi.fn(async () => ({ ok: true })),
   saveQuizAction: vi.fn(async () => ({ ok: true })),
   saveEmailsAction: vi.fn(async () => ({ ok: true })),
-  signOutAllAdminSessionsAction: vi.fn(async () => {}),
 }));
 vi.mock("./actions", () => actions);
 
@@ -115,19 +114,5 @@ describe("settings forms", () => {
       remindersEnabled: false,
       digestRecipients: ["a@kc.example", "b@kc.example"],
     });
-  });
-
-  it("asks before signing every admin out", async () => {
-    render(<forms.AdminPasswordSection />);
-    expect(screen.getByText("pnpm admin:hash-password")).toBeVisible();
-    fireEvent.click(
-      screen.getByRole("button", { name: "Sign out all admin sessions" }),
-    );
-    await act(async () =>
-      fireEvent.click(
-        screen.getByRole("button", { name: "Sign everyone out" }),
-      ),
-    );
-    expect(actions.signOutAllAdminSessionsAction).toHaveBeenCalled();
   });
 });

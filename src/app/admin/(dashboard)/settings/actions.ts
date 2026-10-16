@@ -1,7 +1,6 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 import { z } from "zod";
 import { requireAdmin } from "@/lib/admin-auth";
 import { invalid, type ActionResult } from "@/lib/form-errors";
@@ -11,7 +10,6 @@ import {
   saveQuizSettings,
   saveSafeguardingSettings,
   saveWhatsappLink,
-  signOutAllAdminSessions,
 } from "@/server/admin/settings";
 
 async function attempt(task: () => Promise<unknown>): Promise<ActionResult> {
@@ -51,11 +49,4 @@ export async function saveQuizAction(input: unknown) {
 export async function saveEmailsAction(input: unknown) {
   await requireAdmin();
   return attempt(() => saveEmailSettings(input));
-}
-
-/** Signs every admin out, including this one, then back to the login. */
-export async function signOutAllAdminSessionsAction() {
-  await requireAdmin();
-  await signOutAllAdminSessions();
-  redirect("/admin/login");
 }
