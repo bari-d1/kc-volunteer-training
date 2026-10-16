@@ -1,6 +1,7 @@
 import "server-only";
 import { Prisma } from "@/generated/prisma/client";
 import { requireAdmin } from "@/lib/admin-auth";
+import { DEFAULT_COURSE_SLUG } from "@/lib/course-config";
 import { prisma } from "@/lib/prisma";
 import { logChange } from "./change-log";
 import { CourseInputSchema } from "./inputs";
@@ -61,9 +62,25 @@ export async function updateCourse(id: string, input: unknown) {
   });
 }
 
-/** Courses with issued certificates can't be deleted (FK restrict). */
+/**
+ * Deletes a course with its modules, blocks, quiz and volunteers' progress
+ * in it. The main course (the site's training) and courses with issued
+ * certificates (FK restrict) can't be deleted.
+ */
 export async function deleteCourse(id: string) {
   await requireAdmin();
+  const course = await prisma.course.findUnique({
+    where: { id },
+    select: { slug: true },
+  });
+  if (!course) return { deleted: true as const };
+  if (course.slug === DEFAULT_COURSE_SLUG) {
+    return {
+      deleted: false as const,
+      reason:
+        "This is the main course volunteers take, so it can't be deleted. Unpublish modules instead.",
+    };
+  }
   try {
     await prisma.$transaction(async (tx) => {
       const course = await tx.course.delete({ where: { id } });

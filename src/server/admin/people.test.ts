@@ -16,6 +16,7 @@ const tx = vi.hoisted(() => ({
   },
   leader: {
     create: vi.fn(),
+    delete: vi.fn(),
     update: vi.fn(),
     findFirst: vi.fn(),
     findUniqueOrThrow: vi.fn(),
@@ -193,5 +194,20 @@ describe("leaders", () => {
     await expect(
       people.createLeader({ ...input, name: "", role: "" }),
     ).rejects.toThrow();
+  });
+});
+
+describe("deleting a leader", () => {
+  it("deletes them and logs it by name", async () => {
+    tx.leader.delete.mockResolvedValue({ id: ID, name: "Yemi" });
+    await people.deleteLeader(ID);
+    expect(tx.leader.delete).toHaveBeenCalledWith({ where: { id: ID } });
+    expect(logged).toEqual([
+      expect.objectContaining({
+        entity: "Leader",
+        action: "delete",
+        summary: "Deleted leader “Yemi”",
+      }),
+    ]);
   });
 });

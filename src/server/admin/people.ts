@@ -280,6 +280,21 @@ export async function setLeaderActive(id: string, isActive: boolean) {
   });
 }
 
+/** Removes a leader for good (hiding keeps them for later). */
+export async function deleteLeader(id: string) {
+  await requireAdmin();
+  await prisma.$transaction(async (tx) => {
+    const leader = await tx.leader.delete({ where: { id } });
+    await logChange(
+      tx,
+      "Leader",
+      id,
+      "delete",
+      `Deleted leader “${leader.name}”`,
+    );
+  });
+}
+
 /** Sets leader order within a group to the position of each id. */
 export async function reorderLeaders(group: string, ids: unknown) {
   await requireAdmin();

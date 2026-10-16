@@ -12,7 +12,9 @@ import { useSaveToast } from "@/components/admin/use-save-toast";
 import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/modal";
 import { cn } from "@/lib/cn";
+import { ConfirmDialog } from "@/components/admin/confirm-dialog";
 import {
+  deleteLeaderAction,
   reorderLeadersAction,
   saveLeaderAction,
   setLeaderActiveAction,
@@ -252,6 +254,28 @@ function LeaderItem({
           <Button variant="ghost" size="sm" aria-label={`Edit ${leader.name}`}>
             Edit
           </Button>
+        }
+      />
+      <ConfirmDialog
+        trigger={
+          <Button
+            variant="ghost"
+            size="sm"
+            aria-label={`Delete ${leader.name}`}
+            className="text-danger"
+          >
+            Delete
+          </Button>
+        }
+        title={`Delete ${leader.name}?`}
+        description="They're removed from the course and this list for good. To take them off the course for now, hide them instead."
+        confirmLabel="Delete"
+        onConfirm={async () =>
+          (
+            await save(() => deleteLeaderAction(leader.id), {
+              success: `${leader.name} deleted`,
+            })
+          ).ok
         }
       />
     </div>

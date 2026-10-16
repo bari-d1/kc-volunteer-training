@@ -6,8 +6,10 @@ import { AdminPageSkeleton } from "@/components/admin/admin-page-skeleton";
 import { PageHeader } from "@/components/admin/page-header";
 import { Button } from "@/components/ui/button";
 import { requireAdmin } from "@/lib/admin-auth";
+import { DEFAULT_COURSE_SLUG } from "@/lib/course-config";
 import { getCourseBySlug } from "@/server/admin/courses";
 import { listModules } from "@/server/admin/modules";
+import { DeleteCourseButton } from "../delete-course-button";
 import { ModuleList } from "../module-list";
 
 export const metadata: Metadata = { title: "Course" };
@@ -42,9 +44,18 @@ async function Course({ courseSlug }: { courseSlug: string }) {
         title={course.title}
         description={`/${course.slug} · ${course.isPublished ? "Published" : "Unpublished"} · ${modules.length} module${modules.length === 1 ? "" : "s"}`}
         actions={
-          <Button href={`/admin/content/${course.slug}/new`} size="sm">
-            New module
-          </Button>
+          <>
+            <Button href={`/admin/content/${course.slug}/new`} size="sm">
+              New module
+            </Button>
+            {course.slug !== DEFAULT_COURSE_SLUG && (
+              <DeleteCourseButton
+                id={course.id}
+                title={course.title}
+                moduleCount={modules.length}
+              />
+            )}
+          </>
         }
       />
       <p

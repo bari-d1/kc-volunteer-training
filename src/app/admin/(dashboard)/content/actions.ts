@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { requireAdmin } from "@/lib/admin-auth";
 import { invalid, type ActionResult } from "@/lib/form-errors";
-import { createCourse } from "@/server/admin/courses";
+import { createCourse, deleteCourse } from "@/server/admin/courses";
 import { isUniqueViolation } from "@/server/admin/inputs";
 import {
   createModule,
@@ -79,6 +79,15 @@ export async function reorderModulesAction(courseId: string, ids: string[]) {
 export async function deleteModuleAction(id: string): Promise<ActionResult> {
   await requireAdmin();
   const result = await attempt(() => deleteModule(Id.parse(id)), "");
+  if (!result.ok) return result;
+  return result.data.deleted
+    ? { ok: true }
+    : { ok: false, error: result.data.reason };
+}
+
+export async function deleteCourseAction(id: string): Promise<ActionResult> {
+  await requireAdmin();
+  const result = await attempt(() => deleteCourse(Id.parse(id)), "");
   if (!result.ok) return result;
   return result.data.deleted
     ? { ok: true }

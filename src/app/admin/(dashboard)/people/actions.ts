@@ -8,6 +8,7 @@ import { isUniqueViolation } from "@/server/admin/inputs";
 import {
   createLeader,
   createTeam,
+  deleteLeader,
   renameTeam,
   reorderBranches,
   reorderLeaders,
@@ -81,4 +82,9 @@ export async function setLeaderActiveAction(id: string, isActive: boolean) {
 export async function reorderLeadersAction(group: string, ids: string[]) {
   await requireAdmin();
   return attempt(() => reorderLeaders(group, ids));
+}
+
+export async function deleteLeaderAction(id: string) {
+  await requireAdmin();
+  return attempt(() => deleteLeader(Id.parse(id)));
 }
