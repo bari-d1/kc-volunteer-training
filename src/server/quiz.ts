@@ -365,21 +365,12 @@ export async function submitAttempt(input: unknown): Promise<SubmittedAttempt> {
     }
     const optionOrder = OptionOrderSchema.parse(attempt.optionOrder);
 
-    const results = questions.map((q): QuestionResult => {
+    const results = questions.map((q) => {
       const selectedOptionId = chosen.get(q.id)!;
       if (!q.options.some((o) => o.id === selectedOptionId)) {
         throw new QuizError("invalid", "That answer isn't one of the options");
       }
-      const correctOption = q.options.find((o) => o.id === q.correctOptionId);
-      return {
-        questionId: q.id,
-        prompt: q.prompt,
-        options: orderOptions(q.options, optionOrder[q.id]),
-        selectedOptionId,
-        correctOptionId: q.correctOptionId,
-        correct: selectedOptionId === q.correctOptionId,
-        explanation: explain(q.explanation, correctOption),
-      };
+      return toResult(q, selectedOptionId, optionOrder);
     });
 
     const { passMark } = await getSettings(tx);
@@ -423,6 +414,23 @@ export async function submitAttempt(input: unknown): Promise<SubmittedAttempt> {
   // After the transaction commits, so the certificate exists to email about.
   if (outcome.passed && courseId) sendCompletionEmail(volunteer.id, courseId);
   return outcome;
+}
+
+function toResult(
+  q: StoredQuestion,
+  selectedOptionId: string,
+  optionOrder: Record<string, string[]>,
+): QuestionResult {
+  const correctOption = q.options.find((o) => o.id === q.correctOptionId);
+  return {
+    questionId: q.id,
+    prompt: q.prompt,
+    options: orderOptions(q.options, optionOrder[q.id]),
+    selectedOptionId,
+    correctOptionId: q.correctOptionId,
+    correct: selectedOptionId === q.correctOptionId,
+    explanation: explain(q.explanation, correctOption),
+  };
 }
 
 /**
@@ -473,7 +481,48 @@ async function completeCourse(
 export type QuizIntro = QuizSetting & {
   /** An unsubmitted attempt from the last two hours can be resumed. */
   hasOpenAttempt: boolean;
+  /** Their latest passing attempt, marked, once they've passed. */
+  passedAttempt: SubmittedAttempt | null;
 };
+
+/**
+ * The volunteer's latest passing attempt with their answers, as the results
+ * screen showed it, and their certificate number. Null if they haven't
+ * passed.
+ */
+async function getPassedAttempt(
+  profileId: VolunteerId,
+  courseId: string,
+  passMark: number,
+): Promise<SubmittedAttempt | null> {
+  const attempt = await prisma.quizAttempt.findFirst({
+    where: { profileId, courseId, passed: true, submittedAt: { not: null } },
+    orderBy: { submittedAt: "desc" },
+  });
+  if (!attempt) return null;
+  const ids = QuestionIdsSchema.parse(attempt.questionIds);
+  const answers = AnswersSchema.parse(attempt.answers);
+  const optionOrder = OptionOrderSchema.parse(attempt.optionOrder);
+  const questions =
+    snapshotQuestions(attempt.questions, ids) ??
+    (await loadQuestions(prisma, ids));
+  const certificate = await prisma.certificate.findUnique({
+    where: { profileId_courseId: { profileId, courseId } },
+    select: { certificateNumber: true },
+  });
+  return {
+    attemptId: attempt.id,
+    score: attempt.score ?? 0,
+    total: attempt.total,
+    passMark,
+    passed: true,
+    // A question deleted since (older attempts only): show the score alone.
+    results: (questions ?? []).map((q) =>
+      toResult(q, answers[q.id] ?? "", optionOrder),
+    ),
+    certificateNumber: certificate?.certificateNumber ?? null,
+  };
+}
 
 /** What the quiz intro screen shows. Reads only. */
 export async function getQuizIntro(
@@ -492,5 +541,13 @@ export async function getQuizIntro(
       select: { id: true },
     }),
   ]);
-  return { ...settings, hasOpenAttempt: open !== null };
+  return {
+    ...settings,
+    hasOpenAttempt: open !== null,
+    passedAttempt: await getPassedAttempt(
+      profileId,
+      courseId,
+      settings.passMark,
+    ),
+  };
 }

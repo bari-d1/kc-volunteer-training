@@ -27,8 +27,11 @@ export function QuizResults({
   onRetry,
   retrying,
   error,
+  alreadyPassed = false,
 }: {
   result: SubmittedAttempt;
+  /** Shown on a later visit: they passed before, this isn't a new result. */
+  alreadyPassed?: boolean;
   headingRef: RefObject<HTMLHeadingElement | null>;
   /** The course's module list, for revising. */
   modulesHref: string;
@@ -70,11 +73,15 @@ export function QuizResults({
               tabIndex={-1}
               className="text-h2 focus:outline-none"
             >
-              {result.passed ? "You passed!" : "Not quite this time"}
+              {alreadyPassed
+                ? "You've already passed the quiz"
+                : result.passed
+                  ? "You passed!"
+                  : "Not quite this time"}
             </h2>
             <p className="text-body-lg">
-              You got <strong>{scoreText}</strong>. The pass mark is{" "}
-              {result.passMark}%.
+              You {alreadyPassed ? "scored" : "got"}{" "}
+              <strong>{scoreText}</strong>. The pass mark is {result.passMark}%.
             </p>
             <p className="text-body text-muted">
               {result.passed
@@ -92,7 +99,10 @@ export function QuizResults({
             {next ? (
               <div className="flex flex-col gap-2">
                 <Button size="lg" href={next.href} className="w-full sm:w-fit">
-                  Finish your training <span aria-hidden="true">→</span>
+                  {alreadyPassed
+                    ? "Go to your certificate"
+                    : "Finish your training"}{" "}
+                  <span aria-hidden="true">→</span>
                 </Button>
                 <p className="text-small text-muted">
                   See your certificate and what happens next.
@@ -113,6 +123,23 @@ export function QuizResults({
                 </Button>
                 <p className="text-small text-muted">
                   Certificate number {result.certificateNumber}
+                </p>
+              </div>
+            )}
+            {alreadyPassed && (
+              <div className="flex flex-col gap-2">
+                <Button
+                  variant="ghost"
+                  size="lg"
+                  onClick={onRetry}
+                  loading={retrying}
+                  className="w-full sm:w-fit"
+                >
+                  Take the quiz again
+                </Button>
+                <p className="text-small text-muted">
+                  Just for practice: you&apos;ve passed, so your certificate
+                  stays whatever you score.
                 </p>
               </div>
             )}

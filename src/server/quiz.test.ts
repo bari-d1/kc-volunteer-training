@@ -83,14 +83,16 @@ const prisma = {
       ),
   },
   quizAttempt: {
+    // Either an open attempt to resume, or the latest passed one.
     findFirst: async ({
       where,
     }: {
       where: {
         profileId: string;
         courseId: string;
-        submittedAt: null;
-        startedAt: { gte: Date };
+        submittedAt: null | { not: null };
+        startedAt?: { gte: Date };
+        passed?: boolean;
       };
     }) =>
       quiz.attempts
@@ -98,11 +100,17 @@ const prisma = {
           (a) =>
             a.profileId === where.profileId &&
             a.courseId === where.courseId &&
-            a.submittedAt === null &&
-            a.startedAt >= where.startedAt.gte,
+            (where.submittedAt === null
+              ? a.submittedAt === null
+              : a.submittedAt !== null) &&
+            (!where.startedAt || a.startedAt >= where.startedAt.gte) &&
+            (where.passed === undefined || a.passed === where.passed),
         )
-        .sort((a, b) => b.startedAt.getTime() - a.startedAt.getTime())[0] ??
-      null,
+        .sort(
+          (a, b) =>
+            (b.submittedAt ?? b.startedAt).getTime() -
+            (a.submittedAt ?? a.startedAt).getTime(),
+        )[0] ?? null,
     findUnique: async ({ where }: { where: { id: string } }) =>
       quiz.attempts.find((a) => a.id === where.id) ?? null,
     create: async ({
@@ -609,10 +617,30 @@ describe("getQuizIntro", () => {
       passMark: 70,
       questionsPerAttempt: 12,
       hasOpenAttempt: false,
+      passedAttempt: null,
     });
     await startAttempt(SLUG);
     expect((await getQuizIntro(alice, courseId)).hasOpenAttempt).toBe(true);
     expect((await getQuizIntro(bob, courseId)).hasOpenAttempt).toBe(false);
+  });
+
+  it("returns their passing attempt, with answers, once they've passed", async () => {
+    const failing = await startAttempt(SLUG);
+    await submitAttempt({
+      attemptId: failing.attemptId,
+      answers: answersFor(failing.attemptId, 2),
+    });
+    expect((await getQuizIntro(alice, courseId)).passedAttempt).toBeNull();
+
+    const { attemptId } = await startAttempt(SLUG);
+    const submitted = await submitAttempt({
+      attemptId,
+      answers: answersFor(attemptId, 9),
+    });
+    const { passedAttempt } = await getQuizIntro(alice, courseId);
+    expect(passedAttempt).toEqual(submitted);
+    expect(passedAttempt?.certificateNumber).toEqual(expect.any(String));
+    expect((await getQuizIntro(bob, courseId)).passedAttempt).toBeNull();
   });
 });
 

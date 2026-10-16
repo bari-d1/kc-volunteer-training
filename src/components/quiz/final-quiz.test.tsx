@@ -333,3 +333,54 @@ describe("review and submit", () => {
     expect(screen.getByText("Your answer: Answer 1A")).toBeInTheDocument();
   });
 });
+
+describe("after passing", () => {
+  const passedAttempt = {
+    attemptId: ATTEMPT,
+    score: 9,
+    total: 10,
+    passMark: 80,
+    passed: true,
+    certificateNumber: "KC-2026-0001",
+    results: [
+      {
+        questionId: questions[0].id,
+        prompt: "Question prompt 1?",
+        options: questions[0].options,
+        selectedOptionId: "a",
+        correctOptionId: "a",
+        correct: true,
+        explanation: "Because.",
+      },
+    ],
+  };
+
+  it("says they've already passed and shows their answers instead of the intro", () => {
+    renderQuiz({ passedAttempt });
+    expect(
+      screen.getByRole("heading", { name: "You've already passed the quiz" }),
+    ).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Start quiz" })).toBeNull();
+    expect(screen.getByText("9 out of 10")).toBeInTheDocument();
+    expect(screen.getByText("Question prompt 1?")).toBeInTheDocument();
+    expect(
+      screen.getByRole("link", { name: /Go to your certificate/ }),
+    ).toHaveAttribute("href", "/course/kc/part-of-the-family");
+    expect(screen.getByText("Certificate number KC-2026-0001")).toBeVisible();
+    expect(narrator.say).toHaveBeenCalledWith(
+      expect.stringContaining("already passed"),
+      "celebrate",
+      expect.anything(),
+    );
+  });
+
+  it("lets them take it again for practice", async () => {
+    const user = userEvent.setup();
+    renderQuiz({ passedAttempt });
+    await user.click(
+      screen.getByRole("button", { name: "Take the quiz again" }),
+    );
+    await screen.findByText("Question 1 of 3");
+    expect(startQuizAction).toHaveBeenCalledWith("volunteers-onboarding");
+  });
+});

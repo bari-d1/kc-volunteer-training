@@ -17,6 +17,8 @@ export type FinalQuizProps = {
   passMark: number;
   /** An unfinished attempt can be resumed. */
   hasOpenAttempt: boolean;
+  /** Their passing attempt, once they've passed: shown instead of the intro. */
+  passedAttempt?: SubmittedAttempt | null;
   /** Where Continue goes after passing. */
   next: { href: string; title: string } | null;
   /** The course's module list, for revising after a fail. */
@@ -29,7 +31,8 @@ type Phase =
   | { name: "intro" }
   | { name: "question"; index: number; fromReview: boolean }
   | { name: "review" }
-  | { name: "result"; result: SubmittedAttempt };
+  /** earlier: an attempt from a previous visit, not one just submitted. */
+  | { name: "result"; result: SubmittedAttempt; earlier?: boolean };
 
 const storageKey = (attemptId: string) => `kc:quiz:${attemptId}`;
 
@@ -88,12 +91,18 @@ export function FinalQuiz({
   questionsPerAttempt,
   passMark,
   hasOpenAttempt,
+  passedAttempt = null,
   next,
   modulesHref,
 }: FinalQuizProps) {
   const router = useRouter();
   const narrator = useNarrator();
-  const [phase, setPhase] = useState<Phase>({ name: "intro" });
+  // Coming back after passing shows how they did, not a fresh quiz.
+  const [phase, setPhase] = useState<Phase>(
+    passedAttempt
+      ? { name: "result", result: passedAttempt, earlier: true }
+      : { name: "intro" },
+  );
   const [attempt, setAttempt] = useState<Attempt | null>(null);
   const [answers, setAnswers] = useState<Answers>({});
   const [canResume, setCanResume] = useState(hasOpenAttempt);
@@ -114,6 +123,15 @@ export function FinalQuiz({
   }, [screen]);
 
   const { say, setState } = narrator;
+  const showingEarlierPass = phase.name === "result" && phase.earlier;
+  useEffect(() => {
+    if (!showingEarlierPass) return;
+    say(
+      "You've already passed the quiz. Nice work! Here's how you did.",
+      "celebrate",
+      { key: "quiz:passed", once: "visit" },
+    );
+  }, [showingEarlierPass, say]);
   useEffect(() => {
     if (phase.name !== "intro") return;
     say(
@@ -263,6 +281,21 @@ export function FinalQuiz({
     );
   }
 
+  const results = (shown: Extract<Phase, { name: "result" }>) => (
+    <QuizResults
+      result={shown.result}
+      alreadyPassed={shown.earlier}
+      headingRef={headingRef}
+      modulesHref={modulesHref}
+      next={next}
+      onRetry={retake}
+      retrying={pending}
+      error={errorBox}
+    />
+  );
+  // A pass from an earlier visit has no attempt loaded in this one.
+  if (phase.name === "result" && phase.earlier) return results(phase);
+
   if (!attempt) return null;
   const total = attempt.questions.length;
 
@@ -366,17 +399,7 @@ export function FinalQuiz({
     );
   }
 
-  return (
-    <QuizResults
-      result={phase.result}
-      headingRef={headingRef}
-      modulesHref={modulesHref}
-      next={next}
-      onRetry={retake}
-      retrying={pending}
-      error={errorBox}
-    />
-  );
+  return results(phase);
 }
 
 function QuestionScreen({
