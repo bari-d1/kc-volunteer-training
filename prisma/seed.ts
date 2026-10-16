@@ -12,7 +12,7 @@
  * rather than deleted, so profiles keep them.
  *
  * Quiz questions, sections and settings always come from the question banks
- * in content/quizzes (see quiz-import.ts), with or without the flag.
+ * in content/quizzes (see src/server/quiz-import.ts), with or without the flag.
  */
 import "dotenv/config";
 import { PrismaPg } from "@prisma/adapter-pg";
@@ -31,7 +31,7 @@ import {
   loadQuestionBank,
   questionBankFiles,
   type ImportReport,
-} from "./quiz-import";
+} from "../src/server/quiz-import";
 
 const replace = process.argv.includes("--replace-content");
 

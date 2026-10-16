@@ -225,6 +225,10 @@ model QuizAttempt {
   courseId    String    @db.Uuid
   /// Question ids drawn for this attempt, in the order shown.
   questionIds Json
+  /// The drawn questions as they were when drawn: [{ id, prompt, options,
+  /// correctOptionId, explanation }]. Marking and review use this, so
+  /// admin edits only reach new attempts. Null on attempts from before it.
+  questions   Json?
   /// Map of questionId → option ids in the order shown.
   optionOrder Json      @default("{}")
   /// Map of questionId → chosen optionId. Empty until submitted.

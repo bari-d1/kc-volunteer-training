@@ -58,6 +58,37 @@ export const PublicQuizQuestionSchema = QuizQuestionBase.pick({
 });
 export type PublicQuizQuestion = z.infer<typeof PublicQuizQuestionSchema>;
 
+/**
+ * QuizAttempt.questions: the drawn questions as they were when drawn, so
+ * edits in the admin area only reach new attempts. The explanation may be
+ * empty (the bank allows it).
+ */
+export const AttemptQuestionsSchema = z.array(
+  z.object({
+    id: z.uuid(),
+    prompt: z.string(),
+    options: z.array(QuizOptionSchema),
+    correctOptionId: z.string(),
+    explanation: z.string(),
+  }),
+);
+export type AttemptQuestion = z.infer<typeof AttemptQuestionsSchema>[number];
+
+/**
+ * The snapshot's questions in the order of `ids`, or null if there's no
+ * snapshot or it doesn't cover them all (older attempts).
+ */
+export function snapshotQuestions(
+  snapshot: unknown,
+  ids: string[],
+): AttemptQuestion[] | null {
+  const parsed = AttemptQuestionsSchema.safeParse(snapshot);
+  if (!parsed.success) return null;
+  const byId = new Map(parsed.data.map((q) => [q.id, q]));
+  const ordered = ids.map((id) => byId.get(id));
+  return ordered.every(Boolean) ? (ordered as AttemptQuestion[]) : null;
+}
+
 export const QuizSubmissionSchema = z
   .object({
     /** QuizAttempt.id, returned by startAttempt. */

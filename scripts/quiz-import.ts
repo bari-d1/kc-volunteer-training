@@ -11,7 +11,7 @@ import {
   describeImport,
   importQuestionBank,
   loadQuestionBank,
-} from "../prisma/quiz-import";
+} from "../src/server/quiz-import";
 
 const args = process.argv.slice(2);
 const dryRun = args.includes("--dry-run");

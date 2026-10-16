@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { VolunteerId } from "@/lib/auth";
-import { loadQuestionBank, toQuestionData } from "../../prisma/quiz-import";
+import { loadQuestionBank, toQuestionData } from "./quiz-import";
 import { createFakePrisma, module, uuid } from "./__tests__/fake-prisma";
 
 vi.mock("server-only", () => ({}));
@@ -23,6 +23,7 @@ type Attempt = {
   profileId: string;
   courseId: string;
   questionIds: string[];
+  questions?: unknown;
   optionOrder: Record<string, string[]>;
   answers: Record<string, string>;
   score: number | null;
@@ -109,7 +110,12 @@ const prisma = {
     }: {
       data: Pick<
         Attempt,
-        "profileId" | "courseId" | "questionIds" | "optionOrder" | "total"
+        | "profileId"
+        | "courseId"
+        | "questionIds"
+        | "questions"
+        | "optionOrder"
+        | "total"
       >;
     }) => {
       const row: Attempt = {
@@ -413,11 +419,21 @@ describe("submitAttempt", () => {
   });
 
   it("returns each question's result with an explanation", async () => {
-    const { attemptId } = await startAttempt(SLUG);
-    const first = byId(quiz.attempts[0].questionIds[0]);
+    // random() = 0 draws the same questions each time; set explanations
+    // first, since an attempt keeps the questions as drawn.
+    const peek = await startAttempt(SLUG, () => 0);
+    const [firstId, secondId] = quiz.attempts[0].questionIds;
+    quiz.attempts = [];
+    expect(peek.questions).toHaveLength(10);
+    const first = byId(firstId);
     first.explanation = "Because the deck says so.";
-    const second = byId(quiz.attempts[0].questionIds[1]);
+    const second = byId(secondId);
     second.explanation = "";
+    const { attemptId } = await startAttempt(SLUG, () => 0);
+    expect(quiz.attempts[0].questionIds.slice(0, 2)).toEqual([
+      firstId,
+      secondId,
+    ]);
 
     const { results } = await submitAttempt({
       attemptId,
@@ -438,6 +454,36 @@ describe("submitAttempt", () => {
       correct: false,
       explanation: `The correct answer is ${correctText}.`,
     });
+  });
+
+  it("keeps the questions as drawn when an admin edits them mid-attempt", async () => {
+    const { attemptId, questions } = await startAttempt(SLUG);
+    const answers = answersFor(attemptId, 10);
+    const edited = byId(questions[0].id);
+    const originalPrompt = edited.prompt;
+    const originalCorrect = edited.correctOptionId;
+    edited.prompt = "Reworded";
+    edited.correctOptionId = edited.options.find(
+      (o) => o.id !== originalCorrect,
+    )!.id;
+    edited.isActive = false;
+
+    expect((await startAttempt(SLUG)).questions[0].prompt).toBe(originalPrompt);
+    const { results, score } = await submitAttempt({ attemptId, answers });
+    expect(score).toBe(10);
+    expect(results[0]).toMatchObject({
+      prompt: originalPrompt,
+      correctOptionId: originalCorrect,
+    });
+  });
+
+  it("marks older attempts without a snapshot against the live questions", async () => {
+    const { attemptId } = await startAttempt(SLUG);
+    delete quiz.attempts[0].questions;
+    const answers = answersFor(attemptId, 10);
+    byId(quiz.attempts[0].questionIds[0]).prompt = "Reworded";
+    const { results } = await submitAttempt({ attemptId, answers });
+    expect(results[0].prompt).toBe("Reworded");
   });
 
   it("cannot be submitted twice", async () => {

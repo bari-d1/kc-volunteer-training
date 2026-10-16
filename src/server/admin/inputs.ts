@@ -58,3 +58,22 @@ export class SettingsError extends Error {
     this.name = "SettingsError";
   }
 }
+
+/**
+ * A question bank change that would break the bank's rules, e.g. a second
+ * required question in a group. `problems` lists every issue in an
+ * uploaded bank, one line each.
+ */
+export class QuizBankError extends Error {
+  constructor(
+    readonly fieldErrors: Record<string, string>,
+    readonly problems: string[] = [],
+  ) {
+    super(
+      fieldErrors._form ??
+        Object.values(fieldErrors)[0] ??
+        "Some fields need fixing.",
+    );
+    this.name = "QuizBankError";
+  }
+}

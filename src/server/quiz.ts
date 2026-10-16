@@ -10,6 +10,7 @@ import {
   PublicQuizQuestionSchema,
   QuizOptionSchema,
   QuizSubmissionSchema,
+  snapshotQuestions,
   type PublicQuizQuestion,
   type QuizOption,
 } from "@/lib/schemas/quiz";
@@ -219,7 +220,9 @@ export async function startAttempt(
   });
   if (open) {
     const ids = QuestionIdsSchema.parse(open.questionIds);
-    const questions = await loadQuestions(prisma, ids);
+    const questions =
+      snapshotQuestions(open.questions, ids) ??
+      (await loadQuestions(prisma, ids));
     // A question deleted since the attempt started: draw afresh instead.
     if (questions) {
       return toStarted(
@@ -250,6 +253,8 @@ export async function startAttempt(
       profileId: volunteer.id,
       courseId,
       questionIds: ids,
+      // Frozen here, so edits in the admin area only reach new attempts.
+      questions,
       optionOrder,
       total: ids.length,
     },
@@ -349,7 +354,9 @@ export async function submitAttempt(input: unknown): Promise<SubmittedAttempt> {
     if (chosen.size !== ids.length || ids.some((id) => !chosen.has(id))) {
       throw new QuizError("invalid", "Answer every question before submitting");
     }
-    const questions = await loadQuestions(tx, ids);
+    const questions =
+      snapshotQuestions(attempt.questions, ids) ??
+      (await loadQuestions(tx, ids));
     if (!questions) {
       throw new QuizError(
         "unavailable",

@@ -223,6 +223,7 @@ export function RepeatableList<T>({
   render,
   error,
   min = 1,
+  max,
 }: {
   legend: string;
   /** "Card", "Tab"… used in button names: "Remove card 2". */
@@ -234,6 +235,8 @@ export function RepeatableList<T>({
   /** An error about the list itself, e.g. "Too small". */
   error?: string;
   min?: number;
+  /** Hides "Add" once there are this many. */
+  max?: number;
 }) {
   const lower = itemLabel.toLowerCase();
   return (
@@ -293,13 +296,15 @@ export function RepeatableList<T>({
           )}
         </div>
       ))}
-      <button
-        type="button"
-        onClick={() => onChange([...items, create()])}
-        className="w-fit rounded-md border border-dashed border-surface-2 px-3 py-1.5 text-small font-bold text-muted hover:border-muted hover:text-text"
-      >
-        + Add {lower}
-      </button>
+      {(max === undefined || items.length < max) && (
+        <button
+          type="button"
+          onClick={() => onChange([...items, create()])}
+          className="w-fit rounded-md border border-dashed border-surface-2 px-3 py-1.5 text-small font-bold text-muted hover:border-muted hover:text-text"
+        >
+          + Add {lower}
+        </button>
+      )}
     </fieldset>
   );
 }

@@ -4,7 +4,7 @@ import { requireAdmin } from "@/lib/admin-auth";
 import type { VolunteerId } from "@/lib/auth";
 import { DEFAULT_COURSE_SLUG } from "@/lib/course-config";
 import { prisma } from "@/lib/prisma";
-import { QuizOptionSchema } from "@/lib/schemas/quiz";
+import { QuizOptionSchema, snapshotQuestions } from "@/lib/schemas/quiz";
 import {
   matchesFilters,
   volunteerStatus,
@@ -190,6 +190,7 @@ export async function getVolunteerDetail(id: string) {
         total: true,
         passed: true,
         questionIds: true,
+        questions: true,
         answers: true,
       },
     }),
@@ -211,9 +212,20 @@ export async function getVolunteerDetail(id: string) {
     }),
   ]);
 
-  // Every question any attempt asked, in one query.
+  // Attempts keep the questions as they were drawn; older ones without
+  // that snapshot use the live questions, fetched in one query.
+  const snapshots = new Map(
+    attempts.map((a) => [
+      a.id,
+      snapshotQuestions(a.questions, IdsSchema.parse(a.questionIds)),
+    ]),
+  );
   const questionIds = [
-    ...new Set(attempts.flatMap((a) => IdsSchema.parse(a.questionIds))),
+    ...new Set(
+      attempts.flatMap((a) =>
+        snapshots.get(a.id) ? [] : IdsSchema.parse(a.questionIds),
+      ),
+    ),
   ];
   const questions = new Map(
     (
@@ -240,6 +252,7 @@ export async function getVolunteerDetail(id: string) {
     })),
     attempts: attempts.map((a) => {
       const answers = AnswersSchema.parse(a.answers);
+      const snapshot = new Map(snapshots.get(a.id)?.map((q) => [q.id, q]));
       return {
         id: a.id,
         startedAt: a.startedAt,
@@ -248,7 +261,7 @@ export async function getVolunteerDetail(id: string) {
         total: a.total,
         passed: a.passed,
         answers: IdsSchema.parse(a.questionIds).map((questionId) => {
-          const q = questions.get(questionId);
+          const q = snapshot.get(questionId) ?? questions.get(questionId);
           const chosen = answers[questionId];
           const text = (optionId?: string) =>
             q?.options.find((o) => o.id === optionId)?.text ?? null;
