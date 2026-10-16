@@ -23,7 +23,8 @@
     "quiz:schema": "tsx scripts/quiz-schema.ts",
     "quiz:import": "tsx scripts/quiz-import.ts",
     "email:dev": "email dev --dir src/emails --port 3001",
-    "job:reminders": "tsx --import ./scripts/register-server-only.mjs scripts/job-reminders.ts"
+    "job:reminders": "tsx --import ./scripts/register-server-only.mjs scripts/job-reminders.ts",
+    "storage:setup": "tsx --import ./scripts/register-server-only.mjs scripts/storage-setup.ts"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

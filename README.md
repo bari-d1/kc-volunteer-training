@@ -106,6 +106,23 @@ Notes:
 - The email links to `{{ .SiteURL }}/auth/confirm`, which works in any browser but doesn't carry a `next` path; volunteers land on `/course` (or `/onboarding` the first time). Signing in with the code keeps the page they were heading to.
 - Supabase has no separate switch for password sign-in; the app simply never offers passwords.
 
+## Media uploads
+
+Images, videos and captions are uploaded from the admin block editor to a public Supabase Storage bucket, `course-media`.
+
+**Setup:** add `SUPABASE_SECRET_KEY` (Supabase dashboard → Project Settings → API keys → secret key) to `.env`, then run `pnpm storage:setup` once. It creates the bucket, or updates it if it exists: public, 200 MB per file at most, and only JPEG, PNG, WebP, MP4 and VTT files.
+
+**How an upload works:**
+
+1. The browser checks the file type, and resizes images wider than 2000px to WebP.
+2. An admin-only server action checks the type and size again and creates a signed upload URL with the secret key.
+3. The browser uploads straight to Storage, so large videos never pass through the Next.js server.
+4. Another admin action confirms the file arrived and records it in the `Media` table.
+
+Files are stored at `{yyyy}/{mm}/{uuid}-{safe-filename}`, so URLs can't be guessed. Limits: images (.jpg, .png, .webp) 5 MB after resizing, videos (.mp4) 200 MB, captions (.vtt) 1 MB. Images need alt text.
+
+The media library (in every image, video and captions picker) lists earlier uploads. A file can only be deleted from it once no block (published or draft) or leader uses it.
+
 ## Reminder emails
 
 Volunteers who started but haven't finished get up to two reminders: one after 7 days without progress and one after 21, never two within a week. Any progress starts the count again, and finishing the quiz or turning reminders off stops them. The rules are in `src/server/jobs/reminder-rules.ts`.

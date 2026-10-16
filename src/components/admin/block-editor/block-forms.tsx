@@ -2,6 +2,7 @@
 
 import { useId, type ReactNode } from "react";
 import type { BlockType } from "@/generated/prisma/client";
+import { MediaPicker } from "@/components/admin/media/media-picker";
 import { cn } from "@/lib/cn";
 import type { BlockContent } from "@/lib/schemas/blocks";
 import type { ColourToken } from "@/lib/schemas/common";
@@ -178,11 +179,18 @@ function TextForm({ content, onChange, errors }: FormProps<"TEXT">) {
 function ImageForm({ content, onChange, errors }: FormProps<"IMAGE">) {
   return (
     <Stack>
-      <TextInput
-        label="Image URL"
-        hint="An https:// address, or a path in the site such as /images/team.jpg."
+      <MediaPicker
+        kind="IMAGE"
+        label="Image"
         value={content.url}
-        onChange={(url) => onChange({ ...content, url })}
+        onChange={(url, altText) =>
+          onChange({
+            ...content,
+            url: url ?? "",
+            // Fill in the library's alt text if there's none yet.
+            alt: !content.alt && altText ? altText : content.alt,
+          })
+        }
         error={errors.url}
       />
       <TextInput
@@ -207,23 +215,27 @@ function ImageForm({ content, onChange, errors }: FormProps<"IMAGE">) {
 function VideoForm({ content, onChange, errors }: FormProps<"VIDEO">) {
   return (
     <Stack>
-      <TextInput
-        label="Video URL"
+      <MediaPicker
+        kind="VIDEO"
+        label="Video"
         value={content.url}
-        onChange={(url) => onChange({ ...content, url })}
+        onChange={(url) => onChange({ ...content, url: url ?? "" })}
         error={errors.url}
       />
-      <TextInput
-        label="Captions file URL (optional)"
-        hint="A .vtt file, so the video has subtitles."
+      <MediaPicker
+        kind="CAPTIONS"
+        label="Captions (optional, .vtt)"
+        optional
         value={content.captionsUrl}
-        onChange={(v) => onChange({ ...content, captionsUrl: optional(v) })}
+        onChange={(captionsUrl) => onChange({ ...content, captionsUrl })}
         error={errors.captionsUrl}
       />
-      <TextInput
-        label="Poster image URL (optional)"
+      <MediaPicker
+        kind="IMAGE"
+        label="Poster image (optional)"
+        optional
         value={content.poster}
-        onChange={(v) => onChange({ ...content, poster: optional(v) })}
+        onChange={(poster) => onChange({ ...content, poster })}
         error={errors.poster}
       />
     </Stack>
@@ -431,10 +443,12 @@ function PeopleForm({ content, onChange, errors }: FormProps<"PEOPLE">) {
             onChange={(role) => update({ ...person, role })}
             error={errors[`people.${i}.role`]}
           />
-          <TextInput
-            label="Photo URL (optional)"
+          <MediaPicker
+            kind="IMAGE"
+            label="Photo (optional)"
+            optional
             value={person.photoUrl}
-            onChange={(v) => update({ ...person, photoUrl: optional(v) })}
+            onChange={(photoUrl) => update({ ...person, photoUrl })}
             error={errors[`people.${i}.photoUrl`]}
           />
           <ColourPicker

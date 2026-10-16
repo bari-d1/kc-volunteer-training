@@ -393,3 +393,33 @@ model EmailLog {
   @@index([profileId])
   @@index([createdAt])
 }
+
+// ─── Media ───────────────────────────────────────────────────────────────────
+
+enum MediaKind {
+  IMAGE
+  VIDEO
+  CAPTIONS
+}
+
+/// A file uploaded to the public "course-media" Storage bucket.
+model Media {
+  id        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  kind      MediaKind
+  /// Public URL, as stored in blocks and leaders.
+  url       String    @unique
+  /// Object path in the bucket: {yyyy}/{mm}/{uuid}-{safe-filename}.
+  path      String    @unique
+  filename  String
+  mimeType  String
+  /// Bytes.
+  size      Int
+  /// Required for images.
+  altText   String?
+  width     Int?
+  height    Int?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@index([kind, createdAt])
+}
