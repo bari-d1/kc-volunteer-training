@@ -13,6 +13,7 @@ import {
   toVolunteerBlock,
   type VolunteerBlock,
 } from "@/lib/schemas/blocks";
+import { resolvePeopleBlocks } from "../people-blocks";
 import { logChange } from "./change-log";
 import { BlockEditError } from "./inputs";
 
@@ -348,5 +349,5 @@ export async function getModulePreview(courseSlug: string, moduleSlug: string) {
       // Invalid content can't be saved, but skip it rather than break the page.
     }
   }
-  return { module: courseModule, blocks: preview };
+  return { module: courseModule, blocks: await resolvePeopleBlocks(preview) };
 }

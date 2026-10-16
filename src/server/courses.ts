@@ -3,6 +3,7 @@ import "server-only";
 export type { VolunteerBlock };
 import type { VolunteerId } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { resolvePeopleBlocks } from "./people-blocks";
 import {
   BlockValidationError,
   parseBlock,
@@ -179,7 +180,7 @@ export async function getModuleForVolunteer(
       narratorIntro: courseModule.narratorIntro,
       requiresCheck: courseModule.requiresCheck,
     },
-    blocks,
+    blocks: await resolvePeopleBlocks(blocks),
     progress: summary.progress
       ? {
           lastBlockOrder: summary.progress.lastBlockOrder,

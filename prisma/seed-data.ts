@@ -192,26 +192,9 @@ export const modules: Array<{
         },
       },
       {
+        // Lists the active Church Family leaders from People & Teams.
         type: "PEOPLE",
-        content: {
-          people: [
-            { name: "Pastor E.A. Adeboye", role: "General Overseer, RCCG" },
-            { name: "Pastor Leke Sanusi", role: "RCCG Chairman" },
-            {
-              name: "Pastors Abimbola & Bisi Komolafe",
-              role: "Senior Pastors, JCM",
-            },
-            {
-              name: "Asst. Pastor Adele Ige",
-              role: "Overseeing young adults",
-            },
-            {
-              name: "Pastor Joshua Komolafe",
-              role: "Team Lead",
-              ringColour: "lime",
-            },
-          ],
-        },
+        content: { people: [], source: { group: "CHURCH_FAMILY" } },
       },
       narrator(
         "point",
@@ -627,36 +610,10 @@ export const modules: Array<{
         content: { text: "Branch Leadership", level: 2, pill: "LEADERSHIP" },
       },
       {
+        // Lists the active Branch Leads from People & Teams, so a change
+        // there (e.g. the Ministry restructure) only happens in one place.
         type: "PEOPLE",
-        content: {
-          people: [
-            {
-              name: "Adanna Anthony-Okeke",
-              role: "Experience Lead",
-              ringColour: "experience",
-            },
-            {
-              name: "Princess Omosebi",
-              role: "Ministry Lead",
-              ringColour: "ministry",
-            },
-            {
-              name: "Bami Komolafe",
-              role: "Ministry Lead",
-              ringColour: "ministry",
-            },
-            {
-              name: "Maame Ama Acquah",
-              role: "Creative Lead",
-              ringColour: "creative",
-            },
-            {
-              name: "Dr Anna Fatunla",
-              role: "Systems Lead",
-              ringColour: "systems",
-            },
-          ],
-        },
+        content: { people: [], source: { group: "BRANCH_LEAD" } },
       },
     ],
   },

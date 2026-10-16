@@ -420,46 +420,99 @@ function PyramidForm({ content, onChange, errors }: FormProps<"PYRAMID">) {
   );
 }
 
+const LEADER_GROUPS = [
+  { value: "CHURCH_FAMILY", label: "Church family" },
+  { value: "BRANCH_LEAD", label: "Branch leads" },
+  { value: "TEAM_LEAD", label: "Team leads" },
+] as const;
+
 function PeopleForm({ content, onChange, errors }: FormProps<"PEOPLE">) {
+  const name = useId();
+  const auto = Boolean(content.source);
   return (
-    <RepeatableList
-      legend="People"
-      itemLabel="Person"
-      items={content.people}
-      onChange={(people) => onChange({ ...content, people })}
-      create={() => ({ name: "", role: "" })}
-      error={errors.people}
-      render={(person, update, i) => (
-        <>
-          <TextInput
-            label="Name"
-            value={person.name}
-            onChange={(name) => update({ ...person, name })}
-            error={errors[`people.${i}.name`]}
+    <Stack>
+      <fieldset className="flex flex-col gap-2">
+        <legend className="mb-1 text-small font-bold">Who to show</legend>
+        <label className="flex items-center gap-2 text-small">
+          <input
+            type="radio"
+            name={name}
+            checked={!auto}
+            onChange={() => onChange({ people: content.people })}
+            className="accent-lime"
           />
-          <TextInput
-            label="Role"
-            value={person.role}
-            onChange={(role) => update({ ...person, role })}
-            error={errors[`people.${i}.role`]}
+          List people by hand
+        </label>
+        <label className="flex items-start gap-2 text-small">
+          <input
+            type="radio"
+            name={name}
+            checked={auto}
+            onChange={() =>
+              onChange({ ...content, source: { group: "BRANCH_LEAD" } })
+            }
+            className="mt-1 accent-lime"
           />
-          <MediaPicker
-            kind="IMAGE"
-            label="Photo (optional)"
-            optional
-            value={person.photoUrl}
-            onChange={(photoUrl) => update({ ...person, photoUrl })}
-            error={errors[`people.${i}.photoUrl`]}
-          />
-          <ColourPicker
-            label="Ring colour"
-            value={person.ringColour}
-            onChange={(ringColour) => update({ ...person, ringColour })}
-            error={errors[`people.${i}.ringColour`]}
-          />
-        </>
+          <span>
+            Show a leader group automatically
+            <span className="block text-[12px] text-muted">
+              Lists every active leader in the group from People &amp; Teams, so
+              changes there show up here straight away.
+            </span>
+          </span>
+        </label>
+      </fieldset>
+      {auto ? (
+        <SelectInput
+          label="Leader group"
+          value={content.source?.group}
+          options={[...LEADER_GROUPS]}
+          onChange={(group) =>
+            onChange({ ...content, source: { group: group ?? "BRANCH_LEAD" } })
+          }
+          error={errors["source.group"]}
+        />
+      ) : (
+        <RepeatableList
+          legend="People"
+          itemLabel="Person"
+          items={content.people}
+          onChange={(people) => onChange({ ...content, people })}
+          create={() => ({ name: "", role: "" })}
+          error={errors.people}
+          render={(person, update, i) => (
+            <>
+              <TextInput
+                label="Name"
+                value={person.name}
+                onChange={(name) => update({ ...person, name })}
+                error={errors[`people.${i}.name`]}
+              />
+              <TextInput
+                label="Role"
+                value={person.role}
+                onChange={(role) => update({ ...person, role })}
+                error={errors[`people.${i}.role`]}
+              />
+              <MediaPicker
+                kind="IMAGE"
+                label="Photo (optional)"
+                optional
+                value={person.photoUrl}
+                onChange={(photoUrl) => update({ ...person, photoUrl })}
+                error={errors[`people.${i}.photoUrl`]}
+              />
+              <ColourPicker
+                label="Ring colour"
+                value={person.ringColour}
+                onChange={(ringColour) => update({ ...person, ringColour })}
+                error={errors[`people.${i}.ringColour`]}
+              />
+            </>
+          )}
+        />
       )}
-    />
+    </Stack>
   );
 }
 

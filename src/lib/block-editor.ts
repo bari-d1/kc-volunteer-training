@@ -142,6 +142,12 @@ export function validateBlockContent(type: BlockType, content: unknown) {
   return { valid: false as const, errors };
 }
 
+const GROUP_LABELS: Record<string, string> = {
+  CHURCH_FAMILY: "church family",
+  BRANCH_LEAD: "branch leads",
+  TEAM_LEAD: "team leads",
+};
+
 const clip = (text: string, length = 60) => {
   const flat = text
     .replace(/\s+/g, " ")
@@ -179,11 +185,14 @@ export function summariseBlock(type: BlockType, content: unknown): string {
       return `${count(list("events").length, "event")}, from ${first("events", "year")}`;
     case "PYRAMID":
       return `${count(list("levels").length, "level")}: ${clip(first("levels", "title"), 40)}`;
-    case "PEOPLE":
+    case "PEOPLE": {
+      const group = (c.source as { group?: string } | undefined)?.group;
+      if (group) return `Auto: ${GROUP_LABELS[group] ?? group}`;
       return count(list("people").length, "person").replace(
         "persons",
         "people",
       );
+    }
     case "REFLECTION":
       return clip(String(c.prompt ?? ""));
     case "CHECKLIST":

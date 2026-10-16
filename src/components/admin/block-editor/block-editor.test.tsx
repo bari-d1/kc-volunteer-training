@@ -155,6 +155,34 @@ describe("BlockEditor", () => {
     expect(actions.publishModuleChangesAction).toHaveBeenCalledWith("mod");
   });
 
+  it("switches a people block to a leader group", () => {
+    render(
+      <BlockEditor
+        moduleId="mod"
+        previewHref="/p"
+        initialBlocks={[
+          {
+            id: "p1",
+            type: "PEOPLE",
+            content: { people: [{ name: "Ada", role: "Lead" }] },
+            isNew: false,
+            changed: false,
+          },
+        ]}
+        hasUnpublishedChanges={false}
+        deletedCount={0}
+      />,
+    );
+    fireEvent.click(
+      screen.getByRole("radio", { name: /Show a leader group automatically/ }),
+    );
+    expect(screen.getByRole("combobox", { name: "Leader group" })).toHaveValue(
+      "BRANCH_LEAD",
+    );
+    expect(screen.queryByRole("textbox", { name: "Name" })).toBeNull();
+    expect(screen.getByText("Auto: branch leads")).toBeVisible();
+  });
+
   it("links to the preview in a new tab", () => {
     renderEditor();
     const preview = screen.getByRole("link", { name: /Preview/ });

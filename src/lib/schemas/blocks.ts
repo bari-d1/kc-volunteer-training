@@ -87,18 +87,32 @@ export const PyramidContentSchema = z.object({
     .min(1),
 });
 
-export const PeopleContentSchema = z.object({
-  people: z
-    .array(
+export const LeaderGroupSchema = z.enum([
+  "CHURCH_FAMILY",
+  "BRANCH_LEAD",
+  "TEAM_LEAD",
+]);
+
+export const PeopleContentSchema = z
+  .object({
+    people: z.array(
       z.object({
         name: NonEmptyString,
         role: NonEmptyString,
         photoUrl: UrlOrPathSchema.optional(),
         ringColour: ColourTokenSchema.optional(),
       }),
-    )
-    .min(1),
-});
+    ),
+    /**
+     * "Auto" mode: show every active leader in this group (from People &
+     * Teams) instead of the hand-written list.
+     */
+    source: z.object({ group: LeaderGroupSchema }).optional(),
+  })
+  .refine((content) => content.source || content.people.length > 0, {
+    path: ["people"],
+    message: "Add at least one person, or show a leader group instead",
+  });
 
 export const ReflectionContentSchema = z.object({
   prompt: NonEmptyString,
