@@ -28,13 +28,13 @@ beforeEach(() => {
 
 describe("content actions", () => {
   it("creates a module and returns its id", async () => {
-    server.createModule.mockResolvedValue({ id: "new-id" });
+    server.createModule.mockResolvedValue({ id: "new-id", slug: "giving" });
     expect(
       await actions.createModuleAction(COURSE, {
         title: "Giving",
         slug: "giving",
       }),
-    ).toEqual({ ok: true, data: "new-id" });
+    ).toEqual({ ok: true, data: "giving" });
   });
 
   it("explains a slug already in use on the slug field", async () => {

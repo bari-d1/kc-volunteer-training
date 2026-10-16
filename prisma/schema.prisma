@@ -111,15 +111,23 @@ model Module {
 }
 
 model Block {
-  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  moduleId    String    @db.Uuid
-  order       Int       @default(0)
-  type        BlockType
+  id           String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  moduleId     String    @db.Uuid
+  order        Int       @default(0)
+  type         BlockType
   /// Shape depends on type; validated with zod in the app.
-  content     Json
-  isPublished Boolean   @default(true)
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  content      Json
+  /// Volunteers only see content where isPublished. Admin edits go to the
+  /// draft fields until "Publish changes" copies them over.
+  isPublished  Boolean   @default(true)
+  /// Unpublished edit of content (same shape, validated the same way).
+  draftContent Json?
+  /// Removed in the editor; deleted when the module's changes are published.
+  draftDeleted Boolean   @default(false)
+  /// Unpublished position; replaces order when published.
+  draftOrder   Int?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
 
   module            Module             @relation(fields: [moduleId], references: [id], onDelete: Cascade)
   reflectionAnswers ReflectionAnswer[]

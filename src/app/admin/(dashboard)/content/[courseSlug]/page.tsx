@@ -2,12 +2,11 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
-import { z } from "zod";
 import { AdminPageSkeleton } from "@/components/admin/admin-page-skeleton";
 import { PageHeader } from "@/components/admin/page-header";
 import { Button } from "@/components/ui/button";
 import { requireAdmin } from "@/lib/admin-auth";
-import { getCourse } from "@/server/admin/courses";
+import { getCourseBySlug } from "@/server/admin/courses";
 import { listModules } from "@/server/admin/modules";
 import { ModuleList } from "../module-list";
 
@@ -15,22 +14,21 @@ export const metadata: Metadata = { title: "Course" };
 
 export default function AdminCoursePage({
   params,
-}: PageProps<"/admin/content/[courseId]">) {
+}: PageProps<"/admin/content/[courseSlug]">) {
   return (
     <Suspense fallback={<AdminPageSkeleton />}>
-      {params.then(({ courseId }) => (
-        <Course courseId={courseId} />
+      {params.then(({ courseSlug }) => (
+        <Course courseSlug={courseSlug} />
       ))}
     </Suspense>
   );
 }
 
-async function Course({ courseId }: { courseId: string }) {
+async function Course({ courseSlug }: { courseSlug: string }) {
   await requireAdmin();
-  if (!z.uuid().safeParse(courseId).success) notFound();
-  const course = await getCourse(courseId);
+  const course = await getCourseBySlug(courseSlug);
   if (!course) notFound();
-  const modules = await listModules(courseId);
+  const modules = await listModules(course.id);
 
   return (
     <>
@@ -44,7 +42,7 @@ async function Course({ courseId }: { courseId: string }) {
         title={course.title}
         description={`/${course.slug} · ${course.isPublished ? "Published" : "Unpublished"} · ${modules.length} module${modules.length === 1 ? "" : "s"}`}
         actions={
-          <Button href={`/admin/content/${courseId}/modules/new`} size="sm">
+          <Button href={`/admin/content/${course.slug}/new`} size="sm">
             New module
           </Button>
         }
@@ -58,7 +56,11 @@ async function Course({ courseId }: { courseId: string }) {
         this order, so moving a published module changes what volunteers partway
         through the course can open next.
       </p>
-      <ModuleList courseId={courseId} modules={modules} />
+      <ModuleList
+        courseId={course.id}
+        courseSlug={course.slug}
+        modules={modules}
+      />
     </>
   );
 }

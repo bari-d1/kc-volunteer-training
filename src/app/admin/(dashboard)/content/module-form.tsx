@@ -26,10 +26,12 @@ export type ModuleFormValues = {
  */
 export function ModuleForm({
   courseId,
+  courseSlug,
   moduleId,
   initial,
 }: {
   courseId: string;
+  courseSlug: string;
   /** Omit to create a new module. */
   moduleId?: string;
   initial?: ModuleFormValues;
@@ -68,9 +70,10 @@ export function ModuleForm({
             : createModuleAction(courseId, input),
         { success: moduleId ? "Module saved" : "Module created" },
       );
-      if (result.ok) {
+      if (result.ok && "data" in result) {
         setErrors({});
-        router.push(`/admin/content/${courseId}`);
+        // To the module's editor (its slug may have just changed).
+        router.push(`/admin/content/${courseSlug}/${result.data}`);
         router.refresh();
       } else {
         setErrors("fieldErrors" in result ? (result.fieldErrors ?? {}) : {});
@@ -136,7 +139,15 @@ export function ModuleForm({
         <Button type="submit" size="sm" loading={pending}>
           {moduleId ? "Save module" : "Create module"}
         </Button>
-        <Button href={`/admin/content/${courseId}`} variant="ghost" size="sm">
+        <Button
+          href={
+            moduleId && initial
+              ? `/admin/content/${courseSlug}/${initial.slug}`
+              : `/admin/content/${courseSlug}`
+          }
+          variant="ghost"
+          size="sm"
+        >
           Cancel
         </Button>
       </div>

@@ -21,6 +21,14 @@ export async function getCourse(id: string) {
   });
 }
 
+export async function getCourseBySlug(slug: string) {
+  await requireAdmin();
+  return prisma.course.findUnique({
+    where: { slug },
+    select: { id: true, slug: true, title: true, isPublished: true },
+  });
+}
+
 export async function createCourse(input: unknown) {
   await requireAdmin();
   const data = CourseInputSchema.parse(input);

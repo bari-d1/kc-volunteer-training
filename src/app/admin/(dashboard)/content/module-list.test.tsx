@@ -65,7 +65,7 @@ const titles = () =>
 
 describe("ModuleList", () => {
   it("shows order, status, blocks, check and unpublished changes", () => {
-    render(<ModuleList courseId="c1" modules={modules} />);
+    render(<ModuleList courseId="c1" courseSlug="kc" modules={modules} />);
     expect(titles()).toEqual(["Welcome", "About KC", "Our Values"]);
     const rows = within(
       screen.getByRole("list", { name: "Modules in order" }),
@@ -85,7 +85,7 @@ describe("ModuleList", () => {
   });
 
   it("reorders with the keyboard and saves the new order", async () => {
-    render(<ModuleList courseId="c1" modules={modules} />);
+    render(<ModuleList courseId="c1" courseSlug="kc" modules={modules} />);
     const handle = screen.getByRole("button", { name: "Move Welcome" });
     handle.focus();
     await act(async () => {
@@ -114,7 +114,7 @@ describe("ModuleList", () => {
       ok: false,
       error: "Nope",
     });
-    render(<ModuleList courseId="c1" modules={modules} />);
+    render(<ModuleList courseId="c1" courseSlug="kc" modules={modules} />);
     screen.getByRole("button", { name: "Move Welcome" }).focus();
     for (const key of ["[Space]", "[ArrowDown]", "[Space]"]) {
       await act(async () => {
@@ -126,7 +126,7 @@ describe("ModuleList", () => {
   });
 
   it("publishes and unpublishes", async () => {
-    render(<ModuleList courseId="c1" modules={modules} />);
+    render(<ModuleList courseId="c1" courseSlug="kc" modules={modules} />);
     const rows = within(
       screen.getByRole("list", { name: "Modules in order" }),
     ).getAllByRole("listitem");

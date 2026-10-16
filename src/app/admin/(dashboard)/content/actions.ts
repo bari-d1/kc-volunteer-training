@@ -42,7 +42,7 @@ async function attempt<T>(
 export async function createCourseAction(input: unknown) {
   await requireAdmin();
   return attempt(
-    async () => (await createCourse(input)).id,
+    async () => (await createCourse(input)).slug,
     "Another course already uses this slug.",
   );
 }
@@ -50,7 +50,7 @@ export async function createCourseAction(input: unknown) {
 export async function createModuleAction(courseId: string, input: unknown) {
   await requireAdmin();
   return attempt(
-    async () => (await createModule(Id.parse(courseId), input)).id,
+    async () => (await createModule(Id.parse(courseId), input)).slug,
     "Another module in this course already uses this slug.",
   );
 }
@@ -58,7 +58,7 @@ export async function createModuleAction(courseId: string, input: unknown) {
 export async function updateModuleAction(id: string, input: unknown) {
   await requireAdmin();
   return attempt(
-    async () => (await updateModule(Id.parse(id), input)).id,
+    async () => (await updateModule(Id.parse(id), input)).slug,
     "Another module in this course already uses this slug.",
   );
 }

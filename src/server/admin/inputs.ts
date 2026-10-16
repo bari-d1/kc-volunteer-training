@@ -22,7 +22,9 @@ export const CourseInputSchema = z.object({
 });
 
 export const ModuleInputSchema = z.object({
-  slug: SlugSchema,
+  slug: SlugSchema.refine((slug) => slug !== "new", {
+    message: "“new” is reserved. Choose another slug.",
+  }),
   title: NonEmptyString,
   summary: z.string().trim(),
   isPublished: z.boolean().default(false),
@@ -36,4 +38,15 @@ export function isUniqueViolation(error: unknown) {
     error instanceof Prisma.PrismaClientKnownRequestError &&
     error.code === "P2002"
   );
+}
+
+/** A block edit the admin can fix: shown as a toast, with field errors. */
+export class BlockEditError extends Error {
+  constructor(
+    message: string,
+    readonly fieldErrors?: Record<string, string>,
+  ) {
+    super(message);
+    this.name = "BlockEditError";
+  }
 }

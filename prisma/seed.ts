@@ -16,7 +16,7 @@
  */
 import "dotenv/config";
 import { PrismaPg } from "@prisma/adapter-pg";
-import { PrismaClient, type Prisma } from "@/generated/prisma/client";
+import { Prisma, PrismaClient } from "@/generated/prisma/client";
 import {
   branches,
   course,
@@ -91,6 +91,10 @@ async function replaceBlocks(
       type: block.type,
       content: block.content as Prisma.InputJsonValue,
       isPublished: true,
+      // The seed is the published version: drop any admin drafts.
+      draftContent: Prisma.DbNull,
+      draftDeleted: false,
+      draftOrder: null,
     };
     const id = byType.get(block.type)?.shift();
     if (id) {

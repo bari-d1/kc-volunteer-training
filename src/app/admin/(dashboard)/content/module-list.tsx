@@ -65,12 +65,12 @@ function Badge({
 function Row({
   module: m,
   position,
-  courseId,
+  courseSlug,
   onChanged,
 }: {
   module: ModuleRow;
   position: number;
-  courseId: string;
+  courseSlug: string;
   onChanged: () => void;
 }) {
   const save = useSaveToast();
@@ -121,7 +121,7 @@ function Row({
       </span>
       <div className="flex min-w-0 flex-1 flex-col">
         <Link
-          href={`/admin/content/${courseId}/modules/${m.id}`}
+          href={`/admin/content/${courseSlug}/${m.slug}`}
           className="truncate text-small font-bold hover:text-lime"
         >
           {m.title}
@@ -204,9 +204,11 @@ function Row({
  */
 export function ModuleList({
   courseId,
+  courseSlug,
   modules,
 }: {
   courseId: string;
+  courseSlug: string;
   modules: ModuleRow[];
 }) {
   const router = useRouter();
@@ -298,7 +300,7 @@ export function ModuleList({
               key={m.id}
               module={m}
               position={index + 1}
-              courseId={courseId}
+              courseSlug={courseSlug}
               onChanged={() => router.refresh()}
             />
           ))}

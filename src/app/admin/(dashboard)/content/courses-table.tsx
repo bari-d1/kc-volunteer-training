@@ -17,7 +17,7 @@ const columns: Column<CourseRow>[] = [
     header: "Course",
     render: (c) => (
       <Link
-        href={`/admin/content/${c.id}`}
+        href={`/admin/content/${c.slug}`}
         className="font-bold hover:text-lime"
       >
         {c.title}

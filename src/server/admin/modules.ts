@@ -1,13 +1,14 @@
 import "server-only";
 import { z } from "zod";
+import { Prisma } from "@/generated/prisma/client";
 import { requireAdmin } from "@/lib/admin-auth";
 import { prisma } from "@/lib/prisma";
 import { logChange } from "./change-log";
 import { IdListSchema, ModuleInputSchema } from "./inputs";
 
 /**
- * A course's modules in order, with how many blocks each has, how many of
- * those are unpublished drafts, and how many volunteers have progress.
+ * A course's modules in order, with how many blocks each has, how many have
+ * unpublished changes, and how many volunteers have progress.
  */
 export async function listModules(courseId: string) {
   await requireAdmin();
@@ -17,9 +18,18 @@ export async function listModules(courseId: string) {
       orderBy: { order: "asc" },
       include: { _count: { select: { blocks: true, progress: true } } },
     }),
+    // Blocks with anything volunteers can't see yet.
     prisma.block.groupBy({
       by: ["moduleId"],
-      where: { isPublished: false, module: { courseId } },
+      where: {
+        module: { courseId },
+        OR: [
+          { isPublished: false },
+          { draftDeleted: true },
+          { draftContent: { not: Prisma.DbNull } },
+          { draftOrder: { not: null } },
+        ],
+      },
       _count: { _all: true },
     }),
   ]);
@@ -37,6 +47,18 @@ export async function getModuleWithBlocks(id: string) {
   return prisma.module.findUnique({
     where: { id },
     include: { blocks: { orderBy: { order: "asc" } } },
+  });
+}
+
+/** A module by its course and module slugs, for the admin pages. */
+export async function getModuleBySlugs(courseSlug: string, moduleSlug: string) {
+  await requireAdmin();
+  return prisma.module.findFirst({
+    where: { slug: moduleSlug, course: { slug: courseSlug } },
+    include: {
+      course: { select: { id: true, slug: true, title: true } },
+      _count: { select: { blocks: true } },
+    },
   });
 }
 
