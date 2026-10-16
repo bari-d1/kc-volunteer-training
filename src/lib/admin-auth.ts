@@ -6,14 +6,16 @@ import "server-only";
 import { createHmac } from "node:crypto";
 import { verify } from "@node-rs/argon2";
 import { cookies, headers } from "next/headers";
+import { cache } from "react";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import {
   ADMIN_COOKIE,
   adminCookieOptions,
   createAdminToken,
-  verifyAdminToken,
+  readAdminToken,
 } from "@/lib/admin-session";
+import { AdminSessionSettingSchema } from "@/lib/schemas/site-settings";
 
 export const ADMIN_MAX_FAILURES = 5;
 export const ADMIN_LOCKOUT_MS = 15 * 60 * 1000;
@@ -21,9 +23,24 @@ const RETENTION_MS = 24 * 60 * 60 * 1000;
 
 // ─── Session ─────────────────────────────────────────────────────────────────
 
+/** The current admin session version (SiteSetting "adminSession"). */
+export const adminSessionVersion = cache(async () => {
+  const row = await prisma.siteSetting.findUnique({
+    where: { key: "adminSession" },
+  });
+  const parsed = AdminSessionSettingSchema.safeParse(row?.value);
+  return parsed.success ? parsed.data.version : 0;
+});
+
+/**
+ * A valid admin cookie from the current session version. "Sign out all
+ * admin sessions" bumps the version, so older cookies stop working here
+ * even though their signature is still good.
+ */
 export async function isAdmin() {
   const cookieStore = await cookies();
-  return verifyAdminToken(cookieStore.get(ADMIN_COOKIE)?.value);
+  const token = await readAdminToken(cookieStore.get(ADMIN_COOKIE)?.value);
+  return token !== null && token.version === (await adminSessionVersion());
 }
 
 /**
@@ -37,7 +54,11 @@ export async function requireAdmin() {
 
 export async function startAdminSession() {
   const cookieStore = await cookies();
-  cookieStore.set(ADMIN_COOKIE, await createAdminToken(), adminCookieOptions);
+  cookieStore.set(
+    ADMIN_COOKIE,
+    await createAdminToken(Date.now(), await adminSessionVersion()),
+    adminCookieOptions,
+  );
 }
 
 export async function endAdminSession() {

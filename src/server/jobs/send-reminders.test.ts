@@ -15,6 +15,10 @@ const prisma = vi.hoisted(() => ({
   profile: { findMany: vi.fn() },
 }));
 vi.mock("@/lib/prisma", () => ({ prisma }));
+const emailsSetting = vi.hoisted(() => ({ value: null as unknown }));
+vi.mock("../site-settings", () => ({
+  getSetting: async () => emailsSetting.value,
+}));
 
 const { sendReminders } = await import("./send-reminders");
 const { verifyUnsubscribeToken } = await import("@/lib/unsubscribe-token");
@@ -57,6 +61,18 @@ afterEach(() => {
 });
 
 describe("sendReminders", () => {
+  it("does nothing when reminders are switched off in Settings", async () => {
+    emailsSetting.value = { remindersEnabled: false, digestRecipients: [] };
+    expect(await sendReminders({ now: NOW })).toEqual({
+      sent: 0,
+      skipped: 0,
+      volunteers: [],
+      disabled: true,
+    });
+    expect(prisma.profile.findMany).not.toHaveBeenCalled();
+    emailsSetting.value = null;
+  });
+
   it("only looks at volunteers with reminders on who haven't finished", async () => {
     prisma.profile.findMany.mockResolvedValue([]);
     await sendReminders({ now: NOW });

@@ -107,7 +107,10 @@ describe("planQuestions", () => {
 });
 
 /** In-memory stand-in for the four tables the importer touches. */
-function fakeDb(existing: ExistingQuestion[] = []) {
+function fakeDb(
+  existing: ExistingQuestion[] = [],
+  settingsRow: { key: string; value: unknown } | null = null,
+) {
   const writes: string[] = [];
   const db = {
     course: {
@@ -140,10 +143,7 @@ function fakeDb(existing: ExistingQuestion[] = []) {
       },
     },
     siteSetting: {
-      findUnique: async () => ({
-        key: "quiz",
-        value: { passMark: 70, questionsPerAttempt: 2 },
-      }),
+      findUnique: async () => settingsRow,
       upsert: async ({ update }: { update: { value: unknown } }) => {
         writes.push(`settings ${JSON.stringify(update.value)}`);
       },
@@ -181,8 +181,21 @@ describe("importQuestionBank", () => {
     expect(describeImport(report)).toEqual([
       "Questions: 2 added, 1 updated, 1 deactivated, 0 unchanged",
       "Sections:  2 added, 0 updated, 1 removed",
-      "Settings:  updated",
+      "Settings:  set from the bank",
     ]);
+  });
+
+  it("leaves quiz settings alone once they exist (Admin → Settings owns them)", async () => {
+    const { db, writes } = fakeDb([], {
+      key: "quiz",
+      value: { passMark: 70, questionsPerAttempt: 2 },
+    });
+    const report = await importQuestionBank(db, smallBank());
+    expect(report.settingsChanged).toBe(false);
+    expect(writes.some((w) => w.startsWith("settings"))).toBe(false);
+    expect(describeImport(report).at(-1)).toBe(
+      "Settings:  kept (managed in Admin → Settings)",
+    );
   });
 
   it("writes nothing on a dry run, but reports the same plan", async () => {

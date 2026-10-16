@@ -217,8 +217,9 @@ export async function importQuestionBank(
   const currentSettings = await db.siteSetting.findUnique({
     where: { key: "quiz" },
   });
-  const settingsChanged =
-    JSON.stringify(currentSettings?.value) !== JSON.stringify(settings);
+  // Admin → Settings owns the quiz settings once they exist; the bank's
+  // values only fill them in the first time.
+  const settingsChanged = currentSettings === null;
 
   const report = {
     courseSlug: bank.courseSlug,
@@ -278,7 +279,7 @@ export function describeImport(
   const lines = [
     `Questions: ${questions.add.length} ${add}, ${questions.update.length} ${update}, ${questions.deactivate.length} ${verb("deactivated", "to deactivate")}, ${questions.unchanged} unchanged`,
     `Sections:  ${sections.add.length} ${add}, ${sections.update.length} ${update}, ${sections.remove.length} ${verb("removed", "to remove")}`,
-    `Settings:  ${report.settingsChanged ? verb("updated", "will change") : "unchanged"}`,
+    `Settings:  ${report.settingsChanged ? verb("set from the bank", "will be set from the bank") : "kept (managed in Admin → Settings)"}`,
   ];
   if (verbose) {
     for (const q of questions.add)

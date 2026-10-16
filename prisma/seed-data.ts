@@ -453,18 +453,12 @@ export const modules: Array<{
         },
       },
       {
+        // The email and contacts come from Settings (safeguarding).
         type: "CONTACT",
         content: {
           title: "Key contact details",
-          email: "safeguarding@kingdomculturejcm.co.uk",
-          contacts: [
-            {
-              label: "Designated Safeguarding Lead (DSL)",
-              name: "Yemi",
-              phone: "07582 847316",
-            },
-            { label: "Deputy DSL", name: "Runor", phone: "07446 534029" },
-          ],
+          contacts: [],
+          source: "safeguarding",
         },
       },
       narrator(
@@ -472,11 +466,9 @@ export const modules: Array<{
         "If something worries you, report it. Use the incident report form or contact the safeguarding team.",
       ),
       {
+        // The incident form link comes from Settings (links).
         type: "LINK_QR",
-        content: {
-          label: "Incident report form",
-          url: INCIDENT_FORM_URL,
-        },
+        content: { label: "Incident report form", source: "safeguarding" },
       },
       {
         type: "KNOWLEDGE_CHECK",
@@ -825,7 +817,9 @@ export const leaders: Array<{
   },
 ];
 
-export const siteSettings: { [K in SiteSettingKey]: unknown } = {
+/** Settings the seed owns. adminSession is left alone (it signs admins out). */
+export const siteSettings: Partial<{ [K in SiteSettingKey]: unknown }> = {
+  emails: { remindersEnabled: true, digestRecipients: [] },
   quiz: { passMark: 80, questionsPerAttempt: 10 },
   safeguarding: {
     email: "safeguarding@kingdomculturejcm.co.uk",

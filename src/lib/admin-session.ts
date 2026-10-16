@@ -18,27 +18,42 @@ function secretKey() {
   return new TextEncoder().encode(secret);
 }
 
-/** A signed token that expires in 12 hours. */
-export async function createAdminToken(now = Date.now()) {
+/**
+ * A signed token that expires in 12 hours. `version` is the admin session
+ * version from SiteSetting: bumping it there invalidates older tokens.
+ */
+export async function createAdminToken(now = Date.now(), version = 0) {
   const issuedAt = Math.floor(now / 1000);
-  return new SignJWT({ role: "admin" })
+  return new SignJWT({ role: "admin", v: version })
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt(issuedAt)
     .setExpirationTime(issuedAt + ADMIN_SESSION_SECONDS)
     .sign(secretKey());
 }
 
-/** True when the token is signed by us, unexpired and an admin token. */
-export async function verifyAdminToken(token: string | undefined) {
-  if (!token) return false;
+/**
+ * The session version of a token signed by us, unexpired and for an admin,
+ * or null. Tokens from before versions existed count as version 0.
+ */
+export async function readAdminToken(token: string | undefined) {
+  if (!token) return null;
   try {
     const { payload } = await jwtVerify(token, secretKey(), {
       algorithms: ["HS256"],
     });
-    return payload.role === "admin";
+    if (payload.role !== "admin") return null;
+    return { version: typeof payload.v === "number" ? payload.v : 0 };
   } catch {
-    return false;
+    return null;
   }
+}
+
+/**
+ * True when the token is signed by us, unexpired and an admin token. The
+ * proxy uses this; requireAdmin() also checks the session version.
+ */
+export async function verifyAdminToken(token: string | undefined) {
+  return (await readAdminToken(token)) !== null;
 }
 
 export const adminCookieOptions = {

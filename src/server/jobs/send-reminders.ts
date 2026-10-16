@@ -4,6 +4,7 @@ import { DEFAULT_COURSE_SLUG, moduleHref } from "@/lib/course-config";
 import { prisma } from "@/lib/prisma";
 import { createUnsubscribeToken } from "@/lib/unsubscribe-token";
 import { sendEmail } from "../email";
+import { getSetting } from "../site-settings";
 import { computeModuleStates } from "../unlock";
 import { decideReminder, type ReminderDecision } from "./reminder-rules";
 
@@ -11,6 +12,8 @@ import { decideReminder, type ReminderDecision } from "./reminder-rules";
 export const REMINDERS_PER_RUN = 50;
 
 export type ReminderRun = {
+  /** Reminders are switched off in Settings: nothing was looked at. */
+  disabled?: boolean;
   /** Reminders Resend accepted. */
   sent: number;
   /** Due, but not sent: over the per-run limit, failed, or skipped. */
@@ -34,6 +37,10 @@ export async function sendReminders({
   now = new Date(),
   limit = REMINDERS_PER_RUN,
 } = {}): Promise<ReminderRun> {
+  // The global switch in Settings (on unless set off).
+  if ((await getSetting("emails"))?.remindersEnabled === false) {
+    return { sent: 0, skipped: 0, volunteers: [], disabled: true };
+  }
   const course = await prisma.course.findUnique({
     where: { slug: DEFAULT_COURSE_SLUG },
     select: {

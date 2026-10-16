@@ -50,3 +50,11 @@ export class BlockEditError extends Error {
     this.name = "BlockEditError";
   }
 }
+
+/** A settings value that's valid on its own but not right now (field errors). */
+export class SettingsError extends Error {
+  constructor(readonly fieldErrors: Record<string, string>) {
+    super(Object.values(fieldErrors)[0] ?? "Some fields need fixing.");
+    this.name = "SettingsError";
+  }
+}

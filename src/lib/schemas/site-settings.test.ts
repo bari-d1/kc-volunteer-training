@@ -9,6 +9,8 @@ import {
 describe("site setting schemas", () => {
   it("covers each documented key", () => {
     expect(Object.keys(siteSettingSchemas).sort()).toEqual([
+      "adminSession",
+      "emails",
       "links",
       "quiz",
       "safeguarding",

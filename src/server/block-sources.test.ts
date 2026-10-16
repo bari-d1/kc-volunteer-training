@@ -5,8 +5,15 @@ import { BlockSchema, type VolunteerBlock } from "@/lib/schemas/blocks";
 vi.mock("server-only", () => ({}));
 const findMany = vi.hoisted(() => vi.fn());
 vi.mock("@/lib/prisma", () => ({ prisma: { leader: { findMany } } }));
+const getSettingMock = vi.hoisted(() =>
+  vi.fn<(key: string) => Promise<unknown>>(async () => null),
+);
+vi.mock("./site-settings", () => ({
+  getSetting: (k: string) => getSettingMock(k),
+}));
 
-const { resolvePeopleBlocks } = await import("./people-blocks");
+const { resolveBlockSources: resolvePeopleBlocks } =
+  await import("./block-sources");
 
 const block = (id: string, content: object) =>
   ({ id, type: "PEOPLE", content }) as VolunteerBlock;
@@ -89,5 +96,62 @@ describe("resolvePeopleBlocks", () => {
         block("empty", { people: [], source: { group: "TEAM_LEAD" } }),
       ]),
     ).toEqual([]);
+  });
+});
+
+describe("settings-backed blocks", () => {
+  it("fill contact and link blocks from Settings, hiding unset links", async () => {
+    getSettingMock.mockImplementation(async (key: string) =>
+      key === "safeguarding"
+        ? {
+            email: "safeguarding@kc.example",
+            contacts: [{ label: "DSL", name: "Yemi", phone: "07582 847316" }],
+          }
+        : { incidentFormUrl: "https://forms.example/incident" },
+    );
+    const result = await resolvePeopleBlocks([
+      {
+        id: "c",
+        type: "CONTACT",
+        content: {
+          title: "Key contacts",
+          contacts: [],
+          source: "safeguarding",
+        },
+      },
+      {
+        id: "l1",
+        type: "LINK_QR",
+        content: { label: "Report", source: "safeguarding" },
+      },
+      {
+        id: "l2",
+        type: "LINK_QR",
+        content: { label: "WhatsApp", source: "whatsapp" },
+      },
+      {
+        id: "l3",
+        type: "LINK_QR",
+        content: { label: "Own", url: "https://example.org" },
+      },
+    ] as VolunteerBlock[]);
+    expect(result.map((b) => b.id)).toEqual(["c", "l1", "l3"]);
+    expect(result[0].content).toEqual({
+      title: "Key contacts",
+      source: "safeguarding",
+      email: "safeguarding@kc.example",
+      contacts: [{ label: "DSL", name: "Yemi", phone: "07582 847316" }],
+    });
+    expect(result[1].content).toMatchObject({
+      url: "https://forms.example/incident",
+    });
+  });
+
+  it("read no settings when no block needs them", async () => {
+    getSettingMock.mockClear();
+    await resolvePeopleBlocks([
+      { id: "t", type: "TEXT", content: { markdown: "Hi" } } as VolunteerBlock,
+    ]);
+    expect(getSettingMock).not.toHaveBeenCalled();
   });
 });

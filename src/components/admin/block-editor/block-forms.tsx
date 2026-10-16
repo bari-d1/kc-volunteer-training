@@ -570,6 +570,7 @@ function ChecklistForm({ content, onChange, errors }: FormProps<"CHECKLIST">) {
 }
 
 function ContactForm({ content, onChange, errors }: FormProps<"CONTACT">) {
+  const fromSettings = content.source === "safeguarding";
   return (
     <Stack>
       <TextInput
@@ -578,46 +579,81 @@ function ContactForm({ content, onChange, errors }: FormProps<"CONTACT">) {
         onChange={(title) => onChange({ ...content, title })}
         error={errors.title}
       />
-      <TextInput
-        label="Email (optional)"
-        value={content.email}
-        onChange={(v) => onChange({ ...content, email: optional(v) })}
-        error={errors.email}
-      />
-      <RepeatableList
-        legend="Contacts"
-        itemLabel="Contact"
-        items={content.contacts}
-        onChange={(contacts) => onChange({ ...content, contacts })}
-        create={() => ({ label: "", name: "" })}
-        error={errors.contacts}
-        render={(person, update, i) => (
-          <>
-            <TextInput
-              label="Role"
-              hint="e.g. Designated Safeguarding Lead (DSL)."
-              value={person.label}
-              onChange={(label) => update({ ...person, label })}
-              error={errors[`contacts.${i}.label`]}
-            />
-            <TextInput
-              label="Name"
-              value={person.name}
-              onChange={(name) => update({ ...person, name })}
-              error={errors[`contacts.${i}.name`]}
-            />
-            <TextInput
-              label="Phone (optional)"
-              value={person.phone}
-              onChange={(v) => update({ ...person, phone: optional(v) })}
-              error={errors[`contacts.${i}.phone`]}
-            />
-          </>
-        )}
-      />
+      <label className="flex items-start gap-2 text-small">
+        <input
+          type="checkbox"
+          checked={fromSettings}
+          onChange={(e) =>
+            onChange(
+              e.target.checked
+                ? { ...content, source: "safeguarding" }
+                : {
+                    title: content.title,
+                    email: content.email,
+                    contacts: content.contacts,
+                  },
+            )
+          }
+          className="mt-1 accent-lime"
+        />
+        <span>
+          Use the safeguarding contacts from Settings
+          <span className="block text-[12px] text-muted">
+            The email and contacts come from Settings, so updating a phone
+            number there updates every module.
+          </span>
+        </span>
+      </label>
+      {!fromSettings && (
+        <>
+          <TextInput
+            label="Email (optional)"
+            value={content.email}
+            onChange={(v) => onChange({ ...content, email: optional(v) })}
+            error={errors.email}
+          />
+          <RepeatableList
+            legend="Contacts"
+            itemLabel="Contact"
+            items={content.contacts}
+            onChange={(contacts) => onChange({ ...content, contacts })}
+            create={() => ({ label: "", name: "" })}
+            error={errors.contacts}
+            render={(person, update, i) => (
+              <>
+                <TextInput
+                  label="Role"
+                  hint="e.g. Designated Safeguarding Lead (DSL)."
+                  value={person.label}
+                  onChange={(label) => update({ ...person, label })}
+                  error={errors[`contacts.${i}.label`]}
+                />
+                <TextInput
+                  label="Name"
+                  value={person.name}
+                  onChange={(name) => update({ ...person, name })}
+                  error={errors[`contacts.${i}.name`]}
+                />
+                <TextInput
+                  label="Phone (optional)"
+                  value={person.phone}
+                  onChange={(v) => update({ ...person, phone: optional(v) })}
+                  error={errors[`contacts.${i}.phone`]}
+                />
+              </>
+            )}
+          />
+        </>
+      )}
     </Stack>
   );
 }
+
+const LINK_SOURCES = [
+  { value: "", label: "A link I enter" },
+  { value: "safeguarding", label: "The incident report form (Settings)" },
+  { value: "whatsapp", label: "The volunteers' WhatsApp group (Settings)" },
+] as const;
 
 function LinkQrForm({ content, onChange, errors }: FormProps<"LINK_QR">) {
   return (
@@ -628,13 +664,23 @@ function LinkQrForm({ content, onChange, errors }: FormProps<"LINK_QR">) {
         onChange={(label) => onChange({ ...content, label })}
         error={errors.label}
       />
-      <TextInput
-        label="Link"
-        hint="A full https:// address, so the QR code works when scanned."
-        value={content.url}
-        onChange={(url) => onChange({ ...content, url })}
-        error={errors.url}
+      <SelectInput
+        label="Link to"
+        hint="Links from Settings stay up to date in every module. If one isn't set, the block is hidden."
+        value={content.source}
+        options={[...LINK_SOURCES]}
+        onChange={(source) => onChange({ ...content, source })}
+        error={errors.source}
       />
+      {!content.source && (
+        <TextInput
+          label="Link"
+          hint="A full https:// address, so the QR code works when scanned."
+          value={content.url}
+          onChange={(url) => onChange({ ...content, url: optional(url) })}
+          error={errors.url}
+        />
+      )}
       <TextArea
         label="Description (optional)"
         value={content.description}

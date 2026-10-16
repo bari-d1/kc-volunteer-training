@@ -133,18 +133,35 @@ export const ContactPersonSchema = z.object({
 });
 export type ContactPerson = z.infer<typeof ContactPersonSchema>;
 
-export const ContactContentSchema = z.object({
-  title: NonEmptyString,
-  email: z.email().optional(),
-  contacts: z.array(ContactPersonSchema).min(1),
-});
+export const ContactContentSchema = z
+  .object({
+    title: NonEmptyString,
+    email: z.email().optional(),
+    contacts: z.array(ContactPersonSchema),
+    /** Use the safeguarding contacts from Settings instead of these. */
+    source: z.literal("safeguarding").optional(),
+  })
+  .refine((content) => content.source || content.contacts.length > 0, {
+    path: ["contacts"],
+    message: "Add at least one contact, or use the safeguarding contacts",
+  });
 
-export const LinkQrContentSchema = z.object({
-  label: NonEmptyString,
-  /** Absolute so the QR code works when scanned. */
-  url: HttpUrlSchema,
-  description: NonEmptyString.optional(),
-});
+export const LinkQrContentSchema = z
+  .object({
+    label: NonEmptyString,
+    /** Absolute so the QR code works when scanned. */
+    url: HttpUrlSchema.optional(),
+    description: NonEmptyString.optional(),
+    /**
+     * Use a link from Settings instead: the safeguarding incident form or
+     * the volunteers' WhatsApp group.
+     */
+    source: z.enum(["safeguarding", "whatsapp"]).optional(),
+  })
+  .refine((content) => content.source || content.url, {
+    path: ["url"],
+    message: "Add a link, or use one from Settings",
+  });
 
 export const KnowledgeCheckContentSchema = z.object({
   questions: z

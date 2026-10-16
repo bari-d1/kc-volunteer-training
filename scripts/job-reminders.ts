@@ -15,6 +15,10 @@ const dryRun = process.argv.includes("--dry-run");
 
 async function main() {
   const run = await sendReminders({ dryRun });
+  if (run.disabled) {
+    console.log("Reminder emails are switched off in Settings. Nothing to do.");
+    return;
+  }
   const due = run.volunteers.filter((v) => v.decision.send);
   console.log(
     `${run.volunteers.length} volunteer(s) not finished with reminders on; ${due.length} due a reminder.`,

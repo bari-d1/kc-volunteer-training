@@ -198,9 +198,9 @@ export function summariseBlock(type: BlockType, content: unknown): string {
     case "CHECKLIST":
       return `${count(list("items").length, "item")}: ${clip(String(list("items")[0] ?? ""), 40)}`;
     case "CONTACT":
-      return clip(String(c.title ?? ""));
+      return `${clip(String(c.title ?? ""), 45)}${c.source ? " (from Settings)" : ""}`;
     case "LINK_QR":
-      return clip(String(c.label ?? ""));
+      return `${clip(String(c.label ?? ""), 45)}${c.source ? " (from Settings)" : ""}`;
     case "KNOWLEDGE_CHECK":
       return count(list("questions").length, "question");
     case "NARRATOR_CALLOUT":

@@ -9,6 +9,8 @@ export function LinkQrBlock({
   url,
   description,
 }: BlockProps<"LINK_QR">) {
+  // A link from Settings is filled in before render; without one, show nothing.
+  if (!url) return null;
   return (
     <div className="flex flex-col items-start gap-6 rounded-lg bg-surface p-6 md:flex-row md:items-center md:justify-between md:p-8">
       <div className="flex min-w-0 flex-col gap-4">
