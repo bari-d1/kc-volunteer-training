@@ -2,8 +2,10 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { AdminPageSkeleton } from "@/components/admin/admin-page-skeleton";
 import { PageHeader } from "@/components/admin/page-header";
-import { EmptyState } from "@/components/ui/empty-state";
 import { requireAdmin } from "@/lib/admin-auth";
+import { listCourses } from "@/server/admin/courses";
+import { CoursesTable } from "./courses-table";
+import { NewCourseButton } from "./new-course-button";
 
 export const metadata: Metadata = { title: "Content" };
 
@@ -17,15 +19,22 @@ export default function AdminContentPage() {
 
 async function Content() {
   await requireAdmin();
+  const courses = await listCourses();
   return (
     <>
       <PageHeader
         title="Content"
-        description="Edit modules and their lessons."
+        description="Courses and the modules in them."
+        actions={<NewCourseButton />}
       />
-      <EmptyState
-        title="Coming soon"
-        description="This part of the admin area is next on the list."
+      <CoursesTable
+        rows={courses.map((c) => ({
+          id: c.id,
+          title: c.title,
+          slug: c.slug,
+          isPublished: c.isPublished,
+          moduleCount: c._count.modules,
+        }))}
       />
     </>
   );

@@ -1,5 +1,6 @@
 import "server-only";
 import { z } from "zod";
+import { Prisma } from "@/generated/prisma/client";
 import { NonEmptyString } from "@/lib/schemas/common";
 
 export const SlugSchema = z
@@ -28,3 +29,11 @@ export const ModuleInputSchema = z.object({
   narratorIntro: NonEmptyString.nullable().default(null),
   requiresCheck: z.boolean().default(false),
 });
+
+/** A unique constraint failed, e.g. a slug already in use. */
+export function isUniqueViolation(error: unknown) {
+  return (
+    error instanceof Prisma.PrismaClientKnownRequestError &&
+    error.code === "P2002"
+  );
+}
